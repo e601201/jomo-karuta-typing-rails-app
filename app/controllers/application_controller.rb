@@ -14,9 +14,10 @@ class ApplicationController < ActionController::Base
 
   private
 
-  # ログインユーザー。users テーブルは認証フェーズで導入する（それまでは常に nil）。
   def current_user
-    nil
+    return nil unless session[:user_id]
+
+    @current_user ||= User.find_by(id: session[:user_id])
   end
 
   def require_login

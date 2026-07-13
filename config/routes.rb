@@ -8,6 +8,18 @@ Rails.application.routes.draw do
   get "game",              to: "games#show"
   get "practice/specific", to: "practice#specific"
   get "settings",          to: "pages#settings"
+  get "ranking",           to: "rankings#index"
+  get "profile",           to: "profiles#show"
+
+  # 認証 (OmniAuth)。request phase (POST /auth/:provider) は OmniAuth ミドルウェアが処理する
+  get    "auth/login",              to: "sessions#new"
+  get    "auth/error",              to: "sessions#error"
+  get    "auth/:provider/callback", to: "sessions#create"
+  delete "auth/logout",             to: "sessions#destroy"
+
+  namespace :api do
+    resources :scores, only: :create
+  end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
