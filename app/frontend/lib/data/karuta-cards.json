@@ -1,0 +1,574 @@
+[
+	{
+		"id": "a",
+		"hiragana": "あさまのいたずら おにのおしだし",
+		"meaning": "浅間のいたずら 鬼の押出し",
+		"category": "geography",
+		"difficulty": "easy",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/a.webp",
+			"yomifuda": "/images/karuta/yomifuda/a.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/a.webp"
+		},
+		"hiraganaShort": "あさまのいたずら"
+	},
+	{
+		"id": "i",
+		"hiragana": "いかほおんせん にほんのめいとう",
+		"meaning": "伊香保温泉 日本の名湯",
+		"category": "industry",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/i.webp",
+			"yomifuda": "/images/karuta/yomifuda/i.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/i.webp"
+		},
+		"hiraganaShort": "いかほおんせん"
+	},
+	{
+		"id": "u",
+		"hiragana": "うすいとうげのせきしょあと",
+		"meaning": "碓氷峠の関所跡",
+		"category": "culture",
+		"difficulty": "easy",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/u.webp",
+			"yomifuda": "/images/karuta/yomifuda/u.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/u.webp"
+		},
+		"hiraganaShort": "うすいとうげ"
+	},
+	{
+		"id": "e",
+		"hiragana": "えんぎだるまの しょうりんざん",
+		"meaning": "縁起だるまの少林山",
+		"category": "industry",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/e.webp",
+			"yomifuda": "/images/karuta/yomifuda/e.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/e.webp"
+		},
+		"hiraganaShort": "えんぎだるま"
+	},
+	{
+		"id": "o",
+		"hiragana": "おおたかなやま こそだてどんりゅう",
+		"meaning": "太田金山子育呑龍",
+		"category": "culture",
+		"difficulty": "easy",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/o.webp",
+			"yomifuda": "/images/karuta/yomifuda/o.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/o.webp"
+		},
+		"hiraganaShort": "おおたかなやま"
+	},
+	{
+		"id": "ka",
+		"hiragana": "かんとうと しんえつつなぐ たかさきし",
+		"meaning": "関東と信越つなぐ高崎市",
+		"category": "history",
+		"difficulty": "hard",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/ka.webp",
+			"yomifuda": "/images/karuta/yomifuda/ka.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/ka.webp"
+		},
+		"hiraganaShort": "たかさきし"
+	},
+	{
+		"id": "ki",
+		"hiragana": "きりゅうはにほんのはたどころ",
+		"meaning": "桐生は日本の機どころ",
+		"category": "nature",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/ki.webp",
+			"yomifuda": "/images/karuta/yomifuda/ki.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/ki.webp"
+		},
+		"hiraganaShort": "はたどころ"
+	},
+	{
+		"id": "ku",
+		"hiragana": "くさづよいとこ くすりのいでゆ",
+		"meaning": "草津よいとこ薬の温泉",
+		"category": "history",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/ku.webp",
+			"yomifuda": "/images/karuta/yomifuda/ku.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/ku.webp"
+		},
+		"hiraganaShort": "くさづよいとこ"
+	},
+	{
+		"id": "ke",
+		"hiragana": "けんとまえばし いとのまち",
+		"meaning": "県都前橋 生糸の市",
+		"category": "culture",
+		"difficulty": "hard",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/ke.webp",
+			"yomifuda": "/images/karuta/yomifuda/ke.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/ke.webp"
+		},
+		"hiraganaShort": "けんとまえばし"
+	},
+	{
+		"id": "ko",
+		"hiragana": "こころのとうだい うちむらかんぞう",
+		"meaning": "心の燈台 内村鑑三",
+		"category": "history",
+		"difficulty": "hard",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/ko.webp",
+			"yomifuda": "/images/karuta/yomifuda/ko.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/ko.webp"
+		},
+		"hiraganaShort": "うちむらかんぞう"
+	},
+	{
+		"id": "sa",
+		"hiragana": "さんばせきとともに なだかいふゆざくら",
+		"meaning": "三波石と共に 名高い冬桜",
+		"category": "geography",
+		"difficulty": "easy",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/sa.webp",
+			"yomifuda": "/images/karuta/yomifuda/sa.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/sa.webp"
+		},
+		"hiraganaShort": "さんばせき"
+	},
+	{
+		"id": "shi",
+		"hiragana": "しのぶけのくに ふたごづか",
+		"meaning": "しのぶ毛の国 二子塚",
+		"category": "history",
+		"difficulty": "hard",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/shi.webp",
+			"yomifuda": "/images/karuta/yomifuda/shi.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/shi.webp"
+		},
+		"hiraganaShort": "ふたごづか"
+	},
+	{
+		"id": "su",
+		"hiragana": "すそのはながし あかぎやま",
+		"meaning": "裾野は長し赤城山",
+		"category": "culture",
+		"difficulty": "hard",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/su.webp",
+			"yomifuda": "/images/karuta/yomifuda/su.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/su.webp"
+		},
+		"hiraganaShort": "あかぎやま"
+	},
+	{
+		"id": "se",
+		"hiragana": "せんきょうおぜぬま はなのはら",
+		"meaning": "仙境尾瀬沼花の原",
+		"category": "nature",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/se.webp",
+			"yomifuda": "/images/karuta/yomifuda/se.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/se.webp"
+		},
+		"hiraganaShort": "せんきょうおぜぬま"
+	},
+	{
+		"id": "so",
+		"hiragana": "そろいのしたくで やぎぶしおんど",
+		"meaning": "そろいの仕度で八木節音頭",
+		"category": "history",
+		"difficulty": "hard",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/so.webp",
+			"yomifuda": "/images/karuta/yomifuda/so.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/so.webp"
+		},
+		"hiraganaShort": "やぎぶしおんど"
+	},
+	{
+		"id": "ta",
+		"hiragana": "たきはふきわれ かたしなけいこく",
+		"meaning": "滝は吹割 片品渓谷",
+		"category": "geography",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/ta.webp",
+			"yomifuda": "/images/karuta/yomifuda/ta.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/ta.webp"
+		},
+		"hiraganaShort": "かたしなけいこく"
+	},
+	{
+		"id": "chi",
+		"hiragana": "ちからあわせる ひゃくきゅうじゅうまん",
+		"meaning": "力あわせる百九十万",
+		"category": "nature",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/chi.webp",
+			"yomifuda": "/images/karuta/yomifuda/chi.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/chi.webp"
+		},
+		"hiraganaShort": "ひゃくきゅうじゅうまん"
+	},
+	{
+		"id": "tsu",
+		"hiragana": "つるまうかたちの ぐんまけん",
+		"meaning": "つる舞う形の群馬県",
+		"category": "nature",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/tsu.webp",
+			"yomifuda": "/images/karuta/yomifuda/tsu.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/tsu.webp"
+		},
+		"hiraganaShort": "ぐんまけん"
+	},
+	{
+		"id": "te",
+		"hiragana": "てんかのぎじん もざえもん",
+		"meaning": "天下の義人 茂左衛門",
+		"category": "history",
+		"difficulty": "hard",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/te.webp",
+			"yomifuda": "/images/karuta/yomifuda/te.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/te.webp"
+		},
+		"hiraganaShort": "もざえもん"
+	},
+	{
+		"id": "to",
+		"hiragana": "とねは ばんどういちのかわ",
+		"meaning": "利根は坂東一の川",
+		"category": "geography",
+		"difficulty": "easy",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/to.webp",
+			"yomifuda": "/images/karuta/yomifuda/to.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/to.webp"
+		},
+		"hiraganaShort": "ばんどういちのかわ"
+	},
+	{
+		"id": "na",
+		"hiragana": "なかせんどうしのぶ あんなかすぎなみき",
+		"meaning": "中仙道しのぶ安中杉並木",
+		"category": "history",
+		"difficulty": "hard",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/na.webp",
+			"yomifuda": "/images/karuta/yomifuda/na.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/na.webp"
+		},
+		"hiraganaShort": "あんなかすぎ"
+	},
+	{
+		"id": "ni",
+		"hiragana": "にほんでさいしょの とみおかせいし",
+		"meaning": "日本で最初の富岡製糸",
+		"category": "geography",
+		"difficulty": "easy",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/ni.webp",
+			"yomifuda": "/images/karuta/yomifuda/ni.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/ni.webp"
+		},
+		"hiraganaShort": "とみおかせいし"
+	},
+	{
+		"id": "nu",
+		"hiragana": "ぬまたじょうかの しおばらたすけ",
+		"meaning": "沼田城下の塩原太助",
+		"category": "history",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/nu.webp",
+			"yomifuda": "/images/karuta/yomifuda/nu.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/nu.webp"
+		},
+		"hiraganaShort": "しおばらたすけ"
+	},
+	{
+		"id": "ne",
+		"hiragana": "ねぎとこんにゃく しもにためいさん",
+		"meaning": "ねぎとこんにゃく下仁田名産",
+		"category": "nature",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/ne.webp",
+			"yomifuda": "/images/karuta/yomifuda/ne.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/ne.webp"
+		},
+		"hiraganaShort": "ねぎとこんにゃく"
+	},
+	{
+		"id": "no",
+		"hiragana": "のぼるはるなの きゃんぷむら",
+		"meaning": "登る榛名のキャンプ村",
+		"category": "history",
+		"difficulty": "hard",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/no.webp",
+			"yomifuda": "/images/karuta/yomifuda/no.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/no.webp"
+		},
+		"hiraganaShort": "きゃんぷむら"
+	},
+	{
+		"id": "ha",
+		"hiragana": "はなやまこうえん つつじのめいしょ",
+		"meaning": "花山公園 つつじの名所",
+		"category": "history",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/ha.webp",
+			"yomifuda": "/images/karuta/yomifuda/ha.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/ha.webp"
+		},
+		"hiraganaShort": "はなやまこうえん"
+	},
+	{
+		"id": "hi",
+		"hiragana": "びゃくいかんのん じひのみて",
+		"meaning": "白衣観音 慈悲の御手",
+		"category": "history",
+		"difficulty": "hard",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/hi.webp",
+			"yomifuda": "/images/karuta/yomifuda/hi.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/hi.webp"
+		},
+		"hiraganaShort": "びゃくいかんのん"
+	},
+	{
+		"id": "hu",
+		"hiragana": "ぶんぶくちゃがまの もりんじ",
+		"meaning": "分福茶釜の茂林寺",
+		"category": "nature",
+		"difficulty": "easy",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/hu.webp",
+			"yomifuda": "/images/karuta/yomifuda/hu.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/hu.webp"
+		},
+		"hiraganaShort": "もりんじ"
+	},
+	{
+		"id": "he",
+		"hiragana": "へいわのつかい にいじまじょう",
+		"meaning": "平和の使徒 新島襄",
+		"category": "culture",
+		"difficulty": "easy",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/he.webp",
+			"yomifuda": "/images/karuta/yomifuda/he.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/he.webp"
+		},
+		"hiraganaShort": "にいじまじょう"
+	},
+	{
+		"id": "ho",
+		"hiragana": "ほこるぶんごう たやまかたい",
+		"meaning": "誇る文豪 田山花袋",
+		"category": "nature",
+		"difficulty": "easy",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/ho.webp",
+			"yomifuda": "/images/karuta/yomifuda/ho.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/ho.webp"
+		},
+		"hiraganaShort": "たやまかたい"
+	},
+	{
+		"id": "ma",
+		"hiragana": "まゆときいとは にほんいち",
+		"meaning": "繭と生糸は日本一",
+		"category": "history",
+		"difficulty": "hard",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/ma.webp",
+			"yomifuda": "/images/karuta/yomifuda/ma.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/ma.webp"
+		},
+		"hiraganaShort": "まゆときいと"
+	},
+	{
+		"id": "mi",
+		"hiragana": "みなかみ、たにがわ すきーととざん",
+		"meaning": "水上、谷川 スキーと登山",
+		"category": "industry",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/mi.webp",
+			"yomifuda": "/images/karuta/yomifuda/mi.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/mi.webp"
+		},
+		"hiraganaShort": "みなかみ、たにがわ"
+	},
+	{
+		"id": "mu",
+		"hiragana": "むかしをかたる たごのこひ",
+		"meaning": "昔を語る多胡の古碑",
+		"category": "industry",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/mu.webp",
+			"yomifuda": "/images/karuta/yomifuda/mu.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/mu.webp"
+		},
+		"hiraganaShort": "たごのこひ"
+	},
+	{
+		"id": "me",
+		"hiragana": "めいせんおりだす いせさきし",
+		"meaning": "銘仙織出す伊勢崎市",
+		"category": "geography",
+		"difficulty": "easy",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/me.webp",
+			"yomifuda": "/images/karuta/yomifuda/me.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/me.webp"
+		},
+		"hiraganaShort": "いせさきし"
+	},
+	{
+		"id": "mo",
+		"hiragana": "もみじにはえる みょうぎさん",
+		"meaning": "紅葉に映える妙義山",
+		"category": "history",
+		"difficulty": "hard",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/mo.webp",
+			"yomifuda": "/images/karuta/yomifuda/mo.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/mo.webp"
+		},
+		"hiraganaShort": "みょうぎさん"
+	},
+	{
+		"id": "ya",
+		"hiragana": "やばけいしのぐ あがつまきょう",
+		"meaning": "耶馬渓しのぐ吾妻峡",
+		"category": "geography",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/ya.webp",
+			"yomifuda": "/images/karuta/yomifuda/ya.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/ya.webp"
+		},
+		"hiraganaShort": "あがつまきょう"
+	},
+	{
+		"id": "yu",
+		"hiragana": "ゆかりはふるし ぬきさきじんじゃ",
+		"meaning": "ゆかりは古し貫前神社",
+		"category": "nature",
+		"difficulty": "easy",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/yu.webp",
+			"yomifuda": "/images/karuta/yomifuda/yu.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/yu.webp"
+		},
+		"hiraganaShort": "ぬきさきじんじゃ"
+	},
+	{
+		"id": "yo",
+		"hiragana": "よのちりあらう しまおんせん",
+		"meaning": "世のちり洗う四万温泉",
+		"category": "nature",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/yo.webp",
+			"yomifuda": "/images/karuta/yomifuda/yo.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/yo.webp"
+		},
+		"hiraganaShort": "しまおんせん"
+	},
+	{
+		"id": "ra",
+		"hiragana": "らいとからっかぜ ぎりにんじょう",
+		"meaning": "雷と空風 義理人情",
+		"category": "nature",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/ra.webp",
+			"yomifuda": "/images/karuta/yomifuda/ra.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/ra.webp"
+		},
+		"hiraganaShort": "からっかぜ"
+	},
+	{
+		"id": "ri",
+		"hiragana": "りそうのでんかに でんげんぐんま",
+		"meaning": "理想の電化に電源群馬",
+		"category": "industry",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/ri.webp",
+			"yomifuda": "/images/karuta/yomifuda/ri.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/ri.webp"
+		},
+		"hiraganaShort": "でんげんぐんま"
+	},
+	{
+		"id": "ru",
+		"hiragana": "るーぷでなだかい しみずとんねる",
+		"meaning": "ループで名高い清水トンネル",
+		"category": "geography",
+		"difficulty": "easy",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/ru.webp",
+			"yomifuda": "/images/karuta/yomifuda/ru.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/ru.webp"
+		},
+		"hiraganaShort": "しみずとんねる"
+	},
+	{
+		"id": "re",
+		"hiragana": "れきしになだかい にったよしさだ",
+		"meaning": "歴史に名高い新田義貞",
+		"category": "history",
+		"difficulty": "medium",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/re.webp",
+			"yomifuda": "/images/karuta/yomifuda/re.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/re.webp"
+		},
+		"hiraganaShort": "にったよしさだ"
+	},
+	{
+		"id": "ro",
+		"hiragana": "ろうのう ふなつでんじべい",
+		"meaning": "老農 船津傳次平",
+		"category": "culture",
+		"difficulty": "easy",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/ro.webp",
+			"yomifuda": "/images/karuta/yomifuda/ro.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/ro.webp"
+		},
+		"hiraganaShort": "ふなつでんじべい"
+	},
+	{
+		"id": "wa",
+		"hiragana": "わさんのたいか せきこうわ",
+		"meaning": "和算の大家 関孝和",
+		"category": "history",
+		"difficulty": "hard",
+		"images": {
+			"torifuda": "/images/karuta/torifuda/wa.webp",
+			"yomifuda": "/images/karuta/yomifuda/wa.webp",
+			"kaisetsu": "/images/karuta/kaisetsu/wa.webp"
+		},
+		"hiraganaShort": "せきこうわ"
+	}
+]

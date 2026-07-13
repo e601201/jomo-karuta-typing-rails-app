@@ -23,6 +23,8 @@
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true,
 
+		"types": ["node"],
+
 		/* Aliases */
 		"paths": {
 			"@/*": ["./app/frontend/*"],
