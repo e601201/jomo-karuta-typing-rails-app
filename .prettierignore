@@ -1,0 +1,10 @@
+node_modules/
+public/
+vendor/
+tmp/
+log/
+db/
+coverage/
+Gemfile.lock
+bun.lock
+app/views/
