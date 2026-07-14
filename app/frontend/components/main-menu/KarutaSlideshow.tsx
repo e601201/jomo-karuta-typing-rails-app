@@ -134,9 +134,6 @@ export default function KarutaSlideshow() {
 				</div>
 			</div>
 
-			{/* グラデーションマスク（左右のフェード効果） */}
-			<div className="gradient-mask gradient-mask-left"></div>
-			<div className="gradient-mask gradient-mask-right"></div>
 			<style>{`
 				.karuta-slideshow-container {
 					position: relative;
@@ -144,6 +141,21 @@ export default function KarutaSlideshow() {
 					height: 280px; /* 2段分の高さ */
 					overflow: hidden;
 					margin: 1.5rem 0;
+					/* 左右のフェード効果（背景を問わず透明化するマスク方式） */
+					-webkit-mask-image: linear-gradient(
+						to right,
+						transparent 0%,
+						black 100px,
+						black calc(100% - 100px),
+						transparent 100%
+					);
+					mask-image: linear-gradient(
+						to right,
+						transparent 0%,
+						black 100px,
+						black calc(100% - 100px),
+						transparent 100%
+					);
 				}
 
 				.karuta-slideshow-wrapper {
@@ -206,40 +218,24 @@ export default function KarutaSlideshow() {
 					object-fit: contain; /* coverからcontainに戻して見切れを防ぐ */
 				}
 
-				/* グラデーションマスク */
-				.gradient-mask {
-					position: absolute;
-					top: 0;
-					bottom: 0;
-					width: 100px;
-					pointer-events: none;
-					z-index: 5;
-				}
-
-				.gradient-mask-left {
-					left: 0;
-					background: linear-gradient(
-						to right,
-						rgba(248, 254, 247, 1) 0%,
-						rgba(248, 254, 247, 0.8) 30%,
-						rgba(248, 254, 247, 0) 100%
-					);
-				}
-
-				.gradient-mask-right {
-					right: 0;
-					background: linear-gradient(
-						to left,
-						rgba(248, 254, 247, 1) 0%,
-						rgba(248, 254, 247, 0.8) 30%,
-						rgba(248, 254, 247, 0) 100%
-					);
-				}
-
 				/* レスポンシブ対応 */
 				@media (max-width: 640px) {
 					.karuta-slideshow-container {
 						height: 220px; /* 2段分に調整 */
+						-webkit-mask-image: linear-gradient(
+							to right,
+							transparent 0%,
+							black 60px,
+							black calc(100% - 60px),
+							transparent 100%
+						);
+						mask-image: linear-gradient(
+							to right,
+							transparent 0%,
+							black 60px,
+							black calc(100% - 60px),
+							transparent 100%
+						);
 					}
 
 					.karuta-slideshow-wrapper {
@@ -254,10 +250,6 @@ export default function KarutaSlideshow() {
 					.torifuda-card {
 						width: 70px;
 						height: 84px;
-					}
-
-					.gradient-mask {
-						width: 60px;
 					}
 				}
 

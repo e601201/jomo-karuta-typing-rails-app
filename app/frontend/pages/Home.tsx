@@ -114,8 +114,6 @@ export default function Home() {
 							<ErrorDisplay error={error} onretry={() => window.location.reload()} />
 						) : (
 							<>
-								<div className="m-3 text-center text-xl text-gray-500">モード選択</div>
-
 								{/* Game Modes */}
 								<div
 									data-testid="game-modes-container"
