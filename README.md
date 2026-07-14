@@ -26,15 +26,15 @@ PostgreSQL がローカルで起動している必要があります (`config/da
 
 ## 開発コマンド
 
-| コマンド | 内容 |
-| --- | --- |
-| `bin/dev` | 開発サーバ (Rails + Vite) |
-| `bun run test` | フロントエンドテスト (Vitest) |
-| `bun run test:unit` | Vitest watch モード |
-| `bun run check` | TypeScript 型チェック |
-| `bun run lint` / `bun run format` | Prettier + ESLint |
-| `bundle exec rspec` | バックエンドテスト |
-| `bundle exec rubocop` | Ruby lint |
+| コマンド                          | 内容                          |
+| --------------------------------- | ----------------------------- |
+| `bin/dev`                         | 開発サーバ (Rails + Vite)     |
+| `bun run test`                    | フロントエンドテスト (Vitest) |
+| `bun run test:unit`               | Vitest watch モード           |
+| `bun run check`                   | TypeScript 型チェック         |
+| `bun run lint` / `bun run format` | Prettier + ESLint             |
+| `bundle exec rspec`               | バックエンドテスト            |
+| `bundle exec rubocop`             | Ruby lint                     |
 
 ## アーキテクチャ
 
@@ -47,9 +47,9 @@ PostgreSQL がローカルで起動している必要があります (`config/da
 
 ## ゲームモード
 
-| モード | URL | 内容 |
-| --- | --- | --- |
-| 練習 | `/game?mode=practice` | 全44札を順番に |
-| 特定札 | `/practice/specific` → `/game?mode=specific&cards=...` | 選択した札 (繰り返し・シャッフル) |
-| ランダム | `/game?mode=random&difficulty=beginner\|standard\|advanced` | 60秒制限。beginner は短縮読み、advanced はブラインド入力 |
-| タイムアタック | `/game?mode=timeattack` | 10枚。ミス+2秒 / スキップ+10秒ペナルティ |
+| モード         | URL                                                         | 内容                                                     |
+| -------------- | ----------------------------------------------------------- | -------------------------------------------------------- |
+| 練習           | `/game?mode=practice`                                       | 全44札を順番に                                           |
+| 特定札         | `/practice/specific` → `/game?mode=specific&cards=...`      | 選択した札 (繰り返し・シャッフル)                        |
+| ランダム       | `/game?mode=random&difficulty=beginner\|standard\|advanced` | 60秒制限。beginner は短縮読み、advanced はブラインド入力 |
+| タイムアタック | `/game?mode=timeattack`                                     | 10枚。ミス+2秒 / スキップ+10秒ペナルティ                 |
