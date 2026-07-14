@@ -19,6 +19,7 @@ export type AuthUser = {
 	id: number;
 	email: string;
 	nickname: string | null;
+	avatar_url: string | null;
 	created_at: string;
 };
 

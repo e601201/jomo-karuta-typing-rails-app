@@ -6,7 +6,7 @@ class ApplicationController < ActionController::Base
 
   inertia_share do
     {
-      auth: { user: current_user&.as_json(only: %i[id email nickname created_at]) },
+      auth: { user: current_user&.as_json(only: %i[id email nickname avatar_url created_at]) },
       csrf_token: form_authenticity_token,
       flash: flash.to_h
     }
