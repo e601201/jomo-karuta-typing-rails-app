@@ -8,7 +8,6 @@ const sections = [
 	{ id: 'game', label: 'ゲームプレイ', icon: '🎮' },
 	{ id: 'display', label: '表示', icon: '🖥️' },
 	{ id: 'sound', label: 'サウンド', icon: '🔊' },
-	{ id: 'practice', label: '練習', icon: '📚' },
 	{ id: 'keyboard', label: 'キーボード', icon: '⌨️' },
 	{ id: 'accessibility', label: 'アクセシビリティ', icon: '♿' },
 	{ id: 'data', label: 'データ管理', icon: '💾' }
@@ -32,19 +31,6 @@ const animationSpeedOptions = [
 	{ value: 'slow', label: '遅い' },
 	{ value: 'normal', label: '標準' },
 	{ value: 'fast', label: '速い' }
-];
-
-const orderOptions = [
-	{ value: 'sequential', label: '順番' },
-	{ value: 'random', label: 'ランダム' },
-	{ value: 'weak-first', label: '苦手札優先' }
-];
-
-const difficultyOptions = [
-	{ value: 'beginner', label: '初級' },
-	{ value: 'intermediate', label: '中級' },
-	{ value: 'advanced', label: '上級' },
-	{ value: 'custom', label: 'カスタム' }
 ];
 
 const layoutOptions = [
@@ -148,13 +134,6 @@ export default function Settings() {
 		}
 	}
 
-	function handleDifficultyChange(value: string) {
-		settingsStore.updateSetting('practice.difficulty', value);
-		if (value !== 'custom') {
-			settingsStore.applyPreset(value as 'beginner' | 'intermediate' | 'advanced');
-		}
-	}
-
 	// Prevent navigation with unsaved changes（旧 $effect の忠実な移植）
 	useEffect(() => {
 		function handleBeforeUnload(event: BeforeUnloadEvent) {
@@ -210,7 +189,7 @@ export default function Settings() {
 
 							<SettingItem
 								label="部分入力モード"
-								description="札の一部だけを入力する練習モード"
+								description="札の一部だけを入力するモード"
 								type="toggle"
 								value={settings.inputMode === 'partial'}
 								onChange={(value) =>
@@ -389,62 +368,6 @@ export default function Settings() {
 
 							<button onClick={() => handleReset('sound')} className="btn btn-outline">
 								サウンド設定をリセット
-							</button>
-						</section>
-					) : activeSection === 'practice' ? (
-						<section className="settings-section">
-							<h2>練習設定</h2>
-
-							<SettingItem
-								label="難易度"
-								type="radio"
-								value={settings.practice.difficulty}
-								options={difficultyOptions}
-								onChange={(v) => handleDifficultyChange(String(v))}
-							/>
-
-							<SettingItem
-								label="出題順序"
-								type="select"
-								value={settings.practice.order}
-								options={orderOptions}
-								onChange={(value) => settingsStore.updateSetting('practice.order', value)}
-								disabled={settings.practice.difficulty !== 'custom'}
-							/>
-
-							<SettingItem
-								label="繰り返し回数"
-								type="slider"
-								value={settings.practice.repetitions}
-								min={1}
-								max={5}
-								step={1}
-								unit="回"
-								onChange={(value) => settingsStore.updateSetting('practice.repetitions', value)}
-								disabled={settings.practice.difficulty !== 'custom'}
-							/>
-
-							<SettingItem
-								label="制限時間"
-								type="select"
-								value={settings.practice.timeLimit?.toString() || 'none'}
-								options={[
-									{ value: 'none', label: 'なし' },
-									{ value: '30', label: '30秒' },
-									{ value: '60', label: '60秒' },
-									{ value: '120', label: '120秒' }
-								]}
-								onChange={(v) =>
-									settingsStore.updateSetting(
-										'practice.timeLimit',
-										v === 'none' ? null : parseInt(String(v))
-									)
-								}
-								disabled={settings.practice.difficulty !== 'custom'}
-							/>
-
-							<button onClick={() => handleReset('practice')} className="btn btn-outline">
-								練習設定をリセット
 							</button>
 						</section>
 					) : activeSection === 'keyboard' ? (

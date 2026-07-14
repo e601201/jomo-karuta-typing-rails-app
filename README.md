@@ -38,7 +38,7 @@ PostgreSQL がローカルで起動している必要があります (`config/da
 
 ## アーキテクチャ
 
-- `app/frontend/pages/` — Inertia ページ (Home / Game / Ranking / Settings / PracticeSpecific / Profile / auth)
+- `app/frontend/pages/` — Inertia ページ (Home / Game / Ranking / Settings / Profile / auth)
 - `app/frontend/features/game/` — 旧 `+page.svelte` から抽出したタイピング判定・ローマ字ガイドの純関数群
 - `app/frontend/lib/typing/input-validator.ts` — ローマ字判定エンジン (旧リポジトリから無変更移植。spec が挙動契約)
 - `app/frontend/stores/game-store.ts` — ゲームエンジン (zustand)
@@ -49,7 +49,5 @@ PostgreSQL がローカルで起動している必要があります (`config/da
 
 | モード         | URL                                                         | 内容                                                     |
 | -------------- | ----------------------------------------------------------- | -------------------------------------------------------- |
-| 練習           | `/game?mode=practice`                                       | 全44札を順番に                                           |
-| 特定札         | `/practice/specific` → `/game?mode=specific&cards=...`      | 選択した札 (繰り返し・シャッフル)                        |
 | ランダム       | `/game?mode=random&difficulty=beginner\|standard\|advanced` | 60秒制限。beginner は短縮読み、advanced はブラインド入力 |
 | タイムアタック | `/game?mode=timeattack`                                     | 10枚。ミス+2秒 / スキップ+10秒ペナルティ                 |

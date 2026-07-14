@@ -48,6 +48,13 @@ const mockCards: KarutaCard[] = [
 // 「つる まう かたち の ぐんまけん」→ 'つるまうかたちのぐんまけん' → 'tsurumaukatachinogunmakenn'
 const fullRomajiTsu = 'tsurumaukatachinogunmakenn';
 
+// ランダムモードは startSession でカードをシャッフルする。出題順に依存する
+// テストを決定的に保つため、Math.random を固定して Fisher–Yates を恒等順にする
+// （j = Math.floor(0.9999 * (i + 1)) === i が i < 9999 の範囲で成立する）。
+beforeEach(() => {
+	vi.spyOn(Math, 'random').mockReturnValue(0.9999);
+});
+
 describe('GameStore - 初期化', () => {
 	it('初期状態が正しく設定される', () => {
 		const { gameStore } = createGameStore();
@@ -80,49 +87,26 @@ describe('GameStore - セッション管理', () => {
 		vi.clearAllMocks();
 	});
 
-	it('練習モードでセッションを開始できる', async () => {
-		const { gameStore, startSession } = store;
-
-		await startSession('practice', mockCards);
-		const state = gameStore.getState();
-
-		expect(state.session).not.toBeNull();
-		expect(state.session?.mode).toBe('practice');
-		expect(state.session?.isActive).toBe(true);
-		expect(state.session?.totalCards).toBe(3);
-		expect(state.cards.remaining).toHaveLength(2); // 最初の札以外
-		expect(state.cards.current).toEqual(mockCards[0]);
-		expect(state.cards.currentIndex).toBe(0);
-		expect(state.input.validator).toBeInstanceOf(InputValidator);
-	});
-
-	it('特定札モードでセッションを開始できる', async () => {
-		const { gameStore, startSession } = store;
-		const selectedCards = [mockCards[0], mockCards[2]];
-
-		await startSession('specific', selectedCards);
-		const state = gameStore.getState();
-
-		expect(state.session?.mode).toBe('specific');
-		expect(state.session?.totalCards).toBe(2);
-		expect(state.cards.remaining).toHaveLength(1);
-		expect(state.cards.current).toEqual(selectedCards[0]);
-	});
-
 	it('ランダムモードでセッションを開始できる', async () => {
 		const { gameStore, startSession } = store;
 
 		await startSession('random', mockCards);
 		const state = gameStore.getState();
 
+		expect(state.session).not.toBeNull();
 		expect(state.session?.mode).toBe('random');
-		expect(state.cards.remaining.length + 1).toBe(mockCards.length);
+		expect(state.session?.isActive).toBe(true);
+		expect(state.session?.totalCards).toBe(3);
+		expect(state.cards.remaining).toHaveLength(2); // 最初の札以外
+		expect(state.cards.current).toEqual(mockCards[0]); // シャッフルは恒等化済み
+		expect(state.cards.currentIndex).toBe(0);
+		expect(state.input.validator).toBeInstanceOf(InputValidator);
 	});
 
 	it('セッション終了時に状態が更新される', async () => {
 		const { gameStore, startSession, endSession } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 		endSession();
 		const state = gameStore.getState();
 
@@ -134,7 +118,7 @@ describe('GameStore - セッション管理', () => {
 	it('セッションをリセットできる', async () => {
 		const { gameStore, startSession, resetSession } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 		resetSession();
 		const state = gameStore.getState();
 
@@ -157,7 +141,7 @@ describe('GameStore - カード進行', () => {
 	it('次のカードに進める', async () => {
 		const { gameStore, startSession, nextCard } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 		const firstCard = gameStore.getState().cards.current;
 
 		nextCard();
@@ -176,7 +160,7 @@ describe('GameStore - カード進行', () => {
 	it('最後のカードで完了処理される', async () => {
 		const { gameStore, startSession, nextCard } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 
 		// 最後のカードまで進める
 		nextCard(); // 2枚目
@@ -209,7 +193,7 @@ describe('GameStore - カード進行', () => {
 	it('カード完了時にデータが記録される', async () => {
 		const { gameStore, startSession, completeCard } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 		const firstCard = gameStore.getState().cards.current;
 
 		// ミスを2回記録
@@ -239,7 +223,7 @@ describe('GameStore - 入力管理', () => {
 	it('正しい入力で状態が更新される', async () => {
 		const { gameStore, startSession, updateInput } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 		updateInput('tsu');
 
 		const state = gameStore.getState();
@@ -251,7 +235,7 @@ describe('GameStore - 入力管理', () => {
 	it('誤った入力でミスカウントが増える', async () => {
 		const { gameStore, startSession, updateInput } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 		const mistakesBefore = gameStore.getState().input.mistakes;
 
 		updateInput('x');
@@ -264,7 +248,7 @@ describe('GameStore - 入力管理', () => {
 	it('完全一致で札が完了する', async () => {
 		const { gameStore, startSession, updateInput } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 
 		// 完全な入力（検証ターゲットはスペース除去＋撥音ルールで末尾 nn）
 		updateInput(fullRomajiTsu);
@@ -278,7 +262,7 @@ describe('GameStore - 入力管理', () => {
 	it('部分入力が正しく判定される', async () => {
 		const { gameStore, startSession, updateInput } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 
 		// 'つるまう' の途中まで（スペースなし）
 		updateInput('tsuruma');
@@ -300,7 +284,7 @@ describe('GameStore - スコア計算', () => {
 	it('正確率が正しく計算される', async () => {
 		const { gameStore, startSession } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 
 		// 10文字入力、2ミス - 直接スコアを計算する
 		gameStore.update((s) => {
@@ -321,7 +305,7 @@ describe('GameStore - スコア計算', () => {
 	it('タイピング速度が計算される', async () => {
 		const { gameStore, startSession } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 
 		// 30秒後に60文字入力をシミュレート
 		gameStore.update((s) => {
@@ -343,7 +327,7 @@ describe('GameStore - スコア計算', () => {
 	it('コンボが正しく更新される', async () => {
 		const { gameStore, startSession, updateInput } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 
 		// コンボは「正しいキーストロークごと」に加算される（札完了単位ではない）
 		updateInput('t');
@@ -378,7 +362,7 @@ describe('GameStore - タイマー', () => {
 	it('経過時間が正しく計測される', async () => {
 		const { gameStore, startSession, updateTimer } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 
 		// タイマーはカウントダウン後に開始されるため、明示的に開始時刻を設定
 		gameStore.update((s) => ({
@@ -394,7 +378,7 @@ describe('GameStore - タイマー', () => {
 	it('一時停止で時間が止まる', async () => {
 		const { gameStore, startSession, pauseGame } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 
 		// 1秒経過をシミュレート
 		gameStore.update((s) => ({
@@ -417,7 +401,7 @@ describe('GameStore - タイマー', () => {
 	it('再開で時間計測が再開される', async () => {
 		const { gameStore, startSession, pauseGame, resumeGame } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 
 		pauseGame();
 		// 1秒停止をシミュレート
@@ -439,7 +423,7 @@ describe('GameStore - タイマー', () => {
 	it('カード毎の時間が記録される', async () => {
 		const { gameStore, startSession, completeCard } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 
 		// 5秒経過をシミュレート
 		gameStore.update((s) => ({
@@ -467,7 +451,7 @@ describe('GameStore - 派生ストア', () => {
 	it('progressStoreが進捗を正しく計算する', async () => {
 		const { gameStore, startSession, completeCard } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 
 		let progress = selectProgress(gameStore.getState());
 		expect(progress.completed).toBe(0);
@@ -488,7 +472,7 @@ describe('GameStore - 派生ストア', () => {
 	it('currentCardStoreが現在の札を提供する', async () => {
 		const { gameStore, startSession, nextCard } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 
 		expect(selectCurrentCard(gameStore.getState())).toEqual(mockCards[0]);
 		expect(selectCurrentCard(gameStore.getState())).toEqual(gameStore.getState().cards.current);
@@ -501,7 +485,7 @@ describe('GameStore - 派生ストア', () => {
 	it('scoreStoreがスコア情報を提供する', async () => {
 		const { gameStore, startSession } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 
 		gameStore.update((s) => ({
 			...s,
@@ -539,7 +523,7 @@ describe('GameStore - エラーハンドリング', () => {
 		const { gameStore, startSession } = store;
 
 		const stateBefore = gameStore.getState();
-		await startSession('practice', []);
+		await startSession('random', []);
 
 		const stateAfter = gameStore.getState();
 		expect(stateAfter.session).toBeNull();
@@ -549,7 +533,7 @@ describe('GameStore - エラーハンドリング', () => {
 	it('データ不整合を検出して修正する', async () => {
 		const { gameStore, startSession } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 
 		// 不正な状態を強制的に作る
 		gameStore.update((s) => ({
@@ -581,7 +565,7 @@ describe('GameStore - InputValidator統合', () => {
 	it('InputValidatorの結果が反映される', async () => {
 		const { gameStore, startSession, updateInput } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 		const state = gameStore.getState();
 
 		expect(state.input.validator).toBeInstanceOf(InputValidator);
@@ -605,7 +589,7 @@ describe('GameStore - InputValidator統合', () => {
 			difficulty: 'hard'
 		};
 
-		await startSession('practice', [shiCard]);
+		await startSession('random', [shiCard]);
 
 		// 'shi'パターン
 		updateInput('shi');
@@ -631,7 +615,7 @@ describe('GameStore - パフォーマンス', () => {
 	it('入力更新が16ms以内に完了する', async () => {
 		const { startSession, updateInput } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 
 		const start = performance.now();
 		updateInput('test');
@@ -643,7 +627,7 @@ describe('GameStore - パフォーマンス', () => {
 	it('100回の連続更新でメモリリークがない', async () => {
 		const { startSession, updateInput } = store;
 
-		await startSession('practice', mockCards);
+		await startSession('random', mockCards);
 
 		const initialMemory =
 			(performance as Performance & { memory?: { usedJSHeapSize: number } }).memory
@@ -671,7 +655,7 @@ describe('GameStore - パフォーマンス', () => {
 			id: `card-${i}`
 		}));
 
-		await startSession('practice', manyCards);
+		await startSession('random', manyCards);
 
 		// 150枚完了させる
 		for (let i = 0; i < 150; i++) {
