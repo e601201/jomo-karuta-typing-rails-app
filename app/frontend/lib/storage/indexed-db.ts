@@ -9,7 +9,7 @@ import Dexie, { type Table } from 'dexie';
 export interface GameHistory {
 	id?: number;
 	sessionId: string;
-	mode: 'practice' | 'specific' | 'random';
+	mode: 'random' | 'timeattack';
 	startTime: Date;
 	endTime: Date;
 	cards: CardResult[];
@@ -115,21 +115,11 @@ export interface AchievementProgress {
 	unlocked: boolean;
 }
 
-// お気に入り型定義
-export interface FavoriteData {
-	id: string;
-	name: string;
-	cardIds: string[];
-	createdAt: string;
-	updatedAt?: string;
-}
-
 // Dexieデータベースクラス
 class JomoKarutaDB extends Dexie {
 	gameHistory!: Table<GameHistory>;
 	detailedStats!: Table<DetailedStats>;
 	cardHistory!: Table<CardHistory>;
-	favorites!: Table<FavoriteData>;
 
 	constructor() {
 		super('JomoKarutaDB');
@@ -141,12 +131,17 @@ class JomoKarutaDB extends Dexie {
 			cardHistory: '++id, cardId, bestTime, bestAccuracy, lastAttempt'
 		});
 
-		// バージョン2: お気に入り追加
+		// バージョン2: お気に入り追加（特定札練習用。バージョン3で廃止）
 		this.version(2).stores({
 			gameHistory: '++id, sessionId, mode, startTime, [mode+startTime]',
 			detailedStats: '++id, date',
 			cardHistory: '++id, cardId, bestTime, bestAccuracy, lastAttempt',
 			favorites: 'id, name, createdAt'
+		});
+
+		// バージョン3: 練習モード削除に伴いお気に入りテーブルを削除
+		this.version(3).stores({
+			favorites: null
 		});
 	}
 }
@@ -696,7 +691,7 @@ export class IndexedDBService {
 	 */
 	async getLatestSession(): Promise<{
 		id: string;
-		mode: 'practice' | 'specific' | 'random';
+		mode: 'random' | 'timeattack';
 		startedAt: Date;
 		completedCards: number;
 		totalCards: number;

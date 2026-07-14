@@ -36,8 +36,6 @@ export type DifficultyLevel = 'easy' | 'medium' | 'hard';
  * ゲームモード
  */
 export type GameMode =
-	| 'practice' // 練習モード
-	| 'specific' // 特定札練習
 	| 'random' // ランダム出題
 	| 'timeattack' // タイムアタックモード
 	| 'challenge' // チャレンジモード (Phase 3)
@@ -105,7 +103,6 @@ export type RandomModeDifficulty = 'beginner' | 'standard' | 'advanced';
 export interface UserSettings extends GameSettings {
 	display: DisplaySettings;
 	sound: SoundSettings;
-	practice: PracticeSettings;
 	keyboard: KeyboardSettings;
 	accessibility: AccessibilitySettings;
 }
@@ -135,16 +132,6 @@ export interface SoundSettings {
 	typingSoundVolume: number; // 0-100
 	voiceEnabled: boolean;
 	voiceSpeed: number; // 0.5-2.0
-}
-
-/**
- * 練習設定
- */
-export interface PracticeSettings {
-	order: 'sequential' | 'random' | 'weak-first';
-	repetitions: number; // 1-5
-	timeLimit: number | null; // seconds or null for unlimited
-	difficulty: 'beginner' | 'intermediate' | 'advanced' | 'custom';
 }
 
 /**

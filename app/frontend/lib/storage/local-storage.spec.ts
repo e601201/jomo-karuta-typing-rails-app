@@ -70,7 +70,7 @@ const mockSettings: GameSettings = {
 		effectsEnabled: true
 	},
 	game: {
-		defaultMode: 'practice',
+		defaultMode: 'random',
 		partialInputLength: 5,
 		showHints: false
 	}
@@ -85,7 +85,7 @@ const mockProfile: UserProfile = {
 
 const mockSession: SavedSession = {
 	id: 'session-123',
-	mode: 'practice',
+	mode: 'random',
 	startTime: '2024-01-02T10:00:00Z',
 	cards: {
 		current: { id: 'tsu', hiragana: 'つる まう かたち の ぐんまけん' },
@@ -267,16 +267,16 @@ describe('LocalStorageService - 進捗管理', () => {
 			date: new Date().toISOString()
 		};
 
-		service.updateBestScore('practice', scoreData);
+		service.updateBestScore('random', scoreData);
 
 		const progress = service.getProgress();
 
-		expect(progress.bestScores.practice).toEqual(scoreData);
+		expect(progress.bestScores.random).toEqual(scoreData);
 
 		// より低いスコアは更新されない
-		service.updateBestScore('practice', { ...scoreData, score: 900 });
+		service.updateBestScore('random', { ...scoreData, score: 900 });
 		const progress2 = service.getProgress();
-		expect(progress2.bestScores.practice.score).toBe(1000);
+		expect(progress2.bestScores.random.score).toBe(1000);
 	});
 
 	it('アチーブメントを記録できる', () => {

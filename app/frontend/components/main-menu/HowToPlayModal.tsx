@@ -91,25 +91,6 @@ export default function HowToPlayModal({ isOpen, onclose }: Props) {
 
 							<div className="sections-row">
 								<div className="feature-card">
-									<h3 className="mode-title">📚 練習モード</h3>
-									<p className="mode-desc">
-										制限時間はありません。
-										<br />
-										自分のペースで上毛かるたを覚えましょう！
-									</p>
-									<br />
-									<div className="mode-list">
-										<div className="mode-item">
-											<span className="mode-name">全44札を順番に練習</span>
-											<span className="mode-desc">あ〜わ行の順番で全ての札を練習できます。</span>
-										</div>
-										<div className="mode-item">
-											<span className="mode-name">特定札で練習</span>
-											<span className="mode-desc">好きな札を選んで集中的に練習できます。</span>
-										</div>
-									</div>
-								</div>
-								<div className="feature-card">
 									<h3 className="mode-title">🎮 プレイ開始 (本番モード)</h3>
 									<p className="mode-desc">
 										全44札がランダムな順序で出題されます。

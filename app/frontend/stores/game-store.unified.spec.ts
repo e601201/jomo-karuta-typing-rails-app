@@ -1,10 +1,10 @@
 /**
  * 統一ゲームエンジン（gameStore）の挙動テスト
  *
- * 練習・特定札モードを gameStore に統一したことで保証すべき挙動を固定する:
- *  - 練習 / 特定札は難易度を持たない（= 常に標準スコアリング）
- *  - 練習 / 特定札は hiraganaShort を使わず常に全文ひらがなで検証する
- *  - 練習 / 特定札はシャッフルしない（出題順・重複をそのまま保持）
+ * モードごとに保証すべき挙動を固定する:
+ *  - ランダムモードのみ難易度を持ち、60秒の制限時間が付く
+ *  - ランダム×初心者のみ hiraganaShort を検証対象にする
+ *  - タイムアタックは制限時間なし・難易度なし（= 標準スコアリング）
  *  - 全札を入力し終えるとセッションが終了する（手続き的完了）
  *  - バックスペース（入力短縮）ではコンボが途切れない
  *
@@ -55,40 +55,28 @@ const threeMora: KarutaCard = {
 
 beforeEach(() => {
 	gameStore.resetSession();
+	// ランダムモードは startSession でカードをシャッフルする。出題順に依存する
+	// テストを決定的に保つため、Math.random を固定して Fisher–Yates を恒等順にする。
+	vi.spyOn(Math, 'random').mockReturnValue(0.9999);
 });
 
 afterEach(() => {
 	gameStore.resetSession();
 });
 
-describe('統一エンジン: 練習/特定札の難易度・スコアリング', () => {
-	it('練習モードは session.difficulty を持たない（=標準スコアリング）', async () => {
-		await gameStore.startSession('practice', twoCards);
-		expect(gameStore.getState().session?.difficulty).toBeUndefined();
-	});
-
-	it('特定札モードは session.difficulty を持たない', async () => {
-		await gameStore.startSession('specific', twoCards);
-		expect(gameStore.getState().session?.difficulty).toBeUndefined();
-	});
-
+describe('統一エンジン: 難易度・スコアリング', () => {
 	it('ランダムモードは渡した難易度を session に保持する', async () => {
 		await gameStore.startSession('random', twoCards, 'beginner');
 		expect(gameStore.getState().session?.difficulty).toBe('beginner');
 	});
+
+	it('タイムアタックモードは難易度を持たない（=標準スコアリング）', async () => {
+		await gameStore.startSession('timeattack', twoCards);
+		expect(gameStore.getState().session?.difficulty).toBeUndefined();
+	});
 });
 
 describe('統一エンジン: 制限時間', () => {
-	it('練習モードは制限時間なし（timeLimit=null）', async () => {
-		await gameStore.startSession('practice', twoCards);
-		expect(gameStore.getState().timer.timeLimit).toBeNull();
-	});
-
-	it('特定札モードは制限時間なし（従来の練習経由と同じ挙動を維持）', async () => {
-		await gameStore.startSession('specific', twoCards);
-		expect(gameStore.getState().timer.timeLimit).toBeNull();
-	});
-
 	it('タイムアタックモードは制限時間なし', async () => {
 		await gameStore.startSession('timeattack', twoCards);
 		expect(gameStore.getState().timer.timeLimit).toBeNull();
@@ -100,49 +88,25 @@ describe('統一エンジン: 制限時間', () => {
 	});
 });
 
-describe('統一エンジン: 全文ひらがなで検証（hiraganaShort を使わない）', () => {
-	it('練習モードは hiraganaShort を無視して全文を検証対象にする', async () => {
-		await gameStore.startSession('practice', [cardWithShort]);
-		const validator = gameStore.getState().input.validator as InputValidator;
-		expect(validator.getTarget()).toBe('つるまうかたちのぐんまけん');
-	});
-
-	it('特定札モードも全文を検証対象にする', async () => {
-		await gameStore.startSession('specific', [cardWithShort]);
-		const validator = gameStore.getState().input.validator as InputValidator;
-		expect(validator.getTarget()).toBe('つるまうかたちのぐんまけん');
-	});
-
+describe('統一エンジン: hiraganaShort の適用範囲', () => {
 	it('ランダム×初心者のみ hiraganaShort を検証対象にする', async () => {
 		await gameStore.startSession('random', [cardWithShort], 'beginner');
 		const validator = gameStore.getState().input.validator as InputValidator;
 		expect(validator.getTarget()).toBe('つるまう');
 	});
-});
 
-describe('統一エンジン: 出題順・重複の保持（シャッフルなし）', () => {
-	it('練習モードは出題順を保持する', async () => {
-		await gameStore.startSession('practice', twoCards);
-		const state = gameStore.getState();
-		expect(state.cards.current).toEqual(twoCards[0]);
-		expect(state.cards.remaining).toEqual([twoCards[1]]);
-	});
-
-	it('特定札モードは重複・順序をそのまま保持する', async () => {
-		const repeated = [twoCards[0], twoCards[0], twoCards[1]]; // [a, a, b]
-		await gameStore.startSession('specific', repeated);
-		const state = gameStore.getState();
-		expect(state.session?.totalCards).toBe(3);
-		expect(state.cards.current).toEqual(repeated[0]); // a
-		expect(state.cards.remaining).toEqual([repeated[1], repeated[2]]); // [a, b]
+	it('ランダム×標準は全文を検証対象にする', async () => {
+		await gameStore.startSession('random', [cardWithShort]);
+		const validator = gameStore.getState().input.validator as InputValidator;
+		expect(validator.getTarget()).toBe('つるまうかたちのぐんまけん');
 	});
 });
 
 describe('統一エンジン: 完了とコンボ挙動', () => {
 	it('全札を入力し終えるとセッションが終了する', async () => {
-		await gameStore.startSession('practice', twoCards);
+		await gameStore.startSession('random', twoCards);
 
-		// 1枚目「あい」を完成
+		// 1枚目「あい」を完成（シャッフルは恒等化済み）
 		gameStore.updateInput('a');
 		gameStore.updateInput('ai');
 		// 2枚目「うえ」を完成 → 最後の札で endSession
@@ -156,7 +120,7 @@ describe('統一エンジン: 完了とコンボ挙動', () => {
 	});
 
 	it('バックスペース（入力短縮）ではコンボが途切れない', async () => {
-		await gameStore.startSession('practice', [threeMora]);
+		await gameStore.startSession('random', [threeMora]);
 
 		gameStore.updateInput('a'); // 正打
 		gameStore.updateInput('ai'); // 正打

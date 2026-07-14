@@ -2,7 +2,7 @@
  * ユーザー設定ストア
  * 旧リポジトリ src/lib/stores/settings.ts の zustand 移植。
  * localStorage キー 'userSettings'・デフォルト値・deep-merge・save/load/reset/
- * applyPreset/export/import の挙動を維持する（zustand persist は使わない）。
+ * export/import の挙動を維持する（zustand persist は使わない）。
  */
 
 import { createStore } from 'zustand/vanilla';
@@ -12,7 +12,7 @@ import type { UserSettings } from '@/types/game';
 // Default settings
 const defaultSettings: UserSettings = {
 	// GameSettings
-	mode: 'practice',
+	mode: 'random',
 	inputMode: 'partial',
 	partialLength: 5,
 	soundEnabled: true,
@@ -42,12 +42,6 @@ const defaultSettings: UserSettings = {
 		voiceEnabled: false,
 		voiceSpeed: 1.0
 	},
-	practice: {
-		order: 'sequential',
-		repetitions: 1,
-		timeLimit: null,
-		difficulty: 'custom'
-	},
 	keyboard: {
 		layout: 'JIS',
 		inputMethod: 'romaji',
@@ -62,37 +56,6 @@ const defaultSettings: UserSettings = {
 		reduceMotion: false,
 		screenReaderMode: false,
 		keyboardOnly: false
-	}
-};
-
-// Difficulty presets
-const difficultyPresets = {
-	beginner: {
-		showHints: true,
-		showRomaji: true,
-		partialLength: 5,
-		practice: {
-			timeLimit: null,
-			repetitions: 2
-		}
-	},
-	intermediate: {
-		showHints: false,
-		showRomaji: true,
-		partialLength: 7,
-		practice: {
-			timeLimit: 60,
-			repetitions: 1
-		}
-	},
-	advanced: {
-		showHints: false,
-		showRomaji: false,
-		partialLength: 10,
-		practice: {
-			timeLimit: 30,
-			repetitions: 1
-		}
 	}
 };
 
@@ -137,8 +100,7 @@ function createSettingsStore() {
 			'sound.effectsVolume': { min: 0, max: 100 },
 			'sound.bgmVolume': { min: 0, max: 100 },
 			'sound.typingSoundVolume': { min: 0, max: 100 },
-			'sound.voiceSpeed': { min: 0.5, max: 2.0 },
-			'practice.repetitions': { min: 1, max: 5 }
+			'sound.voiceSpeed': { min: 0.5, max: 2.0 }
 		};
 
 		if (rangeValidations[path]) {
@@ -151,8 +113,6 @@ function createSettingsStore() {
 			'display.fontSize': ['small', 'medium', 'large', 'extra-large'],
 			'display.theme': ['light', 'dark', 'auto'],
 			'display.animationSpeed': ['slow', 'normal', 'fast'],
-			'practice.order': ['sequential', 'random', 'weak-first'],
-			'practice.difficulty': ['beginner', 'intermediate', 'advanced', 'custom'],
 			'keyboard.layout': ['JIS', 'US'],
 			'keyboard.inputMethod': ['romaji', 'kana']
 		};
@@ -183,35 +143,6 @@ function createSettingsStore() {
 			store.setState(newSettings, true);
 		},
 
-		// Apply difficulty preset
-		applyPreset: (difficulty: 'beginner' | 'intermediate' | 'advanced') => {
-			const preset = difficultyPresets[difficulty];
-
-			const settings = store.getState();
-			store.setState(
-				{
-					...settings,
-					showHints: preset.showHints,
-					showRomaji: preset.showRomaji,
-					partialLength: preset.partialLength,
-					practice: {
-						...settings.practice,
-						...preset.practice,
-						difficulty
-					}
-				},
-				true
-			);
-
-			// Mark relevant paths as changed
-			changedPaths.add('showHints');
-			changedPaths.add('showRomaji');
-			changedPaths.add('partialLength');
-			changedPaths.add('practice.timeLimit');
-			changedPaths.add('practice.repetitions');
-			changedPaths.add('practice.difficulty');
-		},
-
 		// Save settings to localStorage
 		save: async () => {
 			const settings = store.getState();
@@ -236,7 +167,6 @@ function createSettingsStore() {
 						...parsed,
 						display: { ...defaultSettings.display, ...parsed.display },
 						sound: { ...defaultSettings.sound, ...parsed.sound },
-						practice: { ...defaultSettings.practice, ...parsed.practice },
 						keyboard: {
 							...defaultSettings.keyboard,
 							...parsed.keyboard,
@@ -263,7 +193,7 @@ function createSettingsStore() {
 
 		// Reset specific section
 		resetSection: (
-			section: keyof UserSettings | 'display' | 'sound' | 'practice' | 'keyboard' | 'accessibility'
+			section: keyof UserSettings | 'display' | 'sound' | 'keyboard' | 'accessibility'
 		) => {
 			const settings = store.getState();
 			const newSettings = { ...settings };
@@ -281,9 +211,6 @@ function createSettingsStore() {
 						break;
 					case 'sound':
 						newSettings.sound = { ...defaultSettings.sound };
-						break;
-					case 'practice':
-						newSettings.practice = { ...defaultSettings.practice };
 						break;
 					case 'keyboard':
 						newSettings.keyboard = { ...defaultSettings.keyboard };
@@ -329,7 +256,6 @@ function createSettingsStore() {
 					...parsed.settings,
 					display: { ...defaultSettings.display, ...parsed.settings.display },
 					sound: { ...defaultSettings.sound, ...parsed.settings.sound },
-					practice: { ...defaultSettings.practice, ...parsed.settings.practice },
 					keyboard: {
 						...defaultSettings.keyboard,
 						...parsed.settings.keyboard,

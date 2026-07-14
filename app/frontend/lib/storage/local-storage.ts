@@ -18,7 +18,7 @@ export interface GameSettings {
 		effectsEnabled: boolean;
 	};
 	game: {
-		defaultMode: 'practice' | 'specific' | 'random';
+		defaultMode: 'random' | 'timeattack';
 		partialInputLength: number;
 		showHints: boolean;
 	};
@@ -174,7 +174,7 @@ export class LocalStorageService {
 				effectsEnabled: true
 			},
 			game: {
-				defaultMode: 'practice',
+				defaultMode: 'random',
 				partialInputLength: 5,
 				showHints: true
 			}
@@ -625,7 +625,7 @@ export class LocalStorageService {
 							effectsEnabled: true
 						},
 						game: {
-							defaultMode: 'practice',
+							defaultMode: 'random',
 							partialInputLength: 5,
 							showHints: true
 						}
