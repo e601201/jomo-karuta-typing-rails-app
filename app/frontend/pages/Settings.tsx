@@ -5,12 +5,9 @@ import SettingItem from '@/components/settings/SettingItem';
 
 // Section navigation
 const sections = [
-	{ id: 'game', label: 'ゲームプレイ', icon: '🎮' },
 	{ id: 'display', label: '表示', icon: '🖥️' },
 	{ id: 'sound', label: 'サウンド', icon: '🔊' },
-	{ id: 'keyboard', label: 'キーボード', icon: '⌨️' },
-	{ id: 'accessibility', label: 'アクセシビリティ', icon: '♿' },
-	{ id: 'data', label: 'データ管理', icon: '💾' }
+	{ id: 'keyboard', label: 'キーボード', icon: '⌨️' }
 ];
 
 // Options for select/radio inputs
@@ -27,17 +24,6 @@ const themeOptions = [
 	{ value: 'auto', label: '自動' }
 ];
 
-const animationSpeedOptions = [
-	{ value: 'slow', label: '遅い' },
-	{ value: 'normal', label: '標準' },
-	{ value: 'fast', label: '速い' }
-];
-
-const layoutOptions = [
-	{ value: 'JIS', label: 'JIS配列' },
-	{ value: 'US', label: 'US配列' }
-];
-
 const inputMethodOptions = [
 	{ value: 'romaji', label: 'ローマ字入力' },
 	{ value: 'kana', label: 'かな入力' }
@@ -45,7 +31,7 @@ const inputMethodOptions = [
 
 export default function Settings() {
 	const settings = useSettingsStore();
-	const [activeSection, setActiveSection] = useState('game');
+	const [activeSection, setActiveSection] = useState('display');
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 	const [showResetConfirm, setShowResetConfirm] = useState(false);
 	const [resetSection, setResetSection] = useState<string | null>(null);
@@ -66,8 +52,7 @@ export default function Settings() {
 	async function handleSave() {
 		await settingsStore.save();
 		setHasUnsavedChanges(false);
-		// Show success message
-		alert('設定を保存しました');
+		router.visit('/');
 	}
 
 	function handleCancel() {
@@ -81,16 +66,14 @@ export default function Settings() {
 		}
 	}
 
-	function handleReset(section?: string) {
-		setResetSection(section || null);
+	function handleReset(section: string) {
+		setResetSection(section);
 		setShowResetConfirm(true);
 	}
 
 	function confirmReset() {
 		if (resetSection) {
 			settingsStore.resetSection(resetSection as Parameters<typeof settingsStore.resetSection>[0]);
-		} else {
-			settingsStore.reset();
 		}
 		setShowResetConfirm(false);
 		setResetSection(null);
@@ -100,38 +83,6 @@ export default function Settings() {
 	function cancelReset() {
 		setShowResetConfirm(false);
 		setResetSection(null);
-	}
-
-	function handleExport() {
-		const data = settingsStore.export();
-		const blob = new Blob([data], { type: 'application/json' });
-		const url = URL.createObjectURL(blob);
-		const a = document.createElement('a');
-		a.href = url;
-		a.download = `settings_${new Date().toISOString().split('T')[0]}.json`;
-		document.body.appendChild(a);
-		a.click();
-		document.body.removeChild(a);
-		URL.revokeObjectURL(url);
-	}
-
-	function handleImport(event: React.ChangeEvent<HTMLInputElement>) {
-		const input = event.target;
-		const file = input.files?.[0];
-
-		if (file) {
-			const reader = new FileReader();
-			reader.onload = async (e) => {
-				try {
-					await settingsStore.import(e.target?.result as string);
-					setHasUnsavedChanges(false);
-					alert('設定をインポートしました');
-				} catch (error) {
-					alert(`設定のインポートに失敗しました${error}`);
-				}
-			};
-			reader.readAsText(file);
-		}
 	}
 
 	// Prevent navigation with unsaved changes（旧 $effect の忠実な移植）
@@ -183,49 +134,7 @@ export default function Settings() {
 
 				{/* Main Content */}
 				<main className="settings-main">
-					{activeSection === 'game' ? (
-						<section className="settings-section">
-							<h2>ゲームプレイ設定</h2>
-
-							<SettingItem
-								label="部分入力モード"
-								description="札の一部だけを入力するモード"
-								type="toggle"
-								value={settings.inputMode === 'partial'}
-								onChange={(value) =>
-									settingsStore.updateSetting('inputMode', value ? 'partial' : 'complete')
-								}
-							/>
-
-							{settings.inputMode === 'partial' && (
-								<SettingItem
-									label="入力文字数"
-									description="部分入力で入力する文字数"
-									type="slider"
-									value={settings.partialLength || 5}
-									min={3}
-									max={10}
-									step={1}
-									unit="文字"
-									onChange={(value) => settingsStore.updateSetting('partialLength', value)}
-								/>
-							)}
-
-							<SettingItem
-								label="ローマ字表示"
-								type="toggle"
-								value={settings.showRomaji}
-								onChange={(value) => settingsStore.updateSetting('showRomaji', value)}
-							/>
-
-							<SettingItem
-								label="ヒント表示"
-								type="toggle"
-								value={settings.showHints}
-								onChange={(value) => settingsStore.updateSetting('showHints', value)}
-							/>
-						</section>
-					) : activeSection === 'display' ? (
+					{activeSection === 'display' ? (
 						<section className="settings-section">
 							<h2>表示設定</h2>
 
@@ -250,30 +159,6 @@ export default function Settings() {
 								type="toggle"
 								value={settings.display.animations}
 								onChange={(value) => settingsStore.updateSetting('display.animations', value)}
-							/>
-
-							{settings.display.animations && (
-								<SettingItem
-									label="アニメーション速度"
-									type="select"
-									value={settings.display.animationSpeed}
-									options={animationSpeedOptions}
-									onChange={(value) => settingsStore.updateSetting('display.animationSpeed', value)}
-								/>
-							)}
-
-							<SettingItem
-								label="ふりがな表示"
-								type="toggle"
-								value={settings.display.showFurigana}
-								onChange={(value) => settingsStore.updateSetting('display.showFurigana', value)}
-							/>
-
-							<SettingItem
-								label="意味説明表示"
-								type="toggle"
-								value={settings.display.showMeaning}
-								onChange={(value) => settingsStore.updateSetting('display.showMeaning', value)}
 							/>
 
 							<button onClick={() => handleReset('display')} className="btn btn-outline">
@@ -375,14 +260,6 @@ export default function Settings() {
 							<h2>キーボード設定</h2>
 
 							<SettingItem
-								label="キーボードレイアウト"
-								type="radio"
-								value={settings.keyboard.layout}
-								options={layoutOptions}
-								onChange={(value) => settingsStore.updateSetting('keyboard.layout', value)}
-							/>
-
-							<SettingItem
 								label="入力方式"
 								type="radio"
 								value={settings.keyboard.inputMethod}
@@ -390,104 +267,9 @@ export default function Settings() {
 								onChange={(value) => settingsStore.updateSetting('keyboard.inputMethod', value)}
 							/>
 
-							<h3>ショートカットキー</h3>
-
-							<div className="shortcut-settings">
-								<div className="shortcut-item">
-									<span>一時停止:</span>
-									<kbd>{settings.keyboard.shortcuts.pause}</kbd>
-								</div>
-								<div className="shortcut-item">
-									<span>スキップ:</span>
-									<kbd>{settings.keyboard.shortcuts.skip}</kbd>
-								</div>
-								<div className="shortcut-item">
-									<span>リトライ:</span>
-									<kbd>{settings.keyboard.shortcuts.retry}</kbd>
-								</div>
-							</div>
-
 							<button onClick={() => handleReset('keyboard')} className="btn btn-outline">
 								キーボード設定をリセット
 							</button>
-						</section>
-					) : activeSection === 'accessibility' ? (
-						<section className="settings-section">
-							<h2>アクセシビリティ設定</h2>
-
-							<SettingItem
-								label="高コントラストモード"
-								description="視認性を高めるための高コントラスト表示"
-								type="toggle"
-								value={settings.accessibility.highContrast}
-								onChange={(value) =>
-									settingsStore.updateSetting('accessibility.highContrast', value)
-								}
-							/>
-
-							<SettingItem
-								label="モーション軽減"
-								description="アニメーションや動きを最小限に抑える"
-								type="toggle"
-								value={settings.accessibility.reduceMotion}
-								onChange={(value) =>
-									settingsStore.updateSetting('accessibility.reduceMotion', value)
-								}
-							/>
-
-							<SettingItem
-								label="スクリーンリーダーモード"
-								description="スクリーンリーダー用の最適化"
-								type="toggle"
-								value={settings.accessibility.screenReaderMode}
-								onChange={(value) =>
-									settingsStore.updateSetting('accessibility.screenReaderMode', value)
-								}
-							/>
-
-							<SettingItem
-								label="キーボードのみ操作"
-								description="マウスを使わずキーボードのみで操作"
-								type="toggle"
-								value={settings.accessibility.keyboardOnly}
-								onChange={(value) =>
-									settingsStore.updateSetting('accessibility.keyboardOnly', value)
-								}
-							/>
-
-							<button onClick={() => handleReset('accessibility')} className="btn btn-outline">
-								アクセシビリティ設定をリセット
-							</button>
-						</section>
-					) : activeSection === 'data' ? (
-						<section className="settings-section">
-							<h2>データ管理</h2>
-
-							<div className="data-section">
-								<h3>設定のエクスポート/インポート</h3>
-								<p className="text-sm text-gray-600 dark:text-gray-400">
-									現在の設定をファイルとして保存したり、保存した設定を読み込むことができます。
-								</p>
-								<div className="data-actions">
-									<button onClick={handleExport} className="btn btn-primary">
-										設定をエクスポート
-									</button>
-									<label className="btn btn-secondary">
-										設定をインポート
-										<input type="file" accept=".json" onChange={handleImport} className="hidden" />
-									</label>
-								</div>
-							</div>
-
-							<div className="data-section">
-								<h3>設定のリセット</h3>
-								<p className="text-sm text-gray-600 dark:text-gray-400">
-									すべての設定をデフォルト値に戻します。この操作は取り消せません。
-								</p>
-								<button onClick={() => handleReset()} className="btn btn-danger">
-									すべての設定をリセット
-								</button>
-							</div>
 						</section>
 					) : null}
 				</main>
@@ -628,48 +410,6 @@ export default function Settings() {
 					margin-bottom: 1rem;
 				}
 
-				.shortcut-settings {
-					display: flex;
-					flex-direction: column;
-					gap: 0.75rem;
-					margin: 1rem 0;
-				}
-
-				.shortcut-item {
-					display: flex;
-					align-items: center;
-					gap: 1rem;
-				}
-
-				.shortcut-item span {
-					min-width: 100px;
-				}
-
-				.shortcut-item kbd {
-					padding: 0.25rem 0.5rem;
-					background: #f3f4f6;
-					border: 1px solid #d1d5db;
-					border-radius: 0.25rem;
-					font-family: monospace;
-					font-size: 0.875rem;
-				}
-
-				.data-section {
-					margin-bottom: 2rem;
-					padding-bottom: 2rem;
-					border-bottom: 1px solid #e5e7eb;
-				}
-
-				.data-section:last-child {
-					border-bottom: none;
-				}
-
-				.data-actions {
-					display: flex;
-					gap: 1rem;
-					margin-top: 1rem;
-				}
-
 				/* Button Styles */
 				.btn {
 					padding: 0.5rem 1rem;
@@ -756,10 +496,6 @@ export default function Settings() {
 					justify-content: flex-end;
 				}
 
-				.hidden {
-					display: none;
-				}
-
 				/* Responsive Design */
 				@media (max-width: 768px) {
 					.settings-content {
@@ -807,16 +543,6 @@ export default function Settings() {
 				.dark .modal-content {
 					background: #1f2937;
 					color: white;
-				}
-
-				.dark .shortcut-item kbd {
-					background: #374151;
-					border-color: #4b5563;
-					color: white;
-				}
-
-				.dark .data-section {
-					border-bottom-color: #374151;
 				}
 			`}</style>
 		</div>
