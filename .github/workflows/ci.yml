@@ -74,6 +74,20 @@ jobs:
         with:
           bundler-cache: true
 
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install frontend dependencies
+        run: bun install --frozen-lockfile
+
+      # request spec がレイアウト経由で Vite マニフェストを参照するため、テスト用ビルドを事前に行う
+      - name: Build Vite assets (test)
+        env:
+          RAILS_ENV: test
+        run: bin/vite build
+
       - name: Run RSpec
         env:
           RAILS_ENV: test
