@@ -22,7 +22,7 @@ beforeEach(async () => {
 // テスト用モックデータ
 const mockGameHistory: GameHistory = {
 	sessionId: 'session-123',
-	mode: 'practice',
+	mode: 'random',
 	startTime: new Date('2024-01-01T10:00:00'),
 	endTime: new Date('2024-01-01T10:30:00'),
 	cards: [
@@ -45,7 +45,7 @@ const mockGameHistory: GameHistory = {
 	settings: {
 		display: { theme: 'dark', fontSize: 'medium', showFurigana: false },
 		sound: { enabled: true, volume: 50, effectsEnabled: true },
-		game: { defaultMode: 'practice', partialInputLength: 5, showHints: false }
+		game: { defaultMode: 'random', partialInputLength: 5, showHints: false }
 	}
 };
 
@@ -147,13 +147,13 @@ describe('IndexedDBService - ゲーム履歴', () => {
 		await service.saveGameHistory({
 			...mockGameHistory,
 			sessionId: 'session-124',
-			mode: 'random'
+			mode: 'timeattack'
 		});
 
-		const practiceHistories = await service.getGameHistoryByMode('practice');
+		const randomHistories = await service.getGameHistoryByMode('random');
 
-		expect(practiceHistories).toHaveLength(1);
-		expect(practiceHistories[0].mode).toBe('practice');
+		expect(randomHistories).toHaveLength(1);
+		expect(randomHistories[0].mode).toBe('random');
 	});
 
 	it('古い履歴を削除できる', async () => {
@@ -487,7 +487,7 @@ describe('IndexedDBService - クエリ機能', () => {
 			await service.saveGameHistory({
 				...mockGameHistory,
 				sessionId: `session-${i}`,
-				mode: i % 3 === 0 ? 'practice' : i % 3 === 1 ? 'specific' : 'random',
+				mode: i % 2 === 0 ? 'random' : 'timeattack',
 				startTime: new Date(Date.now() - i * 86400000),
 				score: {
 					...mockGameHistory.score,
@@ -505,7 +505,7 @@ describe('IndexedDBService - クエリ機能', () => {
 
 	it('複合条件で検索できる', async () => {
 		const results = await service.searchHistory({
-			mode: 'practice',
+			mode: 'random',
 			startDate: new Date(Date.now() - 10 * 86400000),
 			endDate: new Date(),
 			minScore: 5000
@@ -513,7 +513,7 @@ describe('IndexedDBService - クエリ機能', () => {
 
 		expect(results.length).toBeGreaterThan(0);
 		results.forEach((r) => {
-			expect(r.mode).toBe('practice');
+			expect(r.mode).toBe('random');
 			expect(r.score.total).toBeGreaterThanOrEqual(5000);
 		});
 	});
@@ -537,7 +537,7 @@ describe('IndexedDBService - クエリ機能', () => {
 		const startTime = performance.now();
 
 		const results = await service.searchHistory({
-			mode: 'practice',
+			mode: 'random',
 			minScore: 5000
 		});
 

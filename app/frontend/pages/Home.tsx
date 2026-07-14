@@ -6,7 +6,6 @@ import GameModeCard from '@/components/main-menu/GameModeCard';
 import LoadingSpinner from '@/components/main-menu/LoadingSpinner';
 import ErrorDisplay from '@/components/main-menu/ErrorDisplay';
 import KarutaSlideshow from '@/components/main-menu/KarutaSlideshow';
-import PracticeModeModal from '@/components/main-menu/PracticeModeModal';
 import HowToPlayModal from '@/components/main-menu/HowToPlayModal';
 import DifficultySelectModal from '@/components/main-menu/DifficultySelectModal';
 
@@ -16,13 +15,8 @@ interface GameModeOption {
 	description: string;
 }
 
-// Game modes configuration - 3つのメインボタン
+// Game modes configuration - 2つのメインボタン
 const gameModes: GameModeOption[] = [
-	{
-		id: 'practice',
-		title: '練習モード',
-		description: '順番または特定札で練習'
-	},
 	{
 		id: 'random',
 		title: 'ランダムモード',
@@ -40,7 +34,6 @@ export default function Home() {
 
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const [showPracticeModeModal, setShowPracticeModeModal] = useState(false);
 	const [showHowToPlayModal, setShowHowToPlayModal] = useState(false);
 	const [showDifficultyModal, setShowDifficultyModal] = useState(false);
 	const [selectedMode, setSelectedMode] = useState<GameMode | null>(null);
@@ -58,12 +51,6 @@ export default function Home() {
 	/* eslint-enable react-hooks/set-state-in-effect */
 
 	const navigateToGame = (mode: GameMode) => {
-		// 特定札練習モードは専用ページへ
-		if (mode === 'specific') {
-			router.visit('/practice/specific');
-			return;
-		}
-
 		const params = new URLSearchParams({ mode });
 		router.visit(`/game?${params.toString()}`);
 	};
@@ -71,18 +58,12 @@ export default function Home() {
 	const handleModeSelect = (mode: GameMode) => {
 		if (isLoading || error) return;
 
-		if (mode === 'practice') {
-			setShowPracticeModeModal(true);
-		} else if (mode === 'random' || mode === 'timeattack') {
+		if (mode === 'random' || mode === 'timeattack') {
 			setSelectedMode(mode);
 			setShowDifficultyModal(true);
 		} else {
 			navigateToGame(mode);
 		}
-	};
-
-	const handlePracticeModeSelect = (practiceType: 'practice' | 'specific') => {
-		navigateToGame(practiceType === 'specific' ? 'specific' : 'practice');
 	};
 
 	const handleDifficultySelect = (difficulty: RandomModeDifficulty, gameMode: GameMode) => {
@@ -128,7 +109,7 @@ export default function Home() {
 							{/* Game Modes */}
 							<div
 								data-testid="game-modes-container"
-								className="mx-auto mb-12 grid max-w-3xl grid-cols-1 gap-6 sm:grid-cols-3"
+								className="mx-auto mb-12 grid max-w-3xl grid-cols-1 gap-6 sm:grid-cols-2"
 							>
 								{gameModes.map((mode) => (
 									<GameModeCard
@@ -177,16 +158,7 @@ export default function Home() {
 							</nav>
 						</>
 					)}
-					{/* 著作権表示 */}
-					<div className="mt-3 text-center text-sm text-gray-500">© 2025 株式会社Vitalize</div>
 				</div>
-
-				{/* 練習モード選択モーダル */}
-				<PracticeModeModal
-					isOpen={showPracticeModeModal}
-					onclose={() => setShowPracticeModeModal(false)}
-					onselect={handlePracticeModeSelect}
-				/>
 
 				{/* 遊び方モーダル */}
 				<HowToPlayModal isOpen={showHowToPlayModal} onclose={() => setShowHowToPlayModal(false)} />

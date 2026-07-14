@@ -29,12 +29,11 @@ describe('Settings Store', () => {
 		it('TC-001: should have default settings on initialization', () => {
 			const settings = settingsStore.getState();
 
-			expect(settings.mode).toBe('practice');
+			expect(settings.mode).toBe('random');
 			expect(settings.display.fontSize).toBe('medium');
 			expect(settings.display.theme).toBe('auto');
 			expect(settings.sound.effectsEnabled).toBe(true);
 			expect(settings.sound.effectsVolume).toBe(50);
-			expect(settings.practice.order).toBe('sequential');
 			expect(settings.keyboard.layout).toBe('JIS');
 			expect(settings.accessibility.highContrast).toBe(false);
 		});
@@ -44,7 +43,7 @@ describe('Settings Store', () => {
 
 			expect(defaults.display.fontSize).toBe('medium');
 			expect(defaults.sound.effectsVolume).toBe(50);
-			expect(defaults.practice.repetitions).toBe(1);
+			expect(defaults.keyboard.layout).toBe('JIS');
 		});
 	});
 
@@ -107,14 +106,6 @@ describe('Settings Store', () => {
 			expect(settings.display.animations).toBe(false);
 		});
 
-		it('TC-014: should validate repetitions (1-5)', () => {
-			settingsStore.updateSetting('practice.repetitions', 0);
-			expect(settingsStore.getState().practice.repetitions).toBe(1);
-
-			settingsStore.updateSetting('practice.repetitions', 6);
-			expect(settingsStore.getState().practice.repetitions).toBe(5);
-		});
-
 		it('TC-018: should update keyboard shortcuts', () => {
 			settingsStore.updateSetting('keyboard.shortcuts.pause', 'Space');
 			settingsStore.updateSetting('keyboard.shortcuts.skip', 'Enter');
@@ -122,36 +113,6 @@ describe('Settings Store', () => {
 			const settings = settingsStore.getState();
 			expect(settings.keyboard.shortcuts.pause).toBe('Space');
 			expect(settings.keyboard.shortcuts.skip).toBe('Enter');
-		});
-	});
-
-	describe('Difficulty Presets', () => {
-		it('TC-016: should apply beginner preset', () => {
-			settingsStore.applyPreset('beginner');
-			const settings = settingsStore.getState();
-
-			expect(settings.showHints).toBe(true);
-			expect(settings.showRomaji).toBe(true);
-			expect(settings.partialLength).toBe(5);
-			expect(settings.practice.timeLimit).toBe(null);
-		});
-
-		it('should apply intermediate preset', () => {
-			settingsStore.applyPreset('intermediate');
-			const settings = settingsStore.getState();
-
-			expect(settings.showHints).toBe(false);
-			expect(settings.showRomaji).toBe(true);
-			expect(settings.practice.timeLimit).toBe(60);
-		});
-
-		it('should apply advanced preset', () => {
-			settingsStore.applyPreset('advanced');
-			const settings = settingsStore.getState();
-
-			expect(settings.showHints).toBe(false);
-			expect(settings.showRomaji).toBe(false);
-			expect(settings.practice.timeLimit).toBe(30);
 		});
 	});
 
@@ -290,8 +251,7 @@ describe('Settings Store', () => {
 			const validations = [
 				{ path: 'partialLength', invalid: 15, expected: 10 },
 				{ path: 'sound.effectsVolume', invalid: 120, expected: 100 },
-				{ path: 'sound.voiceSpeed', invalid: 3, expected: 2.0 },
-				{ path: 'practice.repetitions', invalid: 10, expected: 5 }
+				{ path: 'sound.voiceSpeed', invalid: 3, expected: 2.0 }
 			];
 
 			validations.forEach(({ path, invalid, expected }) => {

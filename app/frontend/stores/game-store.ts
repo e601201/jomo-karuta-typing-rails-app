@@ -176,7 +176,7 @@ export function selectScore(state: GameState): GameScore {
 	return state.score;
 }
 
-// 旧 statisticsStore 相当: 統計情報（練習モードと同様）
+// 旧 statisticsStore 相当: 統計情報
 export function selectStatistics(state: GameState): GameStatisticsSummary {
 	// WPM計算
 	const elapsedMinutes = state.timer.elapsedTime / 60000;
@@ -250,10 +250,9 @@ export function createGameStore() {
 		const sessionId = generateSessionId();
 		const startTime = new Date();
 
-		// 練習・特定札・タイムアタックは制限時間なし、それ以外（ランダム）は60秒
+		// タイムアタックは制限時間なし、それ以外（ランダム）は60秒
 		const timeLimitTime = 60000;
-		const timeLimit =
-			mode === 'practice' || mode === 'specific' || mode === 'timeattack' ? null : timeLimitTime;
+		const timeLimit = mode === 'timeattack' ? null : timeLimitTime;
 
 		update((state) => ({
 			...state,
@@ -329,7 +328,7 @@ export function createGameStore() {
 		// LocalStorageServiceを初期化
 		storageService = new LocalStorageService();
 
-		// 自動保存を開始（練習モード以外でも5秒ごとに保存）
+		// 自動保存を開始（5秒ごとに保存）
 		startAutoSave();
 	}
 
@@ -533,7 +532,7 @@ export function createGameStore() {
 		nextCard();
 	}
 
-	// キーストロークを処理（練習モードと同様の実装）
+	// キーストロークを処理
 	function processKeystroke(isCorrect: boolean) {
 		update((state) => {
 			const newState = { ...state };
