@@ -2,9 +2,9 @@
  * 統一ゲームエンジン（gameStore）の挙動テスト
  *
  * モードごとに保証すべき挙動を固定する:
- *  - ランダムモードのみ難易度を持ち、60秒の制限時間が付く
- *  - ランダム×初心者のみ hiraganaShort を検証対象にする
- *  - タイムアタックは制限時間なし・難易度なし（= 標準スコアリング）
+ *  - ランダム・タイムアタックとも渡した難易度を保持する
+ *  - 初心者難易度は hiraganaShort を検証対象にする（両モード共通）
+ *  - ランダムモードのみ60秒の制限時間が付き、タイムアタックは制限時間なし
  *  - 全札を入力し終えるとセッションが終了する（手続き的完了）
  *  - バックスペース（入力短縮）ではコンボが途切れない
  *
@@ -70,7 +70,12 @@ describe('統一エンジン: 難易度・スコアリング', () => {
 		expect(gameStore.getState().session?.difficulty).toBe('beginner');
 	});
 
-	it('タイムアタックモードは難易度を持たない（=標準スコアリング）', async () => {
+	it('タイムアタックモードも渡した難易度を session に保持する', async () => {
+		await gameStore.startSession('timeattack', twoCards, 'beginner');
+		expect(gameStore.getState().session?.difficulty).toBe('beginner');
+	});
+
+	it('難易度を渡さない場合は session に難易度を持たない', async () => {
 		await gameStore.startSession('timeattack', twoCards);
 		expect(gameStore.getState().session?.difficulty).toBeUndefined();
 	});
@@ -97,6 +102,18 @@ describe('統一エンジン: hiraganaShort の適用範囲', () => {
 
 	it('ランダム×標準は全文を検証対象にする', async () => {
 		await gameStore.startSession('random', [cardWithShort]);
+		const validator = gameStore.getState().input.validator as InputValidator;
+		expect(validator.getTarget()).toBe('つるまうかたちのぐんまけん');
+	});
+
+	it('タイムアタック×初心者も hiraganaShort を検証対象にする', async () => {
+		await gameStore.startSession('timeattack', [cardWithShort], 'beginner');
+		const validator = gameStore.getState().input.validator as InputValidator;
+		expect(validator.getTarget()).toBe('つるまう');
+	});
+
+	it('タイムアタック×標準は全文を検証対象にする', async () => {
+		await gameStore.startSession('timeattack', [cardWithShort], 'standard');
 		const validator = gameStore.getState().input.validator as InputValidator;
 		expect(validator.getTarget()).toBe('つるまうかたちのぐんまけん');
 	});

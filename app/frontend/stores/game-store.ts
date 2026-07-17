@@ -23,7 +23,7 @@ export interface GameSession {
 	isActive: boolean;
 	totalCards: number;
 	isManualExit?: boolean;
-	difficulty?: RandomModeDifficulty; // ランダムモードの難易度
+	difficulty?: RandomModeDifficulty; // 難易度（ランダム・タイムアタック共通）
 }
 
 export interface CompletedCard {
@@ -262,7 +262,7 @@ export function createGameStore() {
 				startTime,
 				isActive: true,
 				totalCards: gameCards.length,
-				difficulty: mode === 'random' ? difficulty : undefined
+				difficulty
 			},
 			cards: {
 				current: gameCards[0],
