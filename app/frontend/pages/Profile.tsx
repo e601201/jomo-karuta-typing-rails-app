@@ -1,5 +1,5 @@
 import { Head, Link, router, usePage } from '@inertiajs/react';
-import { ArrowLeft, Calendar, LogOut, Mail, User as UserIcon } from 'lucide-react';
+import { Calendar, House, LogOut, Mail, User as UserIcon } from 'lucide-react';
 import type { SharedProps } from '@/types';
 import backgroundImage from '@/assets/images/background.webp';
 
@@ -112,15 +112,15 @@ export default function Profile() {
 					</div>
 				</main>
 
-				{/* メニューに戻る */}
+				{/* TOPに戻る */}
 				<div className="flex justify-center">
 					<button
 						onClick={() => router.visit('/')}
 						type="button"
-						className="flex items-center gap-2 rounded-lg border border-[#C9A961] bg-[#0A1A3599] px-6 py-3 text-[15px] font-semibold text-[#F5E9C8] transition-colors hover:bg-[#0A1A35]"
+						className="flex items-center gap-2 rounded-lg border border-[#C9A961] bg-[#0A1A35CC] px-6 py-3 text-[15px] font-semibold text-[#F5E9C8] transition-colors hover:bg-[#0A1A35]"
 					>
-						<ArrowLeft className="h-4 w-4 text-[#E5C875]" />
-						メニューに戻る
+						<House className="h-4 w-4 text-[#E5C875]" />
+						TOPに戻る
 					</button>
 				</div>
 			</div>
