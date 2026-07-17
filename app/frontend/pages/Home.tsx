@@ -92,7 +92,7 @@ export default function Home() {
 				className="min-h-screen bg-cover bg-fixed bg-center"
 				style={{ backgroundImage: `url(${backgroundImage})` }}
 			>
-				<Header user={auth?.user ?? null} />
+				<Header user={auth?.user ?? null} onHowToPlay={() => setShowHowToPlayModal(true)} />
 
 				<main>
 					<div className="container mx-auto max-w-6xl px-4 py-8">
@@ -131,40 +131,6 @@ export default function Home() {
 										/>
 									))}
 								</div>
-
-								{/* Navigation Links */}
-								<nav className="flex justify-center gap-8">
-									<button
-										onClick={() => setShowHowToPlayModal(true)}
-										className="flex items-center gap-2 text-gray-600 transition-colors hover:text-green-600"
-										type="button"
-									>
-										<span className="text-xl">📖</span>
-										<span>遊び方</span>
-									</button>
-									<a
-										href="/ranking"
-										onClick={(e) => {
-											e.preventDefault();
-											router.visit('/ranking');
-										}}
-										className="flex items-center gap-2 text-gray-600 transition-colors hover:text-green-600"
-									>
-										<span className="text-xl">🏆</span>
-										<span>ランキング</span>
-									</a>
-									<a
-										href="/settings"
-										onClick={(e) => {
-											e.preventDefault();
-											router.visit('/settings');
-										}}
-										className="flex items-center gap-2 text-gray-600 transition-colors hover:text-green-600"
-									>
-										<span className="text-xl">⚙️</span>
-										<span>設定</span>
-									</a>
-								</nav>
 							</>
 						)}
 					</div>
