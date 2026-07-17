@@ -35,9 +35,9 @@ function getRankIcon(rank: number) {
 }
 
 function getRankClass(rank: number): string {
-	if (rank === 1) return 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-white';
-	if (rank === 2) return 'bg-gradient-to-r from-gray-300 to-gray-400 text-white';
-	if (rank === 3) return 'bg-gradient-to-r from-orange-400 to-orange-500 text-white';
+	if (rank === 1) return 'bg-linear-to-r from-yellow-400 to-yellow-500 text-white';
+	if (rank === 2) return 'bg-linear-to-r from-gray-300 to-gray-400 text-white';
+	if (rank === 3) return 'bg-linear-to-r from-orange-400 to-orange-500 text-white';
 	return 'bg-gray-100';
 }
 

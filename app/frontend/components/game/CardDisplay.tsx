@@ -67,7 +67,7 @@ export default function CardDisplay({
 				<div className={`${PANEL_CLASS} ${shake ? 'shake-animation' : ''}`}>
 					{/* 取り札画像 */}
 					{card.images?.torifuda && !imageLoadError.torifuda ? (
-						<div className="flex aspect-[3/4] w-full max-w-[280px] items-center justify-center overflow-hidden rounded-lg border border-[#8B6F3E] bg-white shadow-md sm:w-[46%]">
+						<div className="flex aspect-3/4 w-full max-w-[280px] items-center justify-center overflow-hidden rounded-lg border border-[#8B6F3E] bg-white shadow-md sm:w-[46%]">
 							<img
 								src={card.images.torifuda.replace('.jpg', '.webp')}
 								alt={`${card.meaning}の取り札`}
@@ -79,14 +79,14 @@ export default function CardDisplay({
 						</div>
 					) : (
 						/* フォールバック：画像が読み込めない場合 */
-						<div className="flex aspect-[3/4] w-full max-w-[280px] items-center justify-center rounded-lg border border-[#8B6F3E] bg-[#E5D9BD] sm:w-[46%]">
+						<div className="flex aspect-3/4 w-full max-w-[280px] items-center justify-center rounded-lg border border-[#8B6F3E] bg-[#E5D9BD] sm:w-[46%]">
 							<p className="text-sm text-[#8B6F3E]">取り札を読み込み中...</p>
 						</div>
 					)}
 
 					{/* 解説画像 */}
 					{card.images?.kaisetsu && !imageLoadError.kaisetsu ? (
-						<div className="flex aspect-[3/4] w-full max-w-[280px] items-center justify-center overflow-hidden rounded-lg border border-[#8B6F3E] bg-white shadow-md sm:w-[46%]">
+						<div className="flex aspect-3/4 w-full max-w-[280px] items-center justify-center overflow-hidden rounded-lg border border-[#8B6F3E] bg-white shadow-md sm:w-[46%]">
 							<img
 								src={card.images.kaisetsu.replace('.jpg', '.webp')}
 								alt={`${card.meaning}の解説`}
@@ -98,7 +98,7 @@ export default function CardDisplay({
 						</div>
 					) : card.id ? (
 						/* 解説画像をIDから構築 */
-						<div className="flex aspect-[3/4] w-full max-w-[280px] items-center justify-center overflow-hidden rounded-lg border border-[#8B6F3E] bg-white shadow-md sm:w-[46%]">
+						<div className="flex aspect-3/4 w-full max-w-[280px] items-center justify-center overflow-hidden rounded-lg border border-[#8B6F3E] bg-white shadow-md sm:w-[46%]">
 							<img
 								src={`/images/karuta/kaisetsu/${card.id}.webp`}
 								alt={`${card.meaning}の解説`}
@@ -114,7 +114,7 @@ export default function CardDisplay({
 				/* 通常モード：取り札と読み札を表示 */
 				<div className={`${PANEL_CLASS} ${shake ? 'shake-animation' : ''}`}>
 					{card.images.torifuda && !imageLoadError.torifuda && (
-						<div className="aspect-[3/4] w-full max-w-[280px] overflow-hidden rounded-lg border border-[#8B6F3E] bg-white shadow-md sm:w-[46%]">
+						<div className="aspect-3/4 w-full max-w-[280px] overflow-hidden rounded-lg border border-[#8B6F3E] bg-white shadow-md sm:w-[46%]">
 							<img
 								src={card.images.torifuda}
 								alt={`${card.meaning}の取り札`}
@@ -126,7 +126,7 @@ export default function CardDisplay({
 						</div>
 					)}
 					{card.images.yomifuda && !imageLoadError.yomifuda && (
-						<div className="aspect-[3/4] w-full max-w-[280px] overflow-hidden rounded-lg border border-[#8B6F3E] bg-white shadow-md sm:w-[46%]">
+						<div className="aspect-3/4 w-full max-w-[280px] overflow-hidden rounded-lg border border-[#8B6F3E] bg-white shadow-md sm:w-[46%]">
 							<img
 								src={card.images.yomifuda}
 								alt={`${card.meaning}の読み札`}
