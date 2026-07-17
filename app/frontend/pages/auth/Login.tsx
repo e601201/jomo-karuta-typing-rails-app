@@ -1,5 +1,5 @@
 import { Head, Link, usePage } from '@inertiajs/react';
-import { ArrowLeft, LogIn } from 'lucide-react';
+import { House, LogIn } from 'lucide-react';
 import type { SharedProps } from '@/types';
 import backgroundImage from '@/assets/images/background.webp';
 
@@ -79,14 +79,13 @@ export default function Login() {
 				</div>
 			</div>
 
-			{/* メニューに戻る */}
+			{/* TOPに戻る */}
 			<Link
 				href="/"
-				className="flex items-center gap-2 px-4 py-2.5 text-[13px] font-semibold text-[#E5C875] transition-opacity hover:opacity-80"
-				style={{ textShadow: '0 1px 3px rgba(0,0,0,0.75)' }}
+				className="flex items-center gap-2.5 rounded-lg border border-[#C9A961] bg-[#0A1A35CC] px-5 py-3 text-sm font-bold text-[#F5E9C8] shadow-[0_4px_12px_rgba(0,0,0,0.4)] transition-colors hover:bg-[#0A1A35]"
 			>
-				<ArrowLeft className="h-3.5 w-3.5" />
-				メニューに戻る
+				<House className="h-4 w-4 text-[#E5C875]" />
+				TOPに戻る
 			</Link>
 		</div>
 	);
