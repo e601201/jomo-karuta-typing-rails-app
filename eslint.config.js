@@ -6,7 +6,18 @@ import prettier from 'eslint-config-prettier';
 
 export default ts.config(
 	{
-		ignores: ['node_modules/', 'public/', 'vendor/', 'tmp/', 'log/', 'db/', 'coverage/', 'bin/']
+		ignores: [
+			'node_modules/',
+			'public/',
+			'vendor/',
+			'tmp/',
+			'log/',
+			'db/',
+			'coverage/',
+			'bin/',
+			'.agents/',
+			'.claude/'
+		]
 	},
 	js.configs.recommended,
 	...ts.configs.recommended,
