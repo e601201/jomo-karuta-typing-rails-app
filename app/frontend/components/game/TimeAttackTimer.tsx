@@ -4,6 +4,10 @@ interface Props {
 	isCompleted: boolean;
 }
 
+// デザインカンプ（design.pen）準拠のフォント指定
+const SERIF = { fontFamily: "'Noto Serif JP', serif" } as const;
+const MONO = { fontFamily: "'JetBrains Mono', monospace" } as const;
+
 // 時間をフォーマット (SS.ms形式)
 function formatTime(ms: number): string {
 	const seconds = Math.floor(ms / 1000);
@@ -16,24 +20,30 @@ export default function TimeAttackTimer({ elapsedTime, penalty, isCompleted }: P
 	const finalTime = elapsedTime + penalty;
 
 	return (
-		<div className="flex flex-col items-center justify-center rounded-lg bg-white p-4 shadow-lg">
+		<div className="flex h-full flex-col items-center justify-center rounded-lg border border-[#C9A961] bg-[#0A1A35]/80 px-8 py-6 shadow-lg">
 			{/* メインタイマー */}
-			<div className="flex items-baseline">
-				<span className="text-6xl font-bold text-blue-600 tabular-nums">
+			<div className="flex items-end gap-2">
+				<span className="text-6xl font-extrabold text-[#E5C875] tabular-nums" style={MONO}>
 					{formatTime(isCompleted ? finalTime : elapsedTime)}
 				</span>
-				<span className="ml-2 text-2xl text-gray-600">秒</span>
+				<span className="pb-1 text-2xl font-semibold text-[#F5E9C8]" style={SERIF}>
+					秒
+				</span>
 			</div>
 
 			{/* ペナルティ表示 */}
 			{penalty > 0 && (
-				<div className="mt-2 text-lg text-red-500">ペナルティ: +{formatTime(penalty)}秒</div>
+				<div className="mt-1 text-base font-semibold text-[#E5453D]" style={SERIF}>
+					ペナルティ: +{formatTime(penalty)}秒
+				</div>
 			)}
 
 			{/* 完了時の最終タイム表示 */}
 			{isCompleted && penalty > 0 && (
-				<div className="mt-2 border-t-2 border-gray-200 pt-2">
-					<span className="text-sm text-gray-600">実タイム: {formatTime(elapsedTime)}秒</span>
+				<div className="mt-2 border-t border-[#C9A961]/40 pt-2">
+					<span className="text-sm text-[#B8A874]" style={SERIF}>
+						実タイム: {formatTime(elapsedTime)}秒
+					</span>
 				</div>
 			)}
 		</div>

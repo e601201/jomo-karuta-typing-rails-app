@@ -61,17 +61,35 @@ function parseTextUnits(inputText: string): string[] {
 	return units;
 }
 
-// Get color class for character state
+// デザインカンプ（design.pen）準拠のフォント指定
+const SERIF = { fontFamily: "'Noto Serif JP', serif" } as const;
+const MONO = { fontFamily: "'JetBrains Mono', monospace" } as const;
+
+// ひらがな文字の状態に応じた配色（ダークデザイン準拠）
 function getColorClass(state: InputState): string {
 	switch (state) {
 		case 'correct':
-			return 'text-gray-200';
+			return 'text-[#C9A961]';
 		case 'incorrect':
-			return 'text-red-500';
+			return 'text-[#FF5C5C]';
 		case 'current':
-			return 'text-blue-500 font-bold';
+			return 'text-[#E5C875] font-bold';
 		default:
-			return 'text-gray-600';
+			return 'text-[#F5E9C8]';
+	}
+}
+
+// ローマ字文字の状態に応じた配色（ダークデザイン準拠）
+function getRomajiColorClass(state: InputState): string {
+	switch (state) {
+		case 'correct':
+			return 'text-[#9C8850]';
+		case 'incorrect':
+			return 'text-[#FF5C5C]';
+		case 'current':
+			return 'text-[#FFF3D6] font-bold';
+		default:
+			return 'text-[#E5C875]';
 	}
 }
 
@@ -188,7 +206,8 @@ export default function InputHighlight({
 			`}</style>
 			<div
 				data-testid="highlight-container"
-				className={`font-mono ${getTextSizeClass()} flex flex-wrap items-center justify-center gap-1`}
+				className={`${getTextSizeClass()} flex flex-wrap items-center justify-center gap-1 font-bold tracking-[0.15em]`}
+				style={SERIF}
 			>
 				{characters.length === 0
 					? null /* Empty state */
@@ -211,13 +230,14 @@ export default function InputHighlight({
 			{showRomaji && romaji && (
 				<div
 					data-testid="romaji-container"
-					className={`mt-2 flex items-center justify-center gap-0.5 font-mono ${getTextSizeClass()}`}
+					className={`mt-2 flex flex-wrap items-center justify-center gap-0.5 ${getTextSizeClass()} font-bold tracking-wide`}
+					style={MONO}
 				>
 					{romajiCharacters.map((romajiChar, index) => (
 						<span
 							key={index}
 							data-testid={`romaji-char-${index}`}
-							className={`relative inline-block ${getColorClass(
+							className={`relative inline-block ${getRomajiColorClass(
 								romajiStates[index] || 'pending'
 							)} transition-colors duration-200`}
 						>
@@ -239,7 +259,7 @@ export default function InputHighlight({
 							{index === currentRomajiPosition && (
 								<span
 									data-testid={`romaji-cursor-${index}`}
-									className="absolute -bottom-1 left-0 h-0.5 w-full animate-pulse bg-blue-500"
+									className="absolute -bottom-1 left-0 h-0.5 w-full animate-pulse bg-[#E5C875]"
 								></span>
 							)}
 						</span>
