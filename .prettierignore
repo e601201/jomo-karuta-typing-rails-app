@@ -8,3 +8,5 @@ coverage/
 Gemfile.lock
 bun.lock
 app/views/
+.claude/
+**/.claude/
