@@ -43,30 +43,30 @@ export default function BlindInputDisplay({
 				}
 
 				.completed-text-container {
-					font-size: 1.5rem;
-					font-family: monospace;
-					letter-spacing: 0.1em;
+					font-size: 1.75rem;
+					font-family: 'Noto Serif JP', serif;
+					letter-spacing: 0.15em;
 					margin-bottom: 1rem;
 				}
 
 				.completed-text {
-					color: rgb(34 197 94);
+					color: #f5e9c8;
 					font-weight: bold;
 				}
 
 				.current-char {
-					color: rgb(59 130 246);
+					color: #e5c875;
 					font-weight: bold;
 					animation: blind-input-pulse 1s ease-in-out infinite;
 				}
 
 				.current-char.error {
-					color: rgb(239 68 68);
+					color: #ff5c5c;
 					animation: blind-input-shake 0.3s ease-in-out;
 				}
 
 				.remaining-placeholder {
-					color: rgb(209 213 219);
+					color: #5b6a88;
 					letter-spacing: 0.2em;
 				}
 
@@ -94,31 +94,31 @@ export default function BlindInputDisplay({
 				}
 
 				.romaji-container {
-					font-size: 1.2rem;
-					font-family: monospace;
+					font-size: 1.3rem;
+					font-family: 'JetBrains Mono', monospace;
 					letter-spacing: 0.05em;
 					margin-bottom: 1rem;
 					text-transform: uppercase;
 				}
 
 				.completed-romaji {
-					color: rgb(156 163 175);
+					color: #9c8850;
 					font-weight: normal;
 				}
 
 				.current-romaji {
-					color: rgb(59 130 246);
+					color: #fff3d6;
 					font-weight: bold;
 					animation: blind-input-pulse 1s ease-in-out infinite;
 				}
 
 				.current-romaji.error {
-					color: rgb(239 68 68);
+					color: #ff5c5c;
 					animation: blind-input-shake 0.3s ease-in-out;
 				}
 
 				.romaji-placeholder {
-					color: rgb(209 213 219);
+					color: #6b7a99;
 					font-style: italic;
 				}
 
@@ -127,16 +127,17 @@ export default function BlindInputDisplay({
 					top: -120px;
 					left: 50%;
 					transform: translateX(-50%);
-					background: rgba(0, 0, 0, 0.95);
-					color: white;
+					background: rgba(10, 26, 53, 0.96);
+					color: #f5e9c8;
+					font-family: 'Noto Serif JP', serif;
 					padding: 1rem 2rem;
 					border-radius: 8px;
 					font-size: 1.8rem;
 					font-weight: bold;
 					z-index: 100;
 					animation: blind-input-fade-in 0.3s ease-in-out;
-					box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-					border: 2px solid rgba(59, 130, 246, 0.5);
+					box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+					border: 2px solid rgba(201, 169, 97, 0.6);
 					width: max-content;
 					max-width: 90vw;
 					text-align: center;
@@ -161,14 +162,14 @@ export default function BlindInputDisplay({
 
 				.hint-help {
 					position: absolute;
-					top: 2rem;
-					right: 2rem;
+					top: 1rem;
+					right: 1rem;
 					display: flex;
 					align-items: center;
 					gap: 0.3rem;
 					padding: 0.3rem 0.6rem;
-					background: rgba(59, 130, 246, 0.1);
-					border: 1px solid rgba(59, 130, 246, 0.3);
+					background: rgba(201, 169, 97, 0.12);
+					border: 1px solid rgba(201, 169, 97, 0.35);
 					border-radius: 4px;
 					animation: blind-input-pulse-glow 3s ease-in-out infinite;
 					z-index: 10;
@@ -181,7 +182,7 @@ export default function BlindInputDisplay({
 
 				.hint-help-text {
 					font-size: 0.75rem;
-					color: rgb(59, 130, 246);
+					color: #e5c875;
 					font-weight: 500;
 					letter-spacing: 0.03em;
 				}
@@ -189,12 +190,12 @@ export default function BlindInputDisplay({
 				@keyframes blind-input-pulse-glow {
 					0%,
 					100% {
-						background: rgba(59, 130, 246, 0.1);
-						box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+						background: rgba(201, 169, 97, 0.1);
+						box-shadow: 0 0 0 0 rgba(201, 169, 97, 0);
 					}
 					50% {
-						background: rgba(59, 130, 246, 0.15);
-						box-shadow: 0 0 20px 5px rgba(59, 130, 246, 0.2);
+						background: rgba(201, 169, 97, 0.18);
+						box-shadow: 0 0 20px 5px rgba(201, 169, 97, 0.2);
 					}
 				}
 

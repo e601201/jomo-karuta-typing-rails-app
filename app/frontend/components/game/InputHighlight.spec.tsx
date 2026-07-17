@@ -16,9 +16,9 @@ describe('InputHighlight Component', () => {
 			const characters = screen.getAllByTestId(/char-\d+/);
 			expect(characters).toHaveLength(4);
 
-			// 未入力文字は text-gray-600（現行配色）
+			// 未入力文字はクリーム色（ダークデザイン配色）
 			characters.forEach((char) => {
-				expect(char).toHaveClass('text-gray-600');
+				expect(char).toHaveClass('text-[#F5E9C8]');
 			});
 		});
 
@@ -32,12 +32,12 @@ describe('InputHighlight Component', () => {
 				/>
 			);
 
-			// 入力済み（correct）は薄いグレー、現在位置は青字＋太字
+			// 入力済み（correct）は薄い金色、現在位置は明るい金字＋太字
 			const firstChar = screen.getByTestId('char-0');
-			expect(firstChar).toHaveClass('text-gray-200');
+			expect(firstChar).toHaveClass('text-[#C9A961]');
 
 			const currentChar = screen.getByTestId('char-1');
-			expect(currentChar).toHaveClass('text-blue-500');
+			expect(currentChar).toHaveClass('text-[#E5C875]');
 			expect(currentChar).toHaveClass('font-bold');
 		});
 
@@ -52,7 +52,7 @@ describe('InputHighlight Component', () => {
 			);
 
 			const secondChar = screen.getByTestId('char-1');
-			expect(secondChar).toHaveClass('text-red-500');
+			expect(secondChar).toHaveClass('text-[#FF5C5C]');
 			expect(secondChar).toHaveClass('animate-shake');
 		});
 	});
@@ -69,7 +69,7 @@ describe('InputHighlight Component', () => {
 			);
 
 			const currentChar = screen.getByTestId('char-2');
-			expect(currentChar).toHaveClass('text-blue-500');
+			expect(currentChar).toHaveClass('text-[#E5C875]');
 			expect(currentChar).toHaveClass('font-bold');
 		});
 
@@ -82,7 +82,7 @@ describe('InputHighlight Component', () => {
 				/>
 			);
 
-			expect(screen.getByTestId('char-1')).toHaveClass('text-blue-500');
+			expect(screen.getByTestId('char-1')).toHaveClass('text-[#E5C875]');
 
 			rerender(
 				<InputHighlight
@@ -93,9 +93,9 @@ describe('InputHighlight Component', () => {
 			);
 
 			// 旧位置は current ではなくなり、新位置が current になる
-			expect(screen.getByTestId('char-1')).not.toHaveClass('text-blue-500');
+			expect(screen.getByTestId('char-1')).not.toHaveClass('text-[#E5C875]');
 			const currentChar = screen.getByTestId('char-2');
-			expect(currentChar).toHaveClass('text-blue-500');
+			expect(currentChar).toHaveClass('text-[#E5C875]');
 			// 色遷移アニメーションは各文字に付与される
 			expect(currentChar).toHaveClass('transition-colors');
 		});
@@ -132,12 +132,12 @@ describe('InputHighlight Component', () => {
 			);
 
 			const romajiChars = screen.getAllByTestId(/romaji-char-\d+/);
-			// correct は薄いグレー、pending は text-gray-600（現行配色）
-			expect(romajiChars[0]).toHaveClass('text-gray-200'); // t
-			expect(romajiChars[1]).toHaveClass('text-gray-200'); // s
-			expect(romajiChars[2]).toHaveClass('text-gray-200'); // u
-			expect(romajiChars[3]).toHaveClass('text-gray-600'); // r
-			expect(romajiChars[4]).toHaveClass('text-gray-600'); // u
+			// correct は薄い金色、pending は金色（ダークデザイン配色）
+			expect(romajiChars[0]).toHaveClass('text-[#9C8850]'); // t
+			expect(romajiChars[1]).toHaveClass('text-[#9C8850]'); // s
+			expect(romajiChars[2]).toHaveClass('text-[#9C8850]'); // u
+			expect(romajiChars[3]).toHaveClass('text-[#E5C875]'); // r
+			expect(romajiChars[4]).toHaveClass('text-[#E5C875]'); // u
 		});
 	});
 
@@ -153,7 +153,7 @@ describe('InputHighlight Component', () => {
 
 			rerender(<InputHighlight text="つ" inputStates={['correct']} currentPosition={1} />);
 
-			expect(char).toHaveClass('text-gray-200');
+			expect(char).toHaveClass('text-[#C9A961]');
 		});
 
 		it('TC-009: should animate error shake', () => {

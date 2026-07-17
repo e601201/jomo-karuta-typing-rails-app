@@ -35,11 +35,11 @@ describe('PauseOverlay Component', () => {
 
 			const overlay = screen.getByTestId('pause-overlay');
 			expect(overlay).toBeInTheDocument();
-			expect(overlay).toHaveClass('bg-black', 'bg-opacity-70');
+			expect(overlay).toHaveClass('bg-black/70');
 
 			const modal = screen.getByTestId('pause-modal');
 			expect(modal).toBeInTheDocument();
-			expect(modal).toHaveClass('bg-white', 'rounded-2xl');
+			expect(modal).toHaveClass('bg-[#0A1A35]', 'rounded-2xl');
 		});
 
 		it('should not display when not paused', () => {

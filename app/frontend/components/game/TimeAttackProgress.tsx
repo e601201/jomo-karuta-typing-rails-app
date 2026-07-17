@@ -5,39 +5,53 @@ interface Props {
 	skips: number;
 }
 
+// デザインカンプ（design.pen）準拠のフォント指定
+const SERIF = { fontFamily: "'Noto Serif JP', serif" } as const;
+const MONO = { fontFamily: "'JetBrains Mono', monospace" } as const;
+
 export default function TimeAttackProgress({ current, total, mistakes, skips }: Props) {
 	// 進捗パーセンテージ
 	const percentage = Math.min((current / total) * 100, 100);
 
 	return (
-		<div className="rounded-lg bg-white p-4 shadow-md">
+		<div className="flex h-full flex-col justify-center rounded-lg border border-[#C9A961] bg-[#0A1A35]/80 px-8 py-5 shadow-lg">
 			{/* 進捗バー */}
-			<div className="mb-3">
-				<div className="mb-1 flex justify-between text-sm">
-					<span className="font-medium text-gray-700">進捗</span>
-					<span className="font-bold text-blue-600">
-						{current}/{total}
-					</span>
-				</div>
-				<div className="h-3 overflow-hidden rounded-full bg-gray-200">
-					<div
-						className="bg-liner-to-r h-full rounded-full from-blue-400 to-blue-600 transition-all duration-300"
-						style={{ width: `${percentage}%` }}
-					></div>
-				</div>
+			<div className="mb-2 flex items-center justify-between">
+				<span className="text-base font-semibold text-[#C9A961]" style={SERIF}>
+					進捗
+				</span>
+				<span className="text-xl font-extrabold text-[#E5C875] tabular-nums" style={MONO}>
+					{current} / {total}
+				</span>
+			</div>
+			<div className="h-2 w-full overflow-hidden rounded-full bg-[#1E3560]">
+				<div
+					className="h-full rounded-full bg-[#E5C875] transition-all duration-300"
+					style={{ width: `${percentage}%` }}
+				></div>
 			</div>
 
 			{/* 統計情報 */}
-			<div className="grid grid-cols-2 gap-4 text-sm">
-				<div className="flex items-center justify-between">
-					<span className="text-gray-600">ミス</span>
-					<span className={`font-bold ${mistakes > 0 ? 'text-orange-500' : 'text-gray-700'}`}>
+			<div className="mt-3 flex gap-8">
+				<div className="flex flex-1 items-center justify-between">
+					<span className="text-sm text-[#B8A874]" style={SERIF}>
+						ミス
+					</span>
+					<span
+						className={`text-lg font-bold tabular-nums ${mistakes > 0 ? 'text-[#E5A54B]' : 'text-[#F5E9C8]'}`}
+						style={SERIF}
+					>
 						{mistakes}回
 					</span>
 				</div>
-				<div className="flex items-center justify-between">
-					<span className="text-gray-600">スキップ</span>
-					<span className={`font-bold ${skips > 0 ? 'text-red-500' : 'text-gray-700'}`}>
+				<div className="flex flex-1 items-center justify-between">
+					<span className="text-sm text-[#B8A874]" style={SERIF}>
+						スキップ
+					</span>
+					<span
+						className={`text-lg font-bold tabular-nums ${skips > 0 ? 'text-[#E5453D]' : 'text-[#F5E9C8]'}`}
+						style={SERIF}
+					>
 						{skips}回
 					</span>
 				</div>

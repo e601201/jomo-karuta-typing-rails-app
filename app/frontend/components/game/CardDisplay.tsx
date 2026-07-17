@@ -17,6 +17,10 @@ const forceVisibleImageStyle = {
 	backgroundColor: 'white'
 } as const;
 
+// 札を並べる羊皮紙調のパネル（design.pen 準拠）
+const PANEL_CLASS =
+	'mb-6 flex flex-col items-center justify-center gap-6 rounded-xl border-2 border-[#C9A961] bg-[#F5E9C8]/95 p-5 shadow-xl sm:flex-row sm:gap-10 sm:p-8';
+
 export default function CardDisplay({
 	card,
 	showImages = true,
@@ -58,85 +62,83 @@ export default function CardDisplay({
 					animation: card-display-shake 0.1s ease-in-out;
 				}
 			`}</style>
-			<div className={`mb-6 rounded-lg bg-white p-8 shadow-lg ${shake ? 'shake-animation' : ''}`}>
-				{difficulty === 'advanced' ? (
-					/* 上級者モード：取り札と解説画像を並べて表示 */
-					<div className="flex flex-col items-center justify-center gap-6 md:flex-row">
-						{/* 取り札画像 */}
-						{card.images?.torifuda && !imageLoadError.torifuda ? (
-							<div className="flex flex-col items-center rounded-lg bg-white p-4">
-								<img
-									src={card.images.torifuda.replace('.jpg', '.webp')}
-									alt={`${card.meaning}の取り札`}
-									className="h-auto w-full max-w-[140px] rounded object-contain shadow-xl md:max-w-[180px]"
-									style={forceVisibleImageStyle}
-									onError={() => handleImageError('torifuda')}
-									loading="eager"
-								/>
-							</div>
-						) : (
-							/* フォールバック：画像が読み込めない場合 */
-							<div className="flex h-[200px] w-[140px] items-center justify-center rounded-lg bg-gray-100">
-								<p className="text-gray-500">取り札を読み込み中...</p>
-							</div>
-						)}
+			{difficulty === 'advanced' ? (
+				/* 上級者モード：取り札と解説画像を並べて表示 */
+				<div className={`${PANEL_CLASS} ${shake ? 'shake-animation' : ''}`}>
+					{/* 取り札画像 */}
+					{card.images?.torifuda && !imageLoadError.torifuda ? (
+						<div className="flex aspect-[3/4] w-full max-w-[280px] items-center justify-center overflow-hidden rounded-lg border border-[#8B6F3E] bg-white shadow-md sm:w-[46%]">
+							<img
+								src={card.images.torifuda.replace('.jpg', '.webp')}
+								alt={`${card.meaning}の取り札`}
+								className="h-full w-full object-contain"
+								style={forceVisibleImageStyle}
+								onError={() => handleImageError('torifuda')}
+								loading="eager"
+							/>
+						</div>
+					) : (
+						/* フォールバック：画像が読み込めない場合 */
+						<div className="flex aspect-[3/4] w-full max-w-[280px] items-center justify-center rounded-lg border border-[#8B6F3E] bg-[#E5D9BD] sm:w-[46%]">
+							<p className="text-sm text-[#8B6F3E]">取り札を読み込み中...</p>
+						</div>
+					)}
 
-						{/* 解説画像 */}
-						{card.images?.kaisetsu && !imageLoadError.kaisetsu ? (
-							<div className="flex flex-col items-center rounded-lg bg-white p-4">
-								<img
-									src={card.images.kaisetsu.replace('.jpg', '.webp')}
-									alt={`${card.meaning}の解説`}
-									className="h-auto w-full max-w-[140px] rounded object-contain shadow-xl md:max-w-[180px]"
-									style={forceVisibleImageStyle}
-									onError={() => handleImageError('kaisetsu')}
-									loading="eager"
-								/>
-							</div>
-						) : card.id ? (
-							/* 解説画像をIDから構築 */
-							<div className="flex flex-col items-center rounded-lg bg-white p-4">
-								<img
-									src={`/images/karuta/kaisetsu/${card.id}.webp`}
-									alt={`${card.meaning}の解説`}
-									className="h-auto w-full max-w-[140px] rounded object-contain shadow-xl md:max-w-[180px]"
-									style={forceVisibleImageStyle}
-									onError={() => handleImageError('kaisetsu')}
-									loading="eager"
-								/>
-							</div>
-						) : null}
-					</div>
-				) : showImages && card.images ? (
-					/* 通常モード：取り札と読み札を表示 */
-					<div className="mb-6 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
-						{card.images.torifuda && !imageLoadError.torifuda && (
-							<div className="flex w-full flex-col items-center rounded-lg bg-white p-2 sm:w-auto">
-								<img
-									src={card.images.torifuda}
-									alt={`${card.meaning}の取り札`}
-									className="h-auto w-full max-w-[150px] rounded object-contain shadow sm:max-w-[180px] md:max-w-[200px]"
-									style={forceVisibleImageStyle}
-									onError={() => handleImageError('torifuda')}
-									loading="lazy"
-								/>
-							</div>
-						)}
-						{card.images.yomifuda && !imageLoadError.yomifuda && (
-							<div className="flex w-full flex-col items-center rounded-lg bg-white p-2 sm:w-auto">
-								<img
-									src={card.images.yomifuda}
-									alt={`${card.meaning}の読み札`}
-									className="h-auto w-full max-w-[150px] rounded object-contain shadow sm:max-w-[180px] md:max-w-[200px]"
-									style={forceVisibleImageStyle}
-									onError={() => handleImageError('yomifuda')}
-									loading="lazy"
-								/>
-							</div>
-						)}
-					</div>
-				) : null}
-			</div>
+					{/* 解説画像 */}
+					{card.images?.kaisetsu && !imageLoadError.kaisetsu ? (
+						<div className="flex aspect-[3/4] w-full max-w-[280px] items-center justify-center overflow-hidden rounded-lg border border-[#8B6F3E] bg-white shadow-md sm:w-[46%]">
+							<img
+								src={card.images.kaisetsu.replace('.jpg', '.webp')}
+								alt={`${card.meaning}の解説`}
+								className="h-full w-full object-contain"
+								style={forceVisibleImageStyle}
+								onError={() => handleImageError('kaisetsu')}
+								loading="eager"
+							/>
+						</div>
+					) : card.id ? (
+						/* 解説画像をIDから構築 */
+						<div className="flex aspect-[3/4] w-full max-w-[280px] items-center justify-center overflow-hidden rounded-lg border border-[#8B6F3E] bg-white shadow-md sm:w-[46%]">
+							<img
+								src={`/images/karuta/kaisetsu/${card.id}.webp`}
+								alt={`${card.meaning}の解説`}
+								className="h-full w-full object-contain"
+								style={forceVisibleImageStyle}
+								onError={() => handleImageError('kaisetsu')}
+								loading="eager"
+							/>
+						</div>
+					) : null}
+				</div>
+			) : showImages && card.images ? (
+				/* 通常モード：取り札と読み札を表示 */
+				<div className={`${PANEL_CLASS} ${shake ? 'shake-animation' : ''}`}>
+					{card.images.torifuda && !imageLoadError.torifuda && (
+						<div className="aspect-[3/4] w-full max-w-[280px] overflow-hidden rounded-lg border border-[#8B6F3E] bg-white shadow-md sm:w-[46%]">
+							<img
+								src={card.images.torifuda}
+								alt={`${card.meaning}の取り札`}
+								className="h-full w-full object-cover"
+								style={forceVisibleImageStyle}
+								onError={() => handleImageError('torifuda')}
+								loading="lazy"
+							/>
+						</div>
+					)}
+					{card.images.yomifuda && !imageLoadError.yomifuda && (
+						<div className="aspect-[3/4] w-full max-w-[280px] overflow-hidden rounded-lg border border-[#8B6F3E] bg-white shadow-md sm:w-[46%]">
+							<img
+								src={card.images.yomifuda}
+								alt={`${card.meaning}の読み札`}
+								className="h-full w-full object-cover"
+								style={forceVisibleImageStyle}
+								onError={() => handleImageError('yomifuda')}
+								loading="lazy"
+							/>
+						</div>
+					)}
+				</div>
+			) : null}
 		</>
 	);
 }

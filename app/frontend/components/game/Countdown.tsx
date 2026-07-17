@@ -52,7 +52,8 @@ export default function Countdown({ onComplete, duration = 3 }: Props) {
 					left: 0;
 					right: 0;
 					bottom: 0;
-					background: rgba(0, 0, 0, 0.7);
+					background: rgba(10, 26, 53, 0.85);
+					backdrop-filter: blur(4px);
 					display: flex;
 					align-items: center;
 					justify-content: center;
@@ -67,20 +68,23 @@ export default function Countdown({ onComplete, duration = 3 }: Props) {
 
 				.countdown-number {
 					font-size: 8rem;
-					font-weight: bold;
-					color: white;
-					text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+					font-weight: 900;
+					color: #e5c875;
+					text-shadow:
+						0 4px 24px rgba(201, 169, 97, 0.55),
+						0 0 60px rgba(229, 200, 117, 0.25);
 					animation: countdown-pulse 1s ease-in-out;
 					margin-bottom: 1rem;
-					font-family: 'Helvetica Neue', Arial, sans-serif;
+					font-family: 'Noto Serif JP', serif;
 					line-height: 1;
 				}
 
 				.countdown-start {
 					font-size: 4rem;
-					font-weight: bold;
-					color: #22c55e;
-					text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+					font-weight: 900;
+					color: #3fb56b;
+					text-shadow: 0 4px 24px rgba(63, 181, 107, 0.5);
+					font-family: 'Noto Serif JP', serif;
 					animation: countdown-start-pulse 0.5s ease-out;
 				}
 

@@ -25,6 +25,22 @@ import Countdown from '@/components/game/Countdown';
 import TimeAttackTimer from '@/components/game/TimeAttackTimer';
 import TimeAttackProgress from '@/components/game/TimeAttackProgress';
 import RankingRegistrationModal from '@/components/ranking/RankingRegistrationModal';
+import {
+	Timer,
+	Pause,
+	Play,
+	SkipForward,
+	X,
+	Trophy,
+	Megaphone,
+	RotateCcw,
+	House
+} from 'lucide-react';
+import backgroundImage from '@/assets/images/background.webp';
+
+// デザインカンプ（design.pen）準拠のフォント指定
+const SERIF = { fontFamily: "'Noto Serif JP', serif" } as const;
+const MONO = { fontFamily: "'JetBrains Mono', monospace" } as const;
 
 interface GameProps {
 	mode?: string | null;
@@ -517,116 +533,187 @@ ${modeLabel} ${gameMode === 'random' ? difficultyLabel : ''}で${score.total.toL
 	};
 
 	return (
-		<main className="bg--to-b min-h-screen from-blue-50 to-white">
+		<main
+			className="min-h-screen bg-cover bg-fixed bg-center"
+			style={{ backgroundImage: `url(${backgroundImage})` }}
+		>
 			<Head title="タイピングゲーム - 上毛かるた" />
-			<div data-testid="game-container" className="container mx-auto max-w-4xl flex-col px-4 py-8">
+			<div
+				data-testid="game-container"
+				className="mx-auto flex min-h-screen w-full max-w-5xl flex-col px-4 py-6 sm:px-8 sm:py-8"
+			>
 				{isLoading ? (
-					<div className="flex min-h-[400px] items-center justify-center">
-						<div className="h-12 w-12 animate-spin rounded-full border-b-2 border-blue-600"></div>
-						<p className="ml-4">ゲームを準備中...</p>
+					<div className="flex min-h-[400px] flex-1 items-center justify-center">
+						<div className="h-12 w-12 animate-spin rounded-full border-b-2 border-[#E5C875]"></div>
+						<p className="ml-4 text-[#F5E9C8]" style={SERIF}>
+							ゲームを準備中...
+						</p>
 					</div>
 				) : error ? (
-					<div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
-						<p className="mb-4 text-red-600">{error}</p>
-						<a href="/" className="text-blue-600 hover:underline">
-							メインメニューに戻る
-						</a>
+					<div className="flex flex-1 items-center justify-center">
+						<div className="rounded-xl border border-[#C8302A] bg-[#0A1A35]/85 p-8 text-center shadow-xl">
+							<p className="mb-4 text-[#FF8A84]" style={SERIF}>
+								{error}
+							</p>
+							<a href="/" className="text-[#E5C875] hover:underline" style={SERIF}>
+								メインメニューに戻る
+							</a>
+						</div>
 					</div>
 				) : isGameComplete ? (
-					<div className="rounded-lg bg-white p-8 shadow-lg">
-						<h2 className="mb-6 text-center text-3xl font-bold text-gray-800">ゲーム終了！</h2>
+					<div className="flex flex-1 items-center justify-center py-4">
+						<div className="w-full max-w-[720px] rounded-xl border-2 border-[#C9A961] bg-[#0A1A35]/90 px-6 py-8 shadow-2xl sm:px-12 sm:py-10">
+							<div className="flex flex-col items-center gap-6">
+								{/* タイトル */}
+								<h2 className="text-4xl font-black text-[#E5C875] sm:text-[44px]" style={SERIF}>
+									ゲーム終了！
+								</h2>
 
-						{/* モード表示 */}
-						<div className="mb-4 text-center">
-							<span className="inline-block rounded-full bg-blue-100 px-4 py-2 text-sm font-medium text-blue-800">
-								{modeLabel}
-							</span>
-							<span className="inline-block rounded-full bg-blue-100 px-4 py-2 text-sm font-medium text-green-800">
-								{(gameMode === 'random' || gameMode === 'timeattack') && difficultyLabel}
-							</span>
-						</div>
+								{/* モード表示 */}
+								<div className="flex items-center gap-3">
+									<span
+										className={`rounded-full border border-[#C9A961] px-5 py-2 text-sm font-bold text-[#F5E9C8] ${
+											gameMode === 'timeattack' ? 'bg-[#C8302A]' : 'bg-[#0F2952]'
+										}`}
+										style={SERIF}
+									>
+										{modeLabel}
+									</span>
+									{(gameMode === 'random' || gameMode === 'timeattack') && (
+										<span
+											className="rounded-full border border-[#C9A961] bg-[#0F2952] px-5 py-2 text-sm font-bold text-[#F5E9C8]"
+											style={SERIF}
+										>
+											{difficultyLabel}
+										</span>
+									)}
+								</div>
 
-						{/* スコア（中段・目立つように） / タイムアタックはタイム表示 */}
-						{gameMode === 'timeattack' ? (
-							<div className="mb-8 border border-gray-300 p-6 text-center text-gray-600">
-								<p className="mb-2 text-lg font-medium">最終タイム</p>
-								<p className="text-5xl font-bold">
-									{((timeAttackElapsedTime + timeAttackPenalty) / 1000).toFixed(2)}秒
-								</p>
-								{timeAttackPenalty > 0 && (
-									<>
-										<p className="mt-2 text-sm text-red-500">
-											ペナルティ: +{(timeAttackPenalty / 1000).toFixed(2)}秒
+								{/* スコア（中段・目立つように） / タイムアタックはタイム表示 */}
+								{gameMode === 'timeattack' ? (
+									<div className="flex w-full flex-col items-center gap-1.5 rounded-[10px] border border-[#C9A961] bg-[#132D57] px-8 py-7 text-center">
+										<p className="text-base font-medium text-[#B8A874]" style={SERIF}>
+											最終タイム
 										</p>
-										<p className="text-xs text-gray-500">
-											（ミス: {timeAttackMistakes}回 / スキップ: {timeAttackSkips}回）
+										<div className="flex items-end gap-1.5">
+											<span
+												className="text-6xl font-extrabold text-[#E5C875] tabular-nums"
+												style={MONO}
+											>
+												{((timeAttackElapsedTime + timeAttackPenalty) / 1000).toFixed(2)}
+											</span>
+											<span className="pb-1.5 text-2xl font-semibold text-[#F5E9C8]" style={SERIF}>
+												秒
+											</span>
+										</div>
+										{timeAttackPenalty > 0 && (
+											<>
+												<p className="text-sm font-semibold text-[#E5453D]" style={SERIF}>
+													ペナルティ: +{(timeAttackPenalty / 1000).toFixed(2)}秒
+												</p>
+												<p className="text-xs text-[#B8A874]" style={SERIF}>
+													（ミス: {timeAttackMistakes}回 / スキップ: {timeAttackSkips}回）
+												</p>
+											</>
+										)}
+									</div>
+								) : (
+									<div className="flex w-full flex-col items-center gap-1.5 rounded-[10px] border border-[#C9A961] bg-[#132D57] px-8 py-7 text-center">
+										<p className="text-base font-medium text-[#B8A874]" style={SERIF}>
+											スコア
 										</p>
-									</>
+										<span
+											className="text-6xl font-extrabold text-[#E5C875] tabular-nums"
+											style={MONO}
+										>
+											{score.total.toLocaleString()}
+										</span>
+									</div>
 								)}
-							</div>
-						) : (
-							<div className="mb-8 border border-gray-300 p-6 text-center text-gray-600">
-								<p className="mb-2 text-lg font-medium">スコア</p>
-								<p className="text-5xl font-bold">{score.total.toLocaleString()}</p>
-							</div>
-						)}
 
-						{/* 詳細統計 */}
-						<div data-testid="final-score" className="mb-8 grid grid-cols-2 gap-4 text-center">
-							<div className="rounded-lg p-4">
-								<p className="text-sm text-gray-600">正解した札</p>
-								<p className="text-2xl font-bold text-gray-800">{completedCardsCount} 枚</p>
-							</div>
-							<div className="rounded-lg p-4">
-								<p className="text-sm text-gray-600">正確率</p>
-								<p className="text-2xl font-bold text-gray-800">{score.accuracy.toFixed(2)}%</p>
-							</div>
-							<div className="rounded-lg p-4">
-								<p className="text-sm text-gray-600">WPM(単語数/分)</p>
-								<p className="text-2xl font-bold text-gray-800">{score.speed}</p>
-							</div>
-							<div className="rounded-lg p-4">
-								<p className="text-sm text-gray-600">最大コンボ</p>
-								<p className="text-2xl font-bold text-gray-800">{score.maxCombo}</p>
-							</div>
-						</div>
+								{/* 詳細統計 */}
+								<div data-testid="final-score" className="grid w-full grid-cols-2 gap-3">
+									{[
+										{ label: '正解した札', value: `${completedCardsCount}`, unit: '枚' },
+										{ label: '正確率', value: `${score.accuracy.toFixed(2)}%`, unit: '' },
+										{ label: 'WPM(単語数/分)', value: `${score.speed}`, unit: '' },
+										{ label: '最大コンボ', value: `${score.maxCombo}`, unit: '' }
+									].map((stat) => (
+										<div
+											key={stat.label}
+											className="flex flex-col items-center gap-2 rounded-lg border border-[#C9A961] bg-[#132D57] px-6 py-5"
+										>
+											<p className="text-sm font-medium text-[#B8A874]" style={SERIF}>
+												{stat.label}
+											</p>
+											<div className="flex items-end gap-1">
+												<span
+													className="text-3xl font-extrabold text-[#E5C875] tabular-nums"
+													style={MONO}
+												>
+													{stat.value}
+												</span>
+												{stat.unit && (
+													<span
+														className="pb-0.5 text-base font-semibold text-[#F5E9C8]"
+														style={SERIF}
+													>
+														{stat.unit}
+													</span>
+												)}
+											</div>
+										</div>
+									))}
+								</div>
 
-						{/* ボタン群 */}
-						<div className="flex flex-col gap-3">
-							{(gameMode === 'random' || gameMode === 'timeattack') && !isRankingRegistered && (
-								<button
-									onClick={() => setShowRankingModal(true)}
-									className="transform rounded-lg bg-linear-to-r from-yellow-500 to-orange-500 px-6 py-4 text-lg font-bold text-white transition-all hover:scale-105 hover:from-yellow-600 hover:to-orange-600"
-								>
-									🏆 ランキングに登録する
-								</button>
-							)}
-							<div className="grid grid-cols-2 gap-3">
-								<button
-									onClick={() => router.visit('/ranking')}
-									className="rounded-lg border border-gray-300 bg-white px-6 py-3 text-gray-700 transition-colors hover:bg-gray-50"
-								>
-									🏆 ランキングを見る
-								</button>
-								<button
-									onClick={handleShare}
-									className="rounded-lg border border-gray-300 bg-white px-6 py-3 text-gray-700 transition-colors hover:bg-gray-50"
-								>
-									📢 結果をX(Twitter)でシェア
-								</button>
+								{/* ボタン群 */}
+								<div className="flex w-full flex-col gap-3">
+									{(gameMode === 'random' || gameMode === 'timeattack') && !isRankingRegistered && (
+										<button
+											onClick={() => setShowRankingModal(true)}
+											className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-[#E5C875] bg-linear-to-r from-[#E5C875] to-[#D4681A] px-6 py-4 text-lg font-bold text-white shadow-md transition-transform hover:scale-[1.02]"
+											style={SERIF}
+										>
+											<Trophy className="h-5 w-5" />
+											ランキングに登録する
+										</button>
+									)}
+									<div className="grid grid-cols-2 gap-3">
+										<button
+											onClick={() => router.visit('/ranking')}
+											className="flex items-center justify-center gap-2 rounded-lg border border-[#C9A961] bg-[#0F2952] px-4 py-3.5 text-[15px] font-semibold text-[#F5E9C8] transition-colors hover:bg-[#163A6B]"
+											style={SERIF}
+										>
+											<Trophy className="h-4 w-4 text-[#E5C875]" />
+											ランキングを見る
+										</button>
+										<button
+											onClick={handleShare}
+											className="flex items-center justify-center gap-2 rounded-lg border border-[#C9A961] bg-[#0F2952] px-4 py-3.5 text-[15px] font-semibold text-[#F5E9C8] transition-colors hover:bg-[#163A6B]"
+											style={SERIF}
+										>
+											<Megaphone className="h-4 w-4 text-[#E5C875]" />
+											結果をX(Twitter)でシェア
+										</button>
+									</div>
+									<button
+										onClick={handleReplay}
+										className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-[#E5C875] bg-linear-to-r from-[#3A6BC8] to-[#1E3A6B] px-6 py-4 text-lg font-bold text-white shadow-md transition-transform hover:scale-[1.02]"
+										style={SERIF}
+									>
+										<RotateCcw className="h-[18px] w-[18px]" />
+										もう一度遊ぶ
+									</button>
+									<button
+										onClick={() => router.visit('/')}
+										className="flex w-full items-center justify-center gap-2 rounded-lg border border-[#C9A961] bg-transparent px-6 py-3.5 text-[15px] font-semibold text-[#F5E9C8] transition-colors hover:bg-[#0F2952]"
+										style={SERIF}
+									>
+										<House className="h-4 w-4 text-[#E5C875]" />
+										メインメニューに戻る
+									</button>
+								</div>
 							</div>
-							<button
-								onClick={handleReplay}
-								className="rounded-lg bg-blue-600 px-6 py-3 text-white transition-colors hover:bg-blue-700"
-							>
-								もう一度遊ぶ
-							</button>
-							<button
-								onClick={() => router.visit('/')}
-								className="rounded-lg border border-gray-300 bg-white px-6 py-3 text-gray-700 transition-colors hover:bg-gray-50"
-							>
-								メインメニューに戻る
-							</button>
 						</div>
 					</div>
 				) : (
@@ -647,22 +734,35 @@ ${modeLabel} ${gameMode === 'random' ? difficultyLabel : ''}で${score.total.toL
 								/>
 							</div>
 						) : (
-							<header className="mb-6 rounded-lg bg-white p-4 shadow-md">
-								<div className="flex items-center justify-between">
-									<div className="text-sm text-gray-600">
-										進捗:{' '}
-										<span className="font-bold">
-											{cardIndex + 1} / {totalCards}
+							<header className="mb-6 flex items-center justify-between rounded-lg border border-[#C9A961] bg-[#0A1A35]/80 px-6 py-4 shadow-lg sm:px-8">
+								<div className="flex items-center gap-2">
+									<span className="text-base font-semibold text-[#C9A961]" style={SERIF}>
+										進捗:
+									</span>
+									<span className="text-lg font-bold text-[#F5E9C8] tabular-nums" style={SERIF}>
+										{cardIndex + 1} / {totalCards}
+									</span>
+								</div>
+								{hasTimeLimit && remainingTime !== null && (
+									<div className="flex items-center gap-2">
+										<Timer
+											className={`h-[18px] w-[18px] ${
+												remainingTime < 10000 ? 'text-[#E5453D]' : 'text-[#C9A961]'
+											}`}
+										/>
+										<span className="text-base font-semibold text-[#C9A961]" style={SERIF}>
+											残り時間:
+										</span>
+										<span
+											className={`text-xl font-bold tabular-nums ${
+												remainingTime < 10000 ? 'text-[#E5453D]' : 'text-[#F5E9C8]'
+											}`}
+											style={SERIF}
+										>
+											{formatTime(remainingTime)}
 										</span>
 									</div>
-									{hasTimeLimit && remainingTime !== null && (
-										<div
-											className={`text-sm ${remainingTime < 10000 ? 'font-bold text-red-600' : 'text-gray-600'}`}
-										>
-											残り時間: <span className="font-bold">{formatTime(remainingTime)}</span>
-										</div>
-									)}
-								</div>
+								)}
 							</header>
 						)}
 
@@ -686,19 +786,23 @@ ${modeLabel} ${gameMode === 'random' ? difficultyLabel : ''}で${score.total.toL
 
 						{/* 終了確認 */}
 						{showExitConfirm && (
-							<div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black">
-								<div className="rounded-lg bg-white p-8 text-center">
-									<h2 className="mb-4 text-xl font-bold">本当に終了しますか？</h2>
+							<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+								<div className="mx-4 rounded-xl border border-[#C9A961] bg-[#0A1A35] p-8 text-center shadow-2xl">
+									<h2 className="mb-6 text-xl font-bold text-[#F5E9C8]" style={SERIF}>
+										本当に終了しますか？
+									</h2>
 									<div className="flex justify-center gap-4">
 										<button
 											onClick={confirmExit}
-											className="rounded-lg bg-red-600 px-6 py-2 text-white hover:bg-red-700"
+											className="rounded-lg border border-[#E5453D] bg-[#C8302A] px-8 py-2.5 font-semibold text-white transition-colors hover:bg-[#A8261F]"
+											style={SERIF}
 										>
 											はい
 										</button>
 										<button
 											onClick={() => setShowExitConfirm(false)}
-											className="rounded-lg bg-gray-600 px-6 py-2 text-white hover:bg-gray-700"
+											className="rounded-lg border border-[#5A6472] bg-[#3A4552] px-8 py-2.5 font-semibold text-white transition-colors hover:bg-[#4A5562]"
+											style={SERIF}
 										>
 											いいえ
 										</button>
@@ -717,14 +821,16 @@ ${modeLabel} ${gameMode === 'random' ? difficultyLabel : ''}で${score.total.toL
 										difficulty={currentDifficulty}
 									/>
 								) : (
-									<div className="mb-6 rounded-lg bg-yellow-100 p-8 text-center">
-										<p className="text-gray-800">カードを読み込み中...</p>
+									<div className="mb-6 rounded-xl border-2 border-[#C9A961] bg-[#F5E9C8]/95 p-8 text-center">
+										<p className="text-[#2A1F0F]" style={SERIF}>
+											カードを読み込み中...
+										</p>
 									</div>
 								)}
 
 								{/* 入力ハイライト表示 */}
 								{currentCard && (
-									<div className="mb-1">
+									<div className="mb-6 flex flex-col items-center gap-2 rounded-lg border border-[#C9A961] bg-[#0A1A35]/80 px-6 py-5 shadow-lg">
 										<InputHighlight
 											text={parseHiraganaUnits(displayHiragana.replace(/\s/g, '')).join('')}
 											inputStates={inputStates}
@@ -744,47 +850,71 @@ ${modeLabel} ${gameMode === 'random' ? difficultyLabel : ''}で${score.total.toL
 
 						{/* スコア表示 */}
 						{!showCountdown && (
-							<div className="mb-6 rounded-lg bg-white p-4 shadow-md">
-								<div className="grid grid-cols-3 gap-4 text-center">
-									<div>
-										<p className="text-sm text-gray-600">正確率</p>
-										<p data-testid="accuracy-display" className="text-xl font-bold">
-											{(score.accuracy ?? 100).toFixed(2)}%
-										</p>
-									</div>
-									<div>
-										<p className="text-sm text-gray-600">コンボ</p>
-										<p data-testid="combo-display" className="text-xl font-bold">
-											{score.combo || 0}
-										</p>
-									</div>
-									<div>
-										<p className="text-sm text-gray-600">スコア</p>
-										<p className="text-xl font-bold">{score.total || 0}</p>
-									</div>
+							<div className="mb-6 grid grid-cols-3 gap-4 rounded-lg border border-[#C9A961] bg-[#0A1A35]/80 px-6 py-5 text-center shadow-lg sm:px-8">
+								<div className="flex flex-col items-center gap-1.5">
+									<p className="text-sm font-medium text-[#B8A874]" style={SERIF}>
+										正確率
+									</p>
+									<p
+										data-testid="accuracy-display"
+										className="text-2xl font-extrabold text-[#E5C875] tabular-nums"
+										style={SERIF}
+									>
+										{(score.accuracy ?? 100).toFixed(2)}%
+									</p>
+								</div>
+								<div className="flex flex-col items-center gap-1.5">
+									<p className="text-sm font-medium text-[#B8A874]" style={SERIF}>
+										コンボ
+									</p>
+									<p
+										data-testid="combo-display"
+										className="text-2xl font-extrabold text-[#F5E9C8] tabular-nums"
+										style={SERIF}
+									>
+										{score.combo || 0}
+									</p>
+								</div>
+								<div className="flex flex-col items-center gap-1.5">
+									<p className="text-sm font-medium text-[#B8A874]" style={SERIF}>
+										スコア
+									</p>
+									<p className="text-2xl font-extrabold text-[#F5E9C8] tabular-nums" style={SERIF}>
+										{score.total || 0}
+									</p>
 								</div>
 							</div>
 						)}
 
 						{/* ゲームコントロール */}
 						{!showCountdown && (
-							<div className="flex justify-center gap-4">
+							<div className="flex flex-wrap justify-center gap-4 sm:gap-5">
 								<button
 									onClick={handlePause}
-									className="rounded-lg bg-yellow-600 px-6 py-2 text-white hover:bg-yellow-700"
+									className="flex items-center gap-2.5 rounded-lg border border-[#E5C875] bg-[#D4A017] px-8 py-3.5 font-bold text-white shadow-md transition-colors hover:bg-[#BE8F14]"
+									style={SERIF}
 								>
+									{isPaused ? (
+										<Play className="h-[18px] w-[18px]" />
+									) : (
+										<Pause className="h-[18px] w-[18px]" />
+									)}
 									{isPaused ? '再開' : '一時停止'}
 								</button>
 								<button
 									onClick={handleSkip}
-									className="rounded-lg bg-gray-600 px-6 py-2 text-white hover:bg-gray-700"
+									className="flex items-center gap-2.5 rounded-lg border border-[#5A6472] bg-[#3A4552] px-8 py-3.5 font-bold text-white shadow-md transition-colors hover:bg-[#4A5562]"
+									style={SERIF}
 								>
+									<SkipForward className="h-[18px] w-[18px]" />
 									スキップ
 								</button>
 								<button
 									onClick={() => setShowExitConfirm(true)}
-									className="rounded-lg bg-red-600 px-6 py-2 text-white hover:bg-red-700"
+									className="flex items-center gap-2.5 rounded-lg border border-[#E5453D] bg-[#C8302A] px-8 py-3.5 font-bold text-white shadow-md transition-colors hover:bg-[#A8261F]"
+									style={SERIF}
 								>
+									<X className="h-[18px] w-[18px]" />
 									終了
 								</button>
 							</div>

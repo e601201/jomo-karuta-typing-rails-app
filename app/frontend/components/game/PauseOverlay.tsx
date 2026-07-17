@@ -1,4 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
+import { Play, Settings, X } from 'lucide-react';
+
+// デザインカンプ（design.pen）準拠のフォント指定
+const SERIF = { fontFamily: "'Noto Serif JP', serif" } as const;
+const MONO = { fontFamily: "'JetBrains Mono', monospace" } as const;
 
 interface GameStats {
 	currentCard: number;
@@ -139,10 +144,22 @@ export default function PauseOverlay({
 		return null;
 	}
 
+	// 統計カード（羊皮紙調のネイビーボックス）
+	const statBox = (label: string, value: string) => (
+		<div className="rounded-lg border border-[#C9A961] bg-[#132D57] p-3 text-center">
+			<p className="text-sm text-[#B8A874]" style={SERIF}>
+				{label}
+			</p>
+			<p className="text-xl font-bold text-[#F5E9C8] tabular-nums" style={SERIF}>
+				{value}
+			</p>
+		</div>
+	);
+
 	return (
 		<div
 			data-testid="pause-overlay"
-			className="bg-opacity-70 fixed inset-0 z-50 flex items-center justify-center bg-black backdrop-blur-sm transition-opacity duration-300"
+			className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm transition-opacity duration-300"
 			aria-hidden="false"
 		>
 			<div
@@ -150,49 +167,48 @@ export default function PauseOverlay({
 				role="dialog"
 				aria-labelledby="pause-title"
 				aria-modal="true"
-				className="mx-4 h-full w-full max-w-lg scale-100 rounded-2xl bg-white p-8 shadow-2xl transition-all duration-300 md:h-auto md:w-auto"
+				className="mx-4 h-full w-full max-w-lg scale-100 rounded-2xl border-2 border-[#C9A961] bg-[#0A1A35] p-8 shadow-2xl transition-all duration-300 md:h-auto md:w-auto"
 			>
 				{/* Title */}
-				<h2 id="pause-title" className="mb-6 text-center text-3xl font-bold">
+				<h2
+					id="pause-title"
+					className="mb-6 text-center text-3xl font-bold text-[#E5C875]"
+					style={SERIF}
+				>
 					一時停止中
 				</h2>
 
 				{/* Countdown Display */}
 				{isRunningCountdown ? (
 					<div data-testid="countdown-display" className="mb-8 text-center">
-						<div className="animate-pulse text-6xl font-bold text-blue-600">{countdown}</div>
-						<p className="mt-2 text-sm text-gray-600">スペースキーでスキップ</p>
+						<div
+							className="animate-pulse text-6xl font-extrabold text-[#E5C875] tabular-nums"
+							style={MONO}
+						>
+							{countdown}
+						</div>
+						<p className="mt-2 text-sm text-[#B8A874]" style={SERIF}>
+							スペースキーでスキップ
+						</p>
 					</div>
 				) : !showExitConfirm ? (
 					<>
 						{/* Game Stats */}
 						<div className="mb-8 space-y-4">
 							<div className="grid grid-cols-2 gap-4">
-								<div className="rounded-lg bg-gray-50 p-3 text-center">
-									<p className="text-sm text-gray-600">進捗</p>
-									<p className="text-xl font-bold">
-										{gameStats.currentCard}/{gameStats.totalCards}枚完了
-									</p>
-								</div>
-								<div className="rounded-lg bg-gray-50 p-3 text-center">
-									<p className="text-sm text-gray-600">経過時間</p>
-									<p className="text-xl font-bold">{formatTime(gameStats.elapsedTime)}</p>
-								</div>
+								{statBox('進捗', `${gameStats.currentCard}/${gameStats.totalCards}枚完了`)}
+								{statBox('経過時間', formatTime(gameStats.elapsedTime))}
 							</div>
 
 							<div className="grid grid-cols-2 gap-4">
-								<div className="rounded-lg bg-gray-50 p-3 text-center">
-									<p className="text-sm text-gray-600">スコア</p>
-									<p className="text-xl font-bold">スコア: {gameStats.score}</p>
-								</div>
-								<div className="rounded-lg bg-gray-50 p-3 text-center">
-									<p className="text-sm text-gray-600">正確率</p>
-									<p className="text-xl font-bold">正確率: {gameStats.accuracy.toFixed(2)}%</p>
-								</div>
+								{statBox('スコア', `スコア: ${gameStats.score}`)}
+								{statBox('正確率', `正確率: ${gameStats.accuracy.toFixed(2)}%`)}
 							</div>
 
-							<div className="rounded-lg bg-gray-50 p-3 text-center">
-								<p className="text-sm text-gray-600">一時停止回数: {gameStats.pauseCount}回</p>
+							<div className="rounded-lg border border-[#C9A961] bg-[#132D57] p-3 text-center">
+								<p className="text-sm text-[#B8A874]" style={SERIF}>
+									一時停止回数: {gameStats.pauseCount}回
+								</p>
 							</div>
 						</div>
 
@@ -200,46 +216,58 @@ export default function PauseOverlay({
 						<div className="flex flex-col gap-3">
 							<button
 								onClick={handleResume}
-								className="w-full rounded-lg bg-blue-600 px-6 py-3 text-lg font-semibold text-white transition-colors hover:bg-blue-700"
+								className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-[#E5C875] bg-[#D4A017] px-6 py-3 text-lg font-bold text-white transition-colors hover:bg-[#BE8F14]"
+								style={SERIF}
 							>
+								<Play className="h-5 w-5" />
 								再開
 							</button>
 
 							{onSettings && (
 								<button
 									onClick={onSettings}
-									className="w-full rounded-lg bg-gray-600 px-6 py-3 text-white transition-colors hover:bg-gray-700"
+									className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-[#5A6472] bg-[#3A4552] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#4A5562]"
+									style={SERIF}
 								>
+									<Settings className="h-5 w-5" />
 									設定
 								</button>
 							)}
 
 							<button
 								onClick={handleExit}
-								className="w-full rounded-lg bg-red-600 px-6 py-3 text-white transition-colors hover:bg-red-700"
+								className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-[#E5453D] bg-[#C8302A] px-6 py-3 font-semibold text-white transition-colors hover:bg-[#A8261F]"
+								style={SERIF}
 							>
+								<X className="h-5 w-5" />
 								終了
 							</button>
 						</div>
 
-						<p className="mt-4 text-center text-sm text-gray-600">ESCキーで再開</p>
+						<p className="mt-4 text-center text-sm text-[#B8A874]" style={SERIF}>
+							ESCキーで再開
+						</p>
 					</>
 				) : null}
 
 				{/* Exit Confirmation Dialog */}
 				{showExitConfirm && (
 					<div className="text-center">
-						<h3 className="mb-4 text-xl font-bold">本当に終了しますか？</h3>
+						<h3 className="mb-6 text-xl font-bold text-[#F5E9C8]" style={SERIF}>
+							本当に終了しますか？
+						</h3>
 						<div className="flex justify-center gap-4">
 							<button
 								onClick={confirmExit}
-								className="rounded-lg bg-red-600 px-6 py-2 text-white transition-colors hover:bg-red-700"
+								className="rounded-lg border border-[#E5453D] bg-[#C8302A] px-8 py-2.5 font-semibold text-white transition-colors hover:bg-[#A8261F]"
+								style={SERIF}
 							>
 								はい
 							</button>
 							<button
 								onClick={cancelExit}
-								className="rounded-lg bg-gray-600 px-6 py-2 text-white transition-colors hover:bg-gray-700"
+								className="rounded-lg border border-[#5A6472] bg-[#3A4552] px-8 py-2.5 font-semibold text-white transition-colors hover:bg-[#4A5562]"
+								style={SERIF}
 							>
 								いいえ
 							</button>
