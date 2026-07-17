@@ -197,7 +197,9 @@ export default function Ranking({ gameMode, difficulty, entries }: RankingProps)
 						<div className="overflow-hidden rounded-xl border-2 border-[#C9A961] bg-[#0A1A35DD]">
 							{/* テーブルヘッダー */}
 							<div className="flex items-center bg-[#132D57] px-4 py-4 sm:px-8">
-								<span className="w-[104px] text-sm font-bold text-[#C9A961] sm:w-[120px]">順位</span>
+								<span className="w-[104px] text-sm font-bold text-[#C9A961] sm:w-[120px]">
+									順位
+								</span>
 								<span className="flex-1 text-sm font-bold text-[#C9A961]">プレイヤー</span>
 								<span className="w-[120px] text-right text-sm font-bold text-[#C9A961] sm:w-[160px]">
 									{scoreHeader}
