@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import {
 	Bell,
-	ChevronDown,
 	Info,
 	Keyboard,
 	Languages,
@@ -20,6 +19,8 @@ import {
 	X
 } from 'lucide-react';
 import { settingsStore, useSettingsStore } from '@/stores/settings-store';
+import type { SharedProps } from '@/types';
+import Header from '@/components/layout/Header';
 import backgroundImage from '@/assets/images/background.webp';
 
 const SERIF = { fontFamily: "'Noto Serif JP', serif" } as const;
@@ -210,6 +211,7 @@ function ResetButton({ label, onClick }: { label: string; onClick: () => void })
 
 export default function Settings() {
 	const settings = useSettingsStore();
+	const { auth } = usePage().props as unknown as SharedProps;
 	const [activeSection, setActiveSection] = useState('display');
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 	const [showResetConfirm, setShowResetConfirm] = useState(false);
@@ -283,12 +285,14 @@ export default function Settings() {
 
 	return (
 		<div
-			className="min-h-screen bg-cover bg-fixed bg-center p-8"
+			className="min-h-screen bg-cover bg-fixed bg-center"
 			style={{ backgroundImage: `url(${backgroundImage})`, ...SERIF }}
 		>
 			<Head title="設定 - 上毛かるたタイピング" />
 
-			<div className="mx-auto flex w-full max-w-[1280px] flex-col gap-5">
+			<Header user={auth?.user ?? null} />
+
+			<div className="mx-auto flex w-full max-w-[1280px] flex-col gap-5 p-8">
 				{/* Header */}
 				<header className="flex flex-wrap items-center justify-between gap-4 rounded-[10px] border border-[#C9A961] bg-[#0A1A35CC] px-8 py-4">
 					<div className="flex items-center gap-3">
@@ -382,7 +386,6 @@ export default function Settings() {
 												</option>
 											))}
 										</select>
-										<ChevronDown className="pointer-events-none absolute top-1/2 right-4 h-[18px] w-[18px] -translate-y-1/2 text-[#E5C875]" />
 									</div>
 								</div>
 
