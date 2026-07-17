@@ -138,8 +138,8 @@ export default function Game(props: GameProps) {
 			return;
 		}
 
-		// ランダムモードのみ難易度を反映（タイムアタックは標準扱い）
-		const difficulty = mode === 'random' ? data.difficulty || undefined : undefined;
+		// 難易度を反映（ランダム・タイムアタック共通）
+		const difficulty = data.difficulty || undefined;
 
 		gameStore.startSession(mode, cards, difficulty);
 		setIsLoading(false);
@@ -504,7 +504,7 @@ export default function Game(props: GameProps) {
 
 	const handleShare = () => {
 		const shareText = `【上毛かるたタイピング】
-${modeLabel} ${gameMode === 'random' ? difficultyLabel : ''}で${score.total.toLocaleString()}点獲得！
+${modeLabel} ${difficultyLabel}で${score.total.toLocaleString()}点獲得！
 
 📊 ゲーム結果
 ・正解した札: ${completedCardsCount}枚
