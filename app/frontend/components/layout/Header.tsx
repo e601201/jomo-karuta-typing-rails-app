@@ -5,6 +5,7 @@ import {
 	BookOpen,
 	ChevronDown,
 	History,
+	House,
 	Info,
 	LogIn,
 	LogOut,
@@ -199,6 +200,14 @@ function GuestDropdown({
 			<Divider />
 
 			<div className="flex flex-col py-2">
+				<MenuItem icon={<House size={16} />} label="TOPページ" href="/" onClick={close} />
+				<MenuItem
+					icon={<Settings size={16} />}
+					label="ユーザー設定"
+					href="/settings"
+					onClick={close}
+				/>
+				<Divider />
 				<MenuItem
 					icon={<BookOpen size={16} />}
 					label="遊び方"
@@ -339,6 +348,7 @@ function UserDropdown({
 			<Divider />
 
 			<div className="flex flex-col py-2">
+				<MenuItem icon={<House size={16} />} label="TOPページ" href="/" onClick={close} />
 				<MenuItem icon={<User size={16} />} label="プロフィール" href="/profile" onClick={close} />
 				<MenuItem
 					icon={<History size={16} />}
