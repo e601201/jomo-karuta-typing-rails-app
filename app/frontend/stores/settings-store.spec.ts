@@ -130,6 +130,30 @@ describe('Settings Store', () => {
 			const settings = settingsStore.getState();
 			expect(settings.display.fontSize).toBe('medium');
 		});
+
+		it('変更の破棄（load）で未保存フラグも落ちる', async () => {
+			localStorageMock.getItem.mockReturnValue(
+				JSON.stringify({ display: { fontSize: 'large', theme: 'dark', animations: true } })
+			);
+
+			settingsStore.updateSetting('display.fontSize', 'small');
+			expect(settingsStore.hasChanges()).toBe(true);
+
+			await settingsStore.load();
+
+			expect(settingsStore.getState().display.fontSize).toBe('large');
+			expect(settingsStore.hasChanges()).toBe(false);
+		});
+
+		it('保存値がない場合の load はデフォルトに戻して未保存フラグを落とす', async () => {
+			localStorageMock.getItem.mockReturnValue(null);
+
+			settingsStore.updateSetting('display.fontSize', 'small');
+			await settingsStore.load();
+
+			expect(settingsStore.getState().display.fontSize).toBe('medium');
+			expect(settingsStore.hasChanges()).toBe(false);
+		});
 	});
 
 	describe('Reset Functionality', () => {
@@ -157,6 +181,24 @@ describe('Settings Store', () => {
 			const settings = settingsStore.getState();
 			expect(settings.display.fontSize).toBe('medium');
 			expect(settings.sound.effectsVolume).toBe(80); // Should remain changed
+		});
+
+		it('セクションリセットは未保存の変更として記録される', async () => {
+			// 保存済みの設定が非デフォルトの状態を作る
+			settingsStore.updateSetting('display.fontSize', 'large');
+			await settingsStore.save();
+			expect(settingsStore.hasChanges()).toBe(false);
+
+			settingsStore.resetSection('display');
+
+			expect(settingsStore.getState().display.fontSize).toBe('medium');
+			expect(settingsStore.hasChanges()).toBe(true);
+		});
+
+		it('保存値がデフォルトのままならリセットしてもバッジは出ない', () => {
+			settingsStore.resetSection('display');
+
+			expect(settingsStore.hasChanges()).toBe(false);
 		});
 	});
 
@@ -218,6 +260,30 @@ describe('Settings Store', () => {
 			const changes = settingsStore.getChangedSettings();
 			expect(changes).toContain('display.theme');
 			expect(changes).toContain('sound.effectsVolume');
+		});
+
+		it('値を元に戻すと未保存フラグも解消する', () => {
+			// 保存済みがライトの状態から始める
+			settingsStore.updateSetting('display.theme', 'light');
+			settingsStore.save();
+			expect(settingsStore.hasChanges()).toBe(false);
+
+			settingsStore.updateSetting('display.theme', 'dark');
+			expect(settingsStore.hasChanges()).toBe(true);
+
+			settingsStore.updateSetting('display.theme', 'light');
+			expect(settingsStore.hasChanges()).toBe(false);
+			expect(settingsStore.getChangedSettings()).toEqual([]);
+		});
+
+		it('別項目に変更が残っていれば未保存フラグは維持される', () => {
+			settingsStore.updateSetting('display.theme', 'dark');
+			settingsStore.updateSetting('sound.bgmVolume', 80);
+
+			settingsStore.updateSetting('display.theme', 'auto');
+
+			expect(settingsStore.hasChanges()).toBe(true);
+			expect(settingsStore.getChangedSettings()).toEqual(['sound.bgmVolume']);
 		});
 	});
 
@@ -373,6 +439,19 @@ describe('Settings Store', () => {
 			expect(settingsStore.hasChanges()).toBe(false);
 		});
 
+		it('ログイン中の変更破棄はミラーではなくサーバー設定に戻す', async () => {
+			await settingsStore.initializeFromServer(serverSettings, true);
+			// localStorage へのミラー書きに失敗しているケース（getItem は null を返す）
+			localStorageMock.getItem.mockReturnValue(null);
+
+			settingsStore.updateSetting('display.theme', 'light');
+			await settingsStore.load();
+
+			expect(settingsStore.getState().display.theme).toBe('dark');
+			expect(settingsStore.getState().keyboard.inputMethod).toBe('kana');
+			expect(settingsStore.hasChanges()).toBe(false);
+		});
+
 		it('初回引き継ぎはローカル設定を deep-merge して一度だけ PUT する', async () => {
 			localStorageMock.getItem.mockReturnValue(
 				JSON.stringify({ display: { fontSize: 'small', theme: 'light' } })
@@ -457,7 +536,7 @@ describe('Settings Store', () => {
 			);
 		});
 
-		it('PUT 失敗時はエラーを投げ changedPaths（未保存状態）を維持する', async () => {
+		it('PUT 失敗時はエラーを投げ未保存状態を維持する', async () => {
 			await settingsStore.initializeFromServer(serverSettings, true);
 			localStorageMock.setItem.mockClear();
 

@@ -42,7 +42,10 @@ const defaultSettings: UserSettings = {
 const store = createStore<UserSettings>(() => defaultSettings);
 
 function createSettingsStore() {
-	let changedPaths = new Set<string>();
+	// 未保存判定の基準となる「最後に適用された設定」のスナップショット JSON。
+	// 触ったパスではなく基準との差分で判定するので、値を元に戻せば未保存も解消する
+	// （ライト → ダーク → ライトで「変更あり」が残らない）。
+	let baselineJson = JSON.stringify(defaultSettings);
 
 	// サーバー同期の内部状態
 	let loggedIn = false;
@@ -125,11 +128,29 @@ function createSettingsStore() {
 		}
 	}
 
+	// 設定を状態に適用し、未保存判定の基準をその値に合わせる
+	// （＝これ以降この値との差分だけが「変更あり」になる）
+	function applySettings(settings: UserSettings): void {
+		store.setState(settings, true);
+		baselineJson = JSON.stringify(settings);
+	}
+
+	// 基準と現在値が食い違うパスを列挙する（display.theme など 2 階層固定）
+	function changedPaths(): string[] {
+		const current = store.getState() as unknown as Record<string, Record<string, unknown>>;
+		const baseline = JSON.parse(baselineJson) as Record<string, Record<string, unknown>>;
+
+		return Object.keys(baseline).flatMap((section) =>
+			Object.keys(baseline[section])
+				.filter((key) => current[section]?.[key] !== baseline[section][key])
+				.map((key) => `${section}.${key}`)
+		);
+	}
+
 	// サーバー設定を状態に採用し、localStorage にミラー書きする
 	function adoptServerSettings(settings: UserSettings): void {
 		lastServerSnapshotJson = JSON.stringify(settings);
-		store.setState(settings, true);
-		changedPaths.clear();
+		applySettings(settings);
 		mirrorToLocalStorage(settings);
 	}
 
@@ -193,8 +214,7 @@ function createSettingsStore() {
 				// このページロードで一度だけ行う。
 				if (!guestHydrated) {
 					guestHydrated = true;
-					store.setState(loadLocalSettings(), true);
-					changedPaths.clear();
+					applySettings(loadLocalSettings());
 				}
 				return;
 			}
@@ -232,7 +252,6 @@ function createSettingsStore() {
 
 			const newSettings = { ...store.getState() };
 			setNestedProperty(newSettings as unknown as Record<string, unknown>, path, validatedValue);
-			changedPaths.add(path);
 			store.setState(newSettings, true);
 		},
 
@@ -242,7 +261,7 @@ function createSettingsStore() {
 
 			if (loggedIn) {
 				// PUT 成功後に localStorage にもミラー書きする（二重書き）。
-				// 失敗時は changedPaths を維持したまま呼び出し側へエラーを伝える。
+				// 失敗時は基準を更新せず、未保存のまま呼び出し側へエラーを伝える。
 				try {
 					const saved = mergeWithDefaults(await putSettingsToServer(settings));
 					adoptServerSettings(saved);
@@ -255,32 +274,28 @@ function createSettingsStore() {
 
 			try {
 				localStorage.setItem('userSettings', JSON.stringify(settings));
-				changedPaths.clear();
+				baselineJson = JSON.stringify(settings);
 			} catch (error) {
 				console.error('Failed to save settings:', error);
 				throw error;
 			}
 		},
 
-		// Load settings from localStorage
+		// 「最後に適用された設定」に戻す（変更の破棄）。
+		// - ログイン中はサーバースナップショットが権威。localStorage はそのミラーで、
+		//   ミラー書きに失敗しているとサーバー設定をデフォルトへ巻き戻してしまうため
+		// - ゲスト（保存値なし）はデフォルトに戻る。状態を据え置くと、破棄したはずの
+		//   編集だけが残ってしまうため
 		load: async () => {
-			try {
-				const stored = localStorage.getItem('userSettings');
-				if (stored) {
-					// Merge with defaults to ensure all properties exist
-					const merged = mergeWithDefaults(JSON.parse(stored));
-					store.setState(merged, true);
-				}
-			} catch (error) {
-				console.error('Failed to load settings:', error);
-				// Keep default settings on error
-			}
+			const lastApplied: UserSettings = lastServerSnapshotJson
+				? JSON.parse(lastServerSnapshotJson)
+				: loadLocalSettings();
+			applySettings(lastApplied);
 		},
 
-		// Reset all settings to default
+		// デフォルトに戻す（未保存の変更として扱う。保存するまで DB / localStorage は変わらない）
 		reset: () => {
 			store.setState(defaultSettings, true);
-			changedPaths.clear();
 		},
 
 		// Reset specific section
@@ -300,9 +315,8 @@ function createSettingsStore() {
 					break;
 			}
 
-			// Remove changed paths for this section
-			changedPaths = new Set(Array.from(changedPaths).filter((path) => !path.startsWith(section)));
-
+			// 基準は更新しない。リセット結果が保存値と食い違えば「変更あり」になり、
+			// 元から保存値がデフォルトなら差分ゼロでバッジも出ない
 			store.setState(newSettings, true);
 		},
 
@@ -330,10 +344,7 @@ function createSettingsStore() {
 				}
 
 				// Merge with defaults and validate
-				const merged = mergeWithDefaults(parsed.settings);
-
-				store.setState(merged, true);
-				changedPaths.clear();
+				applySettings(mergeWithDefaults(parsed.settings));
 			} catch (error) {
 				console.error('Failed to import settings:', error);
 				throw error;
@@ -341,17 +352,18 @@ function createSettingsStore() {
 		},
 
 		// Check if there are unsaved changes
-		hasChanges: () => changedPaths.size > 0,
+		hasChanges: () => JSON.stringify(store.getState()) !== baselineJson,
 
 		// Get list of changed settings
-		getChangedSettings: () => Array.from(changedPaths),
+		getChangedSettings: () => changedPaths(),
 
-		// テスト用: サーバー同期の内部状態（ログインフラグ・初回引き継ぎガード）をリセットする
+		// テスト用: ストアの内部状態（サーバー同期・未保存判定の基準）をリセットする
 		resetServerSync: () => {
 			loggedIn = false;
 			initialSyncDone = false;
 			lastServerSnapshotJson = null;
 			guestHydrated = false;
+			baselineJson = JSON.stringify(store.getState());
 		}
 	};
 }
