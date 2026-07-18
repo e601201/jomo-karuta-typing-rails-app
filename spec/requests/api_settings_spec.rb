@@ -3,7 +3,7 @@
 # 本番では ApplicationController#verified_request? の X-XSRF-TOKEN ヘッダ検証で通過する。
 require "rails_helper"
 
-RSpec.describe "Api::Settings", type: :request, inertia: true do
+RSpec.describe "Api::Settings", type: :request do
   def mock_google_auth(email: "player@example.com", name: "Player One", uid: "google-uid-1")
     OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
       provider: "google_oauth2",

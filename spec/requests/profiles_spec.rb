@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Profiles", type: :request, inertia: true do
+RSpec.describe "Profiles", type: :request do
   describe "GET /profile" do
     it "redirects to the login page when not authenticated" do
       get "/profile"

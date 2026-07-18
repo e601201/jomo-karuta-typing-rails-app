@@ -1,6 +1,6 @@
 require "rails_helper"
 
-RSpec.describe "Rankings", type: :request, inertia: true do
+RSpec.describe "Rankings", type: :request do
   describe "GET /ranking" do
     it "renders the Ranking component with default params" do
       get "/ranking"
