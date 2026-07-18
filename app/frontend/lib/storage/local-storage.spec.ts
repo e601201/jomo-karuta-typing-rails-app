@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { LocalStorageService } from './local-storage';
-import type { GameSettings, UserProfile, SavedSession } from './local-storage';
+import type { UserProfile, SavedSession } from './local-storage';
 
 // Base64 polyfill for Node.js environment (test only)
 // Happy-dom v20 now provides btoa/atob, but keep as fallback
@@ -58,24 +58,6 @@ if (typeof window !== 'undefined') {
 }
 
 // テスト用データ
-const mockSettings: GameSettings = {
-	display: {
-		theme: 'dark',
-		fontSize: 'medium',
-		showFurigana: true
-	},
-	sound: {
-		enabled: true,
-		volume: 50,
-		effectsEnabled: true
-	},
-	game: {
-		defaultMode: 'random',
-		partialInputLength: 5,
-		showHints: false
-	}
-};
-
 const mockProfile: UserProfile = {
 	nickname: 'テストユーザー',
 	createdAt: '2024-01-01T00:00:00Z',
@@ -143,7 +125,7 @@ describe('LocalStorageService - 初期化', () => {
 
 		expect(service.isStorageAvailable()).toBe(false);
 		// メモリストレージが使用される
-		expect(() => service.getSettings()).not.toThrow();
+		expect(() => service.getProgress()).not.toThrow();
 
 		// 元に戻す
 		if (globalObj.window) {
@@ -154,54 +136,6 @@ describe('LocalStorageService - 初期化', () => {
 		} else {
 			globalObj.localStorage = originalLocalStorage;
 		}
-	});
-});
-
-describe('LocalStorageService - 設定管理', () => {
-	let service: LocalStorageService;
-
-	beforeEach(() => {
-		localStorageMock.clear();
-		service = new LocalStorageService();
-		service.initialize();
-	});
-
-	it('設定を保存できる', () => {
-		service.saveSettings(mockSettings);
-
-		expect(localStorageMock.setItem).toHaveBeenCalledWith(
-			'jkt_settings',
-			JSON.stringify(mockSettings)
-		);
-	});
-
-	it('設定を読み込める', () => {
-		localStorageMock.setItem('jkt_settings', JSON.stringify(mockSettings));
-
-		const settings = service.getSettings();
-
-		expect(settings).toEqual(mockSettings);
-	});
-
-	it('部分的な設定更新ができる', () => {
-		service.saveSettings(mockSettings);
-		service.saveSettings({ display: { theme: 'light', fontSize: 'medium', showFurigana: true } });
-
-		const settings = service.getSettings();
-
-		expect(settings.display.theme).toBe('light');
-		expect(settings.display.fontSize).toBe('medium'); // 保持される
-		expect(settings.sound.enabled).toBe(true); // 保持される
-	});
-
-	it('設定をリセットできる', () => {
-		service.saveSettings(mockSettings);
-		service.resetSettings();
-
-		const settings = service.getSettings();
-
-		expect(settings).toEqual(service.getDefaultSettings());
-		expect(localStorageMock.removeItem).toHaveBeenCalledWith('jkt_settings');
 	});
 });
 
@@ -400,7 +334,6 @@ describe('LocalStorageService - データ管理', () => {
 	});
 
 	it('データをエクスポートできる', () => {
-		service.saveSettings(mockSettings);
 		service.saveProfile(mockProfile);
 
 		const exportedData = service.exportData();
@@ -412,14 +345,12 @@ describe('LocalStorageService - データ管理', () => {
 				? Buffer.from(exportedData, 'base64').toString('utf-8')
 				: atob(exportedData)
 		);
-		expect(decoded.settings).toEqual(mockSettings);
 		expect(decoded.profile).toEqual(mockProfile);
 	});
 
 	it('データをインポートできる', () => {
 		const dataToImport = {
 			version: '1.0.0',
-			settings: mockSettings,
 			profile: mockProfile,
 			progress: { completedCards: ['tsu', 'ne'] }
 		};
@@ -431,8 +362,8 @@ describe('LocalStorageService - データ管理', () => {
 		const success = service.importData(encoded);
 
 		expect(success).toBe(true);
-		expect(service.getSettings()).toEqual(mockSettings);
 		expect(service.getProfile()).toEqual(mockProfile);
+		expect(service.getProgress().completedCards).toEqual(['tsu', 'ne']);
 	});
 
 	it('不正なデータのインポートを拒否する', () => {
@@ -444,7 +375,6 @@ describe('LocalStorageService - データ管理', () => {
 	});
 
 	it('すべてのデータをクリアできる', () => {
-		service.saveSettings(mockSettings);
 		service.saveProfile(mockProfile);
 		service.saveSession(mockSession);
 
@@ -456,7 +386,6 @@ describe('LocalStorageService - データ管理', () => {
 	});
 
 	it('ストレージサイズを取得できる', () => {
-		service.saveSettings(mockSettings);
 		service.saveProfile(mockProfile);
 
 		const size = service.getStorageSize();
@@ -482,17 +411,21 @@ describe('LocalStorageService - エラーハンドリング', () => {
 		});
 
 		// エラーをスローしない
-		expect(() => service.saveSettings(mockSettings)).not.toThrow();
+		expect(() => service.saveProfile(mockProfile)).not.toThrow();
 	});
 
 	it('破損データを検出できる', () => {
 		// 不正なJSONを設定
 		localStorageMock.getItem.mockReturnValueOnce('{ invalid json }');
 
-		const settings = service.getSettings();
+		const progress = service.getProgress();
 
 		// デフォルト値を返す
-		expect(settings).toEqual(service.getDefaultSettings());
+		expect(progress).toEqual({
+			completedCards: [],
+			bestScores: {},
+			achievements: []
+		});
 	});
 
 	it('プライベートモードで動作する', () => {
@@ -508,9 +441,9 @@ describe('LocalStorageService - エラーハンドリング', () => {
 		expect(service.isStorageAvailable()).toBe(false);
 
 		// メモリストレージで動作
-		service.saveSettings(mockSettings);
-		const settings = service.getSettings();
-		expect(settings).toEqual(mockSettings);
+		service.saveProfile(mockProfile);
+		const profile = service.getProfile();
+		expect(profile).toEqual(mockProfile);
 	});
 });
 
@@ -522,14 +455,10 @@ describe('LocalStorageService - マイグレーション', () => {
 		vi.clearAllMocks();
 	});
 
-	it('古いバージョンからマイグレーションできる', () => {
-		// v1データをセット
-		const v1Settings = { theme: 'dark' }; // 古い形式
-
+	it('古いバージョンでもデータをクリアしない', () => {
 		// localStorageモックを設定
 		const store: Record<string, string> = {
-			jkt_version: '0.9.0',
-			jkt_settings: JSON.stringify(v1Settings)
+			jkt_version: '0.9.0'
 		};
 
 		localStorageMock.getItem.mockImplementation((key: string) => store[key] || null);
@@ -540,9 +469,9 @@ describe('LocalStorageService - マイグレーション', () => {
 		service = new LocalStorageService();
 		service.initialize();
 
-		// v1からv2への移行が実行される
-		const settings = service.getSettings();
-		expect(settings.display.theme).toBe('dark');
+		// 古いバージョンはクリアされず、バージョンだけ更新される
+		expect(localStorageMock.clear).not.toHaveBeenCalled();
+		expect(store['jkt_version']).toBe('1.0.0');
 	});
 
 	it('不明なバージョンを処理できる', () => {
@@ -585,10 +514,10 @@ describe('LocalStorageService - パフォーマンス', () => {
 
 	it('データ読み込みが50ms以内に完了する', () => {
 		service.initialize();
-		service.saveSettings(mockSettings);
+		service.saveProgress({ completedCards: ['tsu'] });
 
 		const start = performance.now();
-		service.getSettings();
+		service.getProgress();
 		const end = performance.now();
 
 		expect(end - start).toBeLessThan(50);
@@ -598,7 +527,7 @@ describe('LocalStorageService - パフォーマンス', () => {
 		service.initialize();
 
 		const start = performance.now();
-		service.saveSettings(mockSettings);
+		service.saveProgress({ completedCards: ['tsu'] });
 		const end = performance.now();
 
 		expect(end - start).toBeLessThan(30);
@@ -612,11 +541,10 @@ describe('LocalStorageService - パフォーマンス', () => {
 
 		// 1000回の読み書き
 		for (let i = 0; i < 1000; i++) {
-			service.saveSettings({
-				...mockSettings,
-				display: { ...mockSettings.display, theme: i % 2 === 0 ? 'dark' : 'light' }
+			service.saveProgress({
+				completedCards: i % 2 === 0 ? ['tsu'] : ['tsu', 'ne']
 			});
-			service.getSettings();
+			service.getProgress();
 		}
 
 		const finalMemory =

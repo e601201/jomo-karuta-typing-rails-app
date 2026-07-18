@@ -6,24 +6,6 @@
 import type { KarutaCard } from '@/types/game';
 
 // 型定義
-export interface GameSettings {
-	display: {
-		theme: 'light' | 'dark' | 'auto';
-		fontSize: 'small' | 'medium' | 'large';
-		showFurigana: boolean;
-	};
-	sound: {
-		enabled: boolean;
-		volume: number; // 0-100
-		effectsEnabled: boolean;
-	};
-	game: {
-		defaultMode: 'random' | 'timeattack';
-		partialInputLength: number;
-		showHints: boolean;
-	};
-}
-
 export interface UserProfile {
 	nickname: string;
 	createdAt: string;
@@ -107,9 +89,9 @@ export interface GameStatistics {
 }
 
 // ストレージキー
+// （ユーザー設定は settings-store が 'userSettings' キーで管理するため、ここでは扱わない）
 const STORAGE_KEYS = {
 	VERSION: 'jkt_version',
-	SETTINGS: 'jkt_settings',
 	PROFILE: 'jkt_profile',
 	PROGRESS: 'jkt_progress',
 	SESSION: 'jkt_session',
@@ -156,63 +138,6 @@ export class LocalStorageService {
 	 */
 	isStorageAvailable(): boolean {
 		return !this.useMemoryFallback;
-	}
-
-	/**
-	 * デフォルト設定を取得
-	 */
-	getDefaultSettings(): GameSettings {
-		return {
-			display: {
-				theme: 'auto',
-				fontSize: 'medium',
-				showFurigana: false
-			},
-			sound: {
-				enabled: true,
-				volume: 50,
-				effectsEnabled: true
-			},
-			game: {
-				defaultMode: 'random',
-				partialInputLength: 5,
-				showHints: true
-			}
-		};
-	}
-
-	/**
-	 * 設定を取得
-	 */
-	getSettings(): GameSettings {
-		const stored = this.getItem(STORAGE_KEYS.SETTINGS);
-		if (!stored) {
-			return this.getDefaultSettings();
-		}
-
-		try {
-			const settings = JSON.parse(stored);
-			// デフォルト値とマージ
-			return this.deepMerge(this.getDefaultSettings(), settings);
-		} catch {
-			return this.getDefaultSettings();
-		}
-	}
-
-	/**
-	 * 設定を保存
-	 */
-	saveSettings(settings: Partial<GameSettings>): void {
-		const current = this.getSettings();
-		const merged = this.deepMerge(current, settings);
-		this.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(merged));
-	}
-
-	/**
-	 * 設定をリセット
-	 */
-	resetSettings(): void {
-		this.removeItem(STORAGE_KEYS.SETTINGS);
 	}
 
 	/**
@@ -468,7 +393,6 @@ export class LocalStorageService {
 	exportData(): string {
 		const data = {
 			version: CURRENT_VERSION,
-			settings: this.getSettings(),
 			profile: this.getProfile(),
 			progress: this.getProgress(),
 			session: this.loadSession(),
@@ -516,9 +440,6 @@ export class LocalStorageService {
 			}
 
 			// データを復元
-			if (data.settings) {
-				this.saveSettings(data.settings);
-			}
 			if (data.profile) {
 				this.setItem(STORAGE_KEYS.PROFILE, JSON.stringify(data.profile));
 			}
@@ -582,59 +503,18 @@ export class LocalStorageService {
 	 */
 	private migrate(oldVersion: string, newVersion: string): void {
 		// バージョンごとのマイグレーション処理
-		if (oldVersion === '0.9.0') {
-			// v0.9.0 → v1.0.0のマイグレーション
-			this.migrateV09ToV10();
-		} else {
-			// 不明なバージョンまたは未来のバージョン
-			const [oldMajor, oldMinor, oldPatch] = oldVersion.split('.').map(Number);
-			const [newMajor, newMinor, newPatch] = newVersion.split('.').map(Number);
+		// （旧 v0.9.0 → v1.0.0 の設定マイグレーションは設定管理の settings-store 移行に伴い削除）
+		const [oldMajor, oldMinor, oldPatch] = oldVersion.split('.').map(Number);
+		const [newMajor, newMinor, newPatch] = newVersion.split('.').map(Number);
 
-			if (
-				oldMajor > newMajor ||
-				(oldMajor === newMajor && oldMinor > newMinor) ||
-				(oldMajor === newMajor && oldMinor === newMinor && oldPatch > newPatch)
-			) {
-				// ダウングレードまたは不明なバージョン
-				console.warn('Unknown or future version detected. Clearing all data.');
-				this.clearAllData();
-			}
-		}
-	}
-
-	/**
-	 * v0.9.0からv1.0.0へのマイグレーション
-	 */
-	private migrateV09ToV10(): void {
-		try {
-			// 旧形式の設定を新形式に変換
-			const oldSettings = this.getItem(STORAGE_KEYS.SETTINGS);
-			if (oldSettings) {
-				const parsed = JSON.parse(oldSettings);
-				if (parsed.theme && !parsed.display) {
-					// 旧形式から新形式への変換
-					const newSettings: GameSettings = {
-						display: {
-							theme: parsed.theme,
-							fontSize: 'medium',
-							showFurigana: false
-						},
-						sound: {
-							enabled: true,
-							volume: 50,
-							effectsEnabled: true
-						},
-						game: {
-							defaultMode: 'random',
-							partialInputLength: 5,
-							showHints: true
-						}
-					};
-					this.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(newSettings));
-				}
-			}
-		} catch (error) {
-			console.error('Migration failed:', error);
+		if (
+			oldMajor > newMajor ||
+			(oldMajor === newMajor && oldMinor > newMinor) ||
+			(oldMajor === newMajor && oldMinor === newMinor && oldPatch > newPatch)
+		) {
+			// ダウングレードまたは不明なバージョン
+			console.warn('Unknown or future version detected. Clearing all data.');
+			this.clearAllData();
 		}
 	}
 
@@ -739,36 +619,4 @@ export class LocalStorageService {
 			this.updateStatistics(stats);
 		}
 	}
-
-	/**
-	 * ディープマージ
-	 */
-	private deepMerge<T>(target: T, source: unknown): T {
-		const output = { ...target } as Record<string, unknown>;
-
-		if (isObject(target) && isObject(source)) {
-			const targetObj = target as Record<string, unknown>;
-			const sourceObj = source as Record<string, unknown>;
-			Object.keys(sourceObj).forEach((key) => {
-				if (isObject(sourceObj[key])) {
-					if (!(key in targetObj)) {
-						Object.assign(output, { [key]: sourceObj[key] });
-					} else {
-						output[key] = this.deepMerge(targetObj[key], sourceObj[key]);
-					}
-				} else {
-					Object.assign(output, { [key]: sourceObj[key] });
-				}
-			});
-		}
-
-		return output as T;
-	}
-}
-
-/**
- * オブジェクトかどうかチェック
- */
-function isObject(item: unknown): boolean {
-	return Boolean(item) && typeof item === 'object' && !Array.isArray(item);
 }

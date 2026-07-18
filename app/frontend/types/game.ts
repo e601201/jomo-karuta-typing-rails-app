@@ -43,26 +43,6 @@ export type GameMode =
 	| 'multiplayer'; // 対戦モード (Phase 4)
 
 /**
- * 入力モード
- */
-export type InputMode = 'partial' | 'complete';
-
-/**
- * ゲーム設定
- */
-export interface GameSettings {
-	mode: GameMode;
-	inputMode: InputMode;
-	partialLength?: number; // 部分入力時の文字数 (3-10)
-	soundEnabled: boolean;
-	bgmEnabled: boolean;
-	showHints: boolean;
-	showRomaji: boolean;
-	fontSize: 'small' | 'medium' | 'large';
-	theme: 'light' | 'dark' | 'auto';
-}
-
-/**
  * 部分入力モード設定
  */
 export interface PartialInputConfig {
@@ -98,13 +78,13 @@ export type PartialInputPreset = 'beginner' | 'intermediate' | 'advanced' | 'cus
 export type RandomModeDifficulty = 'beginner' | 'standard' | 'advanced';
 
 /**
- * ユーザー設定（GameSettingsを拡張）
+ * ユーザー設定
+ * アカウント単位で DB 保存されるワイヤ形状（API・Inertia shared props）と一致させる
  */
-export interface UserSettings extends GameSettings {
+export interface UserSettings {
 	display: DisplaySettings;
 	sound: SoundSettings;
 	keyboard: KeyboardSettings;
-	accessibility: AccessibilitySettings;
 }
 
 /**
@@ -114,10 +94,6 @@ export interface DisplaySettings {
 	fontSize: 'small' | 'medium' | 'large' | 'extra-large';
 	theme: 'light' | 'dark' | 'auto';
 	animations: boolean;
-	animationSpeed: 'slow' | 'normal' | 'fast';
-	showFurigana: boolean;
-	showMeaning: boolean;
-	showCardImages?: boolean;
 }
 
 /**
@@ -138,21 +114,5 @@ export interface SoundSettings {
  * キーボード設定
  */
 export interface KeyboardSettings {
-	layout: 'JIS' | 'US';
 	inputMethod: 'romaji' | 'kana';
-	shortcuts: {
-		pause: string;
-		skip: string;
-		retry: string;
-	};
-}
-
-/**
- * アクセシビリティ設定
- */
-export interface AccessibilitySettings {
-	highContrast: boolean;
-	reduceMotion: boolean;
-	screenReaderMode: boolean;
-	keyboardOnly: boolean;
 }
