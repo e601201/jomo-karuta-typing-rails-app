@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { Link, router } from '@inertiajs/react';
+import { Link, router, usePage } from '@inertiajs/react';
 import {
 	BookOpen,
 	ChevronDown,
@@ -19,11 +19,18 @@ import {
 	X,
 	Zap
 } from 'lucide-react';
-import { LocalStorageService, type GameProgress } from '@/lib/storage/local-storage';
-import type { AuthUser } from '@/types';
+import { formatTime } from '@/lib/format-time';
+import type { AuthUser, BestScores, RandomModeDifficulty, SharedProps } from '@/types';
 
 const JP_FONT = { fontFamily: "'Noto Serif JP', serif" } as const;
 const MONO_FONT = { fontFamily: "'JetBrains Mono', monospace" } as const;
+
+// ランキング画面の難易度タブと同じ表記
+const DIFFICULTY_LABELS: Record<RandomModeDifficulty, string> = {
+	beginner: '初心者',
+	standard: '標準',
+	advanced: '上級者'
+};
 
 interface Props {
 	user: AuthUser | null;
@@ -240,12 +247,14 @@ function ScoreCard({
 	label,
 	value,
 	unit,
+	badge,
 	accent
 }: {
 	icon: ReactNode;
 	label: string;
 	value: string;
 	unit: string;
+	badge?: string;
 	accent: string;
 }) {
 	return (
@@ -255,7 +264,7 @@ function ScoreCard({
 		>
 			<div className="flex items-center gap-1.5">
 				<span style={{ color: accent }}>{icon}</span>
-				<span className="text-[10px] font-bold text-[#B8A874]" style={JP_FONT}>
+				<span className="text-[10px] font-bold whitespace-nowrap text-[#B8A874]" style={JP_FONT}>
 					{label}
 				</span>
 			</div>
@@ -266,6 +275,14 @@ function ScoreCard({
 				<span className="text-[10px] font-semibold text-[#F5E9C8]" style={JP_FONT}>
 					{unit}
 				</span>
+				{badge && (
+					<span
+						className="mb-px ml-auto rounded-sm border px-1 py-px text-[9px] font-semibold whitespace-nowrap"
+						style={{ ...JP_FONT, borderColor: accent, color: accent }}
+					>
+						{badge}
+					</span>
+				)}
 			</div>
 		</div>
 	);
@@ -280,15 +297,15 @@ function UserDropdown({
 	close
 }: {
 	user: AuthUser;
-	bestScores: GameProgress['bestScores'];
+	bestScores: BestScores | null;
 	onHowToPlay?: () => void;
 	onFeedback?: () => void;
 	onLogout: () => void;
 	close: () => void;
 }) {
 	const nickname = user.nickname || user.email.split('@')[0];
-	const randomBest = bestScores.random?.score;
-	const timeattackBest = bestScores.timeattack?.score;
+	const randomBest = bestScores?.random ?? null;
+	const timeattackBest = bestScores?.timeattack ?? null;
 
 	return (
 		<div role="menu" aria-label="メニュー" className={DROPDOWN_SHELL}>
@@ -331,15 +348,17 @@ function UserDropdown({
 					<ScoreCard
 						icon={<Zap size={11} />}
 						label="ランダム"
-						value={randomBest != null ? randomBest.toLocaleString() : '—'}
+						value={randomBest ? randomBest.score.toLocaleString() : '—'}
 						unit="pt"
+						badge={randomBest ? DIFFICULTY_LABELS[randomBest.difficulty] : undefined}
 						accent="#E5C875"
 					/>
 					<ScoreCard
 						icon={<Timer size={11} />}
 						label="タイムアタック"
-						value={timeattackBest != null ? timeattackBest.toLocaleString() : '—'}
+						value={timeattackBest ? formatTime(timeattackBest.time_ms) : '—'}
 						unit="秒"
+						badge={timeattackBest ? DIFFICULTY_LABELS[timeattackBest.difficulty] : undefined}
 						accent="#C8302A"
 					/>
 				</div>
@@ -405,19 +424,8 @@ function UserDropdown({
 export default function Header({ user, onHowToPlay, onFeedback }: Props) {
 	const [menuOpen, setMenuOpen] = useState(false);
 	const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-	const [bestScores, setBestScores] = useState<GameProgress['bestScores']>({});
+	const { best_scores: bestScores } = usePage().props as unknown as SharedProps;
 	const menuRef = useRef<HTMLDivElement>(null);
-
-	/* eslint-disable react-hooks/set-state-in-effect */
-	useEffect(() => {
-		try {
-			const progress = new LocalStorageService().getProgress();
-			setBestScores(progress.bestScores ?? {});
-		} catch {
-			/* localStorage 未使用環境では空のまま */
-		}
-	}, []);
-	/* eslint-enable react-hooks/set-state-in-effect */
 
 	useEffect(() => {
 		if (!menuOpen) return;

@@ -10,6 +10,17 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
 
+  # ベストスコア（ランキング登録したスコアの中での自己最高。CONTEXT.md 参照）。
+  # 並び順はリーダーボードとタイブレーク（created_at 先着優先)まで揃える
+  def best_scores
+    random = scores.random.where.not(score: nil).order(score: :desc, created_at: :asc).first
+    timeattack = scores.timeattack.where.not(time_ms: nil).order(time_ms: :asc, created_at: :asc).first
+    {
+      random: random && { score: random.score, difficulty: random.difficulty },
+      timeattack: timeattack && { time_ms: timeattack.time_ms, difficulty: timeattack.difficulty }
+    }
+  end
+
   # OmniAuth の auth ハッシュからユーザーを解決する。
   # (a) 既存 Identity → その user を返す
   # (b) メールアドレス一致の既存ユーザー → Identity を紐付けて返す

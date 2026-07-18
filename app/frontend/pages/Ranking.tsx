@@ -3,6 +3,7 @@ import { Head, router, usePage } from '@inertiajs/react';
 import { Award, BookOpen, Leaf, Medal, Timer, Trophy, User, Zap } from 'lucide-react';
 import type { RandomModeDifficulty, SharedProps } from '@/types';
 import Header from '@/components/layout/Header';
+import { formatTime } from '@/lib/format-time';
 import backgroundImage from '@/assets/images/background.webp';
 
 const SERIF = { fontFamily: "'Noto Serif JP', serif" } as const;
@@ -36,12 +37,6 @@ const levelTabs = [
 	{ value: 'standard', label: '標準', icon: BookOpen },
 	{ value: 'advanced', label: '上級者', icon: Zap }
 ] as const;
-
-function formatTime(ms: number): string {
-	const seconds = Math.floor(ms / 1000);
-	const milliseconds = Math.floor((ms % 1000) / 10);
-	return `${seconds}.${milliseconds.toString().padStart(2, '0')}`;
-}
 
 // 順位に応じたメダル（金/銀/銅、4位以降は紺のユーザーアイコン）
 function getMedal(rank: number): { bg: string; Icon: typeof Trophy; iconColor: string } {

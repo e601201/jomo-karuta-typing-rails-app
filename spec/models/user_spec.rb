@@ -49,6 +49,45 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe "#best_scores" do
+    it "returns nil for both modes when the user has no scores" do
+      user = create(:user)
+
+      expect(user.best_scores).to eq(random: nil, timeattack: nil)
+    end
+
+    it "returns the highest score for random and the lowest time for timeattack, with their difficulties" do
+      user = create(:user)
+      create(:score, :random_score, user: user, score: 800, difficulty: "beginner")
+      create(:score, :random_score, user: user, score: 1200, difficulty: "advanced")
+      create(:score, :timeattack_score, user: user, time_ms: 45_000, difficulty: "standard")
+      create(:score, :timeattack_score, user: user, time_ms: 30_000, difficulty: "beginner")
+
+      expect(user.best_scores).to eq(
+        random: { score: 1200, difficulty: "advanced" },
+        timeattack: { time_ms: 30_000, difficulty: "beginner" }
+      )
+    end
+
+    it "ignores other users' scores" do
+      user = create(:user)
+      create(:score, :random_score, score: 9999)
+      create(:score, :timeattack_score, time_ms: 1)
+
+      expect(user.best_scores).to eq(random: nil, timeattack: nil)
+    end
+
+    it "breaks ties by created_at like the leaderboard (first achiever wins)" do
+      user = create(:user)
+      first = create(:score, :random_score, user: user, score: 1000, difficulty: "beginner",
+                     created_at: 2.days.ago)
+      create(:score, :random_score, user: user, score: 1000, difficulty: "advanced",
+             created_at: 1.day.ago)
+
+      expect(user.best_scores[:random]).to eq(score: 1000, difficulty: first.difficulty)
+    end
+  end
+
   describe ".from_omniauth" do
     context "when an identity already exists for provider/uid" do
       it "returns the identity's user without creating records" do

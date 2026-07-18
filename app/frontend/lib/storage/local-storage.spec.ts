@@ -193,26 +193,6 @@ describe('LocalStorageService - 進捗管理', () => {
 		expect(progress.completedCards.length).toBe(2);
 	});
 
-	it('ベストスコアを更新できる', () => {
-		const scoreData = {
-			score: 1000,
-			accuracy: 95.5,
-			speed: 120,
-			date: new Date().toISOString()
-		};
-
-		service.updateBestScore('random', scoreData);
-
-		const progress = service.getProgress();
-
-		expect(progress.bestScores.random).toEqual(scoreData);
-
-		// より低いスコアは更新されない
-		service.updateBestScore('random', { ...scoreData, score: 900 });
-		const progress2 = service.getProgress();
-		expect(progress2.bestScores.random.score).toBe(1000);
-	});
-
 	it('アチーブメントを記録できる', () => {
 		service.unlockAchievement('first_game');
 		service.unlockAchievement('perfect_score');
@@ -423,7 +403,6 @@ describe('LocalStorageService - エラーハンドリング', () => {
 		// デフォルト値を返す
 		expect(progress).toEqual({
 			completedCards: [],
-			bestScores: {},
 			achievements: []
 		});
 	});
