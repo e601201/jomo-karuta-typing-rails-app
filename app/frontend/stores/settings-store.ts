@@ -51,6 +51,8 @@ function createSettingsStore() {
 	// 最後に適用したサーバースナップショット（同一スナップショットの再適用で
 	// 未保存の編集を上書きしないための比較用 JSON）
 	let lastServerSnapshotJson: string | null = null;
+	// ゲストの localStorage 読み戻しを、このページロードで一度だけ行うためのガード
+	let guestHydrated = false;
 
 	// Helper function to get nested property
 	function getNestedProperty(obj: Record<string, unknown>, path: string): unknown {
@@ -179,12 +181,21 @@ function createSettingsStore() {
 		//   状態に採用したうえで localStorage にミラー書きする
 		// - ログイン中かつ settings === null（DB 未保存のシグナル）: 一度だけ
 		//   localStorage（なければデフォルト）を deep-merge した値を PUT で DB へ引き継ぐ
-		// - ゲスト: 何もしない（localStorage のみの従来動作を維持）
+		// - ゲスト: localStorage の設定を状態に読み戻す（DB は使わない従来動作を維持）
 		initializeFromServer: async (serverSettings: UserSettings | null, isLoggedIn: boolean) => {
 			loggedIn = isLoggedIn;
 
 			if (!isLoggedIn) {
 				lastServerSnapshotJson = null;
+				// ストアはモジュール評価時にデフォルト値で作られるため、フルリロード
+				// （「もう一度遊ぶ」など）のあとは読み戻さないと設定が効かない。
+				// SPA 遷移のたびに読み直すと未保存の編集を上書きしてしまうので、
+				// このページロードで一度だけ行う。
+				if (!guestHydrated) {
+					guestHydrated = true;
+					store.setState(loadLocalSettings(), true);
+					changedPaths.clear();
+				}
 				return;
 			}
 
@@ -340,6 +351,7 @@ function createSettingsStore() {
 			loggedIn = false;
 			initialSyncDone = false;
 			lastServerSnapshotJson = null;
+			guestHydrated = false;
 		}
 	};
 }

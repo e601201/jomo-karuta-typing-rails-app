@@ -406,6 +406,42 @@ describe('Settings Store', () => {
 			expect(settingsStore.hasChanges()).toBe(false);
 		});
 
+		// 「もう一度遊ぶ」は window.location.href によるフルリロードで、ストアは
+		// デフォルト値で作り直される。読み戻しがないとゲームに設定が効かなくなる
+		it('ゲストはフルリロード後に localStorage の設定を読み戻す', async () => {
+			localStorageMock.getItem.mockReturnValue(JSON.stringify(serverSettings));
+
+			await settingsStore.initializeFromServer(null, false);
+
+			expect(settingsStore.getState()).toEqual(serverSettings);
+			expect(settingsStore.hasChanges()).toBe(false);
+			// 読み戻しは読むだけで、新たな書き込み経路を作らない
+			expect(localStorageMock.setItem).not.toHaveBeenCalled();
+			expect(fetchMock).not.toHaveBeenCalled();
+		});
+
+		it('ゲストの読み戻しは一度だけで、SPA 遷移では未保存の編集を上書きしない', async () => {
+			localStorageMock.getItem.mockReturnValue(JSON.stringify(serverSettings));
+			await settingsStore.initializeFromServer(null, false);
+
+			settingsStore.updateSetting('display.theme', 'light');
+
+			// ページ遷移のたびに navigate イベントから同じ呼び出しが走る
+			await settingsStore.initializeFromServer(null, false);
+
+			expect(settingsStore.getState().display.theme).toBe('light');
+			expect(settingsStore.hasChanges()).toBe(true);
+		});
+
+		it('localStorage に設定がないゲストはデフォルトのままになる', async () => {
+			localStorageMock.getItem.mockReturnValue(null);
+
+			await settingsStore.initializeFromServer(null, false);
+
+			expect(settingsStore.getState()).toEqual(settingsStore.getDefaults());
+			expect(localStorageMock.setItem).not.toHaveBeenCalled();
+		});
+
 		it('ログイン中の保存は PUT 成功後に localStorage にミラー書きする', async () => {
 			await settingsStore.initializeFromServer(serverSettings, true);
 			localStorageMock.setItem.mockClear();
