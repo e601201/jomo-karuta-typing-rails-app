@@ -7,6 +7,8 @@ class ApplicationController < ActionController::Base
   inertia_share do
     {
       auth: { user: current_user&.as_json(only: %i[id email nickname avatar_url created_at]) },
+      # 未ログイン / 未保存は nil（nil が「初回引き継ぎ対象」のシグナル。ADR-0004）
+      settings: current_user&.user_setting&.as_frontend,
       csrf_token: form_authenticity_token,
       flash: flash.to_h
     }

@@ -3,6 +3,7 @@ class User < ApplicationRecord
   class EmailUnavailableError < StandardError; end
 
   has_many :identities, dependent: :destroy
+  has_one :user_setting, dependent: :destroy
 
   validates :email, presence: true, uniqueness: true
 

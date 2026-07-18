@@ -216,6 +216,7 @@ export default function Settings() {
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 	const [showResetConfirm, setShowResetConfirm] = useState(false);
 	const [resetSection, setResetSection] = useState<string | null>(null);
+	const [saveError, setSaveError] = useState<string | null>(null);
 
 	// 旧 $effect（ストア更新のたびに未保存フラグを再計算する）の忠実な移植
 	/* eslint-disable react-hooks/set-state-in-effect */
@@ -231,7 +232,14 @@ export default function Settings() {
 
 	// Event handlers
 	async function handleSave() {
-		await settingsStore.save();
+		setSaveError(null);
+		try {
+			await settingsStore.save();
+		} catch {
+			// 保存失敗時は未保存状態（変更ありバッジ）を維持したままエラーを表示する
+			setSaveError('設定の保存に失敗しました。時間をおいて再度お試しください。');
+			return;
+		}
 		setHasUnsavedChanges(false);
 		router.visit('/');
 	}
@@ -307,6 +315,11 @@ export default function Settings() {
 						</h1>
 					</div>
 					<div className="flex items-center gap-3">
+						{saveError && (
+							<span className="rounded-md border border-[#C8302A]/60 bg-[#0A1A3599] px-3 py-1 text-xs font-semibold text-[#C8302A]">
+								{saveError}
+							</span>
+						)}
 						{hasUnsavedChanges && (
 							<span className="rounded-md border border-[#C9A961]/60 bg-[#0A1A3599] px-3 py-1 text-xs font-semibold text-[#E5C875]">
 								変更あり

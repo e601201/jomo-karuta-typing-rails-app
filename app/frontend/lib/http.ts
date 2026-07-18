@@ -83,6 +83,17 @@ export async function postJson<T>(url: string, body: unknown): Promise<T> {
 	return parseResponse<T>(response);
 }
 
+/** 同一オリジンへの JSON PUT。!ok なら HttpError を投げる */
+export async function putJson<T>(url: string, body: unknown): Promise<T> {
+	const response = await fetch(url, {
+		method: 'PUT',
+		headers: buildHeaders(true),
+		credentials: 'same-origin',
+		body: JSON.stringify(body)
+	});
+	return parseResponse<T>(response);
+}
+
 /** 同一オリジンへの JSON GET。!ok なら HttpError を投げる */
 export async function getJson<T>(url: string): Promise<T> {
 	const response = await fetch(url, {
