@@ -14,6 +14,7 @@ import {
 	Save,
 	Settings as SettingsIcon,
 	Sun,
+	Trash2,
 	Type,
 	Volume2,
 	X
@@ -21,6 +22,7 @@ import {
 import { settingsStore, useSettingsStore } from '@/stores/settings-store';
 import type { SharedProps } from '@/types';
 import Header from '@/components/layout/Header';
+import ConfirmModal from '@/components/common/ConfirmModal';
 import backgroundImage from '@/assets/images/background.webp';
 
 const SERIF = { fontFamily: "'Noto Serif JP', serif" } as const;
@@ -215,6 +217,7 @@ export default function Settings() {
 	const [activeSection, setActiveSection] = useState('display');
 	const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 	const [showResetConfirm, setShowResetConfirm] = useState(false);
+	const [showDiscardConfirm, setShowDiscardConfirm] = useState(false);
 	const [resetSection, setResetSection] = useState<string | null>(null);
 	const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -245,14 +248,20 @@ export default function Settings() {
 	}
 
 	function handleCancel() {
+		// 未保存の変更があるときだけ確認をはさむ
 		if (hasUnsavedChanges) {
-			if (confirm('変更を破棄してもよろしいですか？')) {
-				void settingsStore.load();
-				setHasUnsavedChanges(false);
-			}
-		} else {
-			router.visit('/');
+			setShowDiscardConfirm(true);
+			return;
 		}
+		router.visit('/');
+	}
+
+	// 破棄を承認したら、最後に保存された設定へ戻してトップへ帰る
+	async function confirmDiscard() {
+		setShowDiscardConfirm(false);
+		await settingsStore.load();
+		setHasUnsavedChanges(false);
+		router.visit('/');
 	}
 
 	function handleReset(section: string) {
@@ -585,49 +594,29 @@ export default function Settings() {
 				</div>
 			</div>
 
-			{/* Reset Confirmation Dialog */}
+			{showDiscardConfirm && (
+				<ConfirmModal
+					icon={Trash2}
+					title="変更を破棄しますか？"
+					confirmLabel="破棄する"
+					onConfirm={() => void confirmDiscard()}
+					onCancel={() => setShowDiscardConfirm(false)}
+				/>
+			)}
+
 			{showResetConfirm && (
-				<div
-					className="fixed inset-0 z-50 flex items-center justify-center p-4"
-					style={{ background: 'rgba(0,0,0,0.6)' }}
-					onClick={(e) => {
-						if (e.currentTarget === e.target) cancelReset();
-					}}
-					onKeyDown={(e) => e.key === 'Escape' && cancelReset()}
-					role="dialog"
-					aria-modal="true"
-					aria-labelledby="reset-dialog-title"
-					tabIndex={-1}
-				>
-					<div
-						className="flex w-full max-w-md flex-col gap-5 rounded-[14px] border-2 border-[#C9A961] bg-[#0F2145] px-8 py-7 shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
-						style={SERIF}
-					>
-						<h3 id="reset-dialog-title" className="text-xl font-black text-[#E5C875]">
-							設定のリセット
-						</h3>
-						<p className="text-sm leading-relaxed text-[#F5E9C8]">
-							{resetSection
-								? `${sections.find((s) => s.id === resetSection)?.label}の設定`
-								: 'すべての設定'}
-							をデフォルト値に戻します。この操作は取り消せません。
-						</p>
-						<div className="flex justify-end gap-3">
-							<button
-								onClick={confirmReset}
-								className="rounded-lg border border-[#C8302A] bg-[#C8302A] px-5 py-2.5 text-sm font-bold text-white transition-opacity hover:opacity-90"
-							>
-								リセット
-							</button>
-							<button
-								onClick={cancelReset}
-								className="rounded-lg border border-[#C9A961] bg-[#0A1A3599] px-5 py-2.5 text-sm font-semibold text-[#F5E9C8] transition-colors hover:bg-[#0A1A35]"
-							>
-								キャンセル
-							</button>
-						</div>
-					</div>
-				</div>
+				<ConfirmModal
+					icon={RotateCcw}
+					title="設定をリセットしますか？"
+					description={`${
+						resetSection
+							? `${sections.find((s) => s.id === resetSection)?.label}の設定`
+							: 'すべての設定'
+					}をデフォルト値に戻します。`}
+					confirmLabel="リセット"
+					onConfirm={confirmReset}
+					onCancel={cancelReset}
+				/>
 			)}
 
 			<style>{`
