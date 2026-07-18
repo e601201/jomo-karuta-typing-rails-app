@@ -264,17 +264,9 @@ function ScoreCard({
 		>
 			<div className="flex items-center gap-1.5">
 				<span style={{ color: accent }}>{icon}</span>
-				<span className="text-[10px] font-bold text-[#B8A874]" style={JP_FONT}>
+				<span className="text-[10px] font-bold whitespace-nowrap text-[#B8A874]" style={JP_FONT}>
 					{label}
 				</span>
-				{badge && (
-					<span
-						className="ml-auto rounded-sm border px-1 py-px text-[9px] font-semibold"
-						style={{ ...JP_FONT, borderColor: accent, color: accent }}
-					>
-						{badge}
-					</span>
-				)}
 			</div>
 			<div className="flex items-end gap-[3px]">
 				<span className="text-base font-extrabold" style={{ ...MONO_FONT, color: accent }}>
@@ -283,6 +275,14 @@ function ScoreCard({
 				<span className="text-[10px] font-semibold text-[#F5E9C8]" style={JP_FONT}>
 					{unit}
 				</span>
+				{badge && (
+					<span
+						className="mb-px ml-auto rounded-sm border px-1 py-px text-[9px] font-semibold whitespace-nowrap"
+						style={{ ...JP_FONT, borderColor: accent, color: accent }}
+					>
+						{badge}
+					</span>
+				)}
 			</div>
 		</div>
 	);
