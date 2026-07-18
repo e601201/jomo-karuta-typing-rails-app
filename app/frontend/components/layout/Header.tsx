@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { createPortal } from 'react-dom';
 import { Link, router, usePage } from '@inertiajs/react';
 import {
 	BookOpen,
@@ -20,6 +19,7 @@ import {
 	Zap
 } from 'lucide-react';
 import { formatTime } from '@/lib/format-time';
+import ConfirmModal from '@/components/common/ConfirmModal';
 import type { AuthUser, BestScores, RandomModeDifficulty, SharedProps } from '@/types';
 
 const JP_FONT = { fontFamily: "'Noto Serif JP', serif" } as const;
@@ -95,68 +95,6 @@ function MenuPointer() {
 			aria-hidden="true"
 			className="absolute top-[calc(100%+6px)] right-3 h-3 w-3 rotate-45 border-t-2 border-l-2 border-[#C9A961] bg-[#0F2145]"
 		/>
-	);
-}
-
-function LogoutConfirmModal({
-	onConfirm,
-	onCancel
-}: {
-	onConfirm: () => void;
-	onCancel: () => void;
-}) {
-	useEffect(() => {
-		const onKey = (e: KeyboardEvent) => {
-			if (e.key === 'Escape') onCancel();
-		};
-		document.addEventListener('keydown', onKey);
-		return () => document.removeEventListener('keydown', onKey);
-	}, [onCancel]);
-
-	if (typeof document === 'undefined') return null;
-
-	return createPortal(
-		<div
-			className="fixed inset-0 z-1000 flex items-center justify-center bg-black/60 p-4"
-			role="dialog"
-			aria-modal="true"
-			aria-labelledby="logout-confirm-title"
-			onClick={(e) => {
-				if (e.target === e.currentTarget) onCancel();
-			}}
-		>
-			<div
-				className="flex w-full max-w-[400px] flex-col gap-5 rounded-[14px] border-2 border-[#C9A961] bg-[#0F2145] px-8 py-7 shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
-				style={JP_FONT}
-			>
-				<div className="flex flex-col items-center gap-3 text-center">
-					<span className="flex h-12 w-12 items-center justify-center rounded-full border border-[#E5453D] bg-[#7A1E1B]/30">
-						<LogOut size={22} className="text-[#E5453D]" aria-hidden="true" />
-					</span>
-					<h2 id="logout-confirm-title" className="text-xl font-black text-[#E5C875]">
-						ログアウトしますか？
-					</h2>
-				</div>
-				<div className="flex gap-3">
-					<button
-						type="button"
-						onClick={onCancel}
-						className="flex-1 rounded-lg border border-[#C9A961] px-4 py-3 text-sm font-bold text-[#F5E9C8] transition-colors hover:bg-[#132D57]"
-					>
-						キャンセル
-					</button>
-					<button
-						type="button"
-						onClick={onConfirm}
-						className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-[#E5453D] bg-linear-to-b from-[#C8302A] to-[#7A1E1B] px-4 py-3 text-sm font-extrabold text-white shadow-[0_2px_8px_#7A1E1B66] transition-opacity hover:opacity-90"
-					>
-						<LogOut size={16} aria-hidden="true" />
-						ログアウト
-					</button>
-				</div>
-			</div>
-		</div>,
-		document.body
 	);
 }
 
@@ -540,7 +478,10 @@ export default function Header({ user, onHowToPlay, onFeedback }: Props) {
 			</div>
 
 			{showLogoutConfirm && (
-				<LogoutConfirmModal
+				<ConfirmModal
+					icon={LogOut}
+					title="ログアウトしますか？"
+					confirmLabel="ログアウト"
 					onConfirm={confirmLogout}
 					onCancel={() => setShowLogoutConfirm(false)}
 				/>
