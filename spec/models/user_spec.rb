@@ -31,6 +31,24 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe "associations" do
+    it "has many scores" do
+      user = create(:user)
+      mine = create(:score, :random_score, user: user)
+      create(:score, :random_score)
+
+      expect(user.scores).to eq([ mine ])
+    end
+
+    it "nullifies scores on destroy so leaderboard entries survive" do
+      user = create(:user)
+      score = create(:score, :random_score, user: user)
+
+      expect { user.destroy! }.not_to change(Score, :count)
+      expect(score.reload.user_id).to be_nil
+    end
+  end
+
   describe ".from_omniauth" do
     context "when an identity already exists for provider/uid" do
       it "returns the identity's user without creating records" do

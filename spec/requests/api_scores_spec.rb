@@ -4,6 +4,15 @@
 require "rails_helper"
 
 RSpec.describe "Api::Scores", type: :request do
+  def log_in_via_google(email: "player@example.com", name: "Player One", uid: "google-uid-1")
+    OmniAuth.config.mock_auth[:google_oauth2] = OmniAuth::AuthHash.new(
+      provider: "google_oauth2",
+      uid: uid,
+      info: { email: email, name: name, image: "https://example.com/avatar.png" }
+    )
+    get "/auth/google_oauth2/callback"
+  end
+
   describe "POST /api/scores" do
     context "with a valid random payload" do
       let(:payload) do
@@ -28,6 +37,26 @@ RSpec.describe "Api::Scores", type: :request do
 
       it "stores user_id nil when logged out" do
         post "/api/scores", params: payload, as: :json
+
+        expect(response).to have_http_status(:created)
+        expect(Score.last.user_id).to be_nil
+      end
+
+      it "stores the logged-in user's id" do
+        log_in_via_google(email: "player@example.com")
+        user = User.find_by!(email: "player@example.com")
+
+        post "/api/scores", params: payload, as: :json
+
+        expect(response).to have_http_status(:created)
+        expect(Score.last.user).to eq(user)
+      end
+
+      # user_id はサーバの session からのみ決まる（クライアントの申告は信用しない）
+      it "ignores a client-supplied user_id" do
+        other = create(:user)
+
+        post "/api/scores", params: payload.merge(user_id: other.id), as: :json
 
         expect(response).to have_http_status(:created)
         expect(Score.last.user_id).to be_nil
