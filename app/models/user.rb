@@ -4,6 +4,9 @@ class User < ApplicationRecord
 
   has_many :identities, dependent: :destroy
   has_one :user_setting, dependent: :destroy
+  # 退会してもランキングの記録は残す（nick_name は scores 行が持っており、
+  # リーダーボードは users を参照しないため、:destroy だと公開順位が書き換わる）
+  has_many :scores, dependent: :nullify
 
   validates :email, presence: true, uniqueness: true
 
