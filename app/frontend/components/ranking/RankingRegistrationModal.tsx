@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { router } from '@inertiajs/react';
 import { X, Trophy, Send } from 'lucide-react';
 import { saveScore } from '@/lib/api/scores';
 import type { GameMode, RandomModeDifficulty } from '@/types';
@@ -63,6 +64,9 @@ export default function RankingRegistrationModal({
 
 				setSuccess(true);
 				onSuccess?.(nameToSave);
+
+				// ヘッダーのベストスコア（inertia_share の best_scores）を最新化する
+				router.reload({ only: ['best_scores'] });
 
 				// 少し待ってから閉じる
 				setTimeout(() => {

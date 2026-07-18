@@ -15,14 +15,6 @@ export interface UserProfile {
 
 export interface GameProgress {
 	completedCards: string[]; // カードID配列
-	bestScores: {
-		[mode: string]: {
-			score: number;
-			accuracy: number;
-			speed: number;
-			date: string;
-		};
-	};
 	achievements: Achievement[];
 }
 
@@ -177,7 +169,6 @@ export class LocalStorageService {
 		if (!stored) {
 			return {
 				completedCards: [],
-				bestScores: {},
 				achievements: []
 			};
 		}
@@ -187,7 +178,6 @@ export class LocalStorageService {
 		} catch {
 			return {
 				completedCards: [],
-				bestScores: {},
 				achievements: []
 			};
 		}
@@ -209,27 +199,6 @@ export class LocalStorageService {
 		const progress = this.getProgress();
 		if (!progress.completedCards.includes(cardId)) {
 			progress.completedCards.push(cardId);
-			this.saveProgress(progress);
-		}
-	}
-
-	/**
-	 * ベストスコアを更新
-	 */
-	updateBestScore(
-		mode: string,
-		scoreData: {
-			score: number;
-			accuracy: number;
-			speed: number;
-			date: string;
-		}
-	): void {
-		const progress = this.getProgress();
-		const currentBest = progress.bestScores[mode];
-
-		if (!currentBest || scoreData.score > currentBest.score) {
-			progress.bestScores[mode] = scoreData;
 			this.saveProgress(progress);
 		}
 	}

@@ -10,6 +10,8 @@ RSpec.describe "Rankings", type: :request, inertia: true do
       expect(inertia.props[:gameMode]).to eq("random")
       expect(inertia.props[:difficulty]).to eq("standard")
       expect(inertia.props[:entries]).to eq([])
+      # ゲストにベストスコアは存在しない
+      expect(inertia.props[:best_scores]).to be_nil
     end
 
     it "accepts valid game_mode and difficulty params" do
