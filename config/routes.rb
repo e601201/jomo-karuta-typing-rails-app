@@ -5,10 +5,11 @@ Rails.application.routes.draw do
   end
 
   root "pages#home"
-  get "game",     to: "games#show"
-  get "settings", to: "pages#settings"
-  get "ranking",  to: "rankings#index"
-  get "profile",  to: "profiles#show"
+  get "game",        to: "games#show"
+  get "settings",    to: "pages#settings"
+  get "ranking",     to: "rankings#index"
+  get "profile",     to: "profiles#show"
+  get "how-to-play", to: "pages#how_to_play"
 
   # 認証 (OmniAuth)。request phase (POST /auth/:provider) は OmniAuth ミドルウェアが処理する
   get    "auth/login",              to: "sessions#new"
