@@ -6,7 +6,6 @@ import GameModeCard from '@/components/main-menu/GameModeCard';
 import LoadingSpinner from '@/components/main-menu/LoadingSpinner';
 import ErrorDisplay from '@/components/main-menu/ErrorDisplay';
 import KarutaSlideshow from '@/components/main-menu/KarutaSlideshow';
-import HowToPlayModal from '@/components/main-menu/HowToPlayModal';
 import DifficultySelectModal from '@/components/main-menu/DifficultySelectModal';
 import backgroundImage from '@/assets/images/background.webp';
 import randomModeButton from '@/assets/images/random_mode_button.png';
@@ -40,7 +39,6 @@ export default function Home() {
 
 	const [isLoading, setIsLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
-	const [showHowToPlayModal, setShowHowToPlayModal] = useState(false);
 	const [showDifficultyModal, setShowDifficultyModal] = useState(false);
 	const [selectedMode, setSelectedMode] = useState<GameMode | null>(null);
 
@@ -92,7 +90,7 @@ export default function Home() {
 				className="min-h-screen bg-cover bg-fixed bg-center"
 				style={{ backgroundImage: `url(${backgroundImage})` }}
 			>
-				<Header user={auth?.user ?? null} onHowToPlay={() => setShowHowToPlayModal(true)} />
+				<Header user={auth?.user ?? null} />
 
 				<main>
 					<div className="container mx-auto max-w-6xl px-4 py-8">
@@ -134,12 +132,6 @@ export default function Home() {
 							</>
 						)}
 					</div>
-
-					{/* 遊び方モーダル */}
-					<HowToPlayModal
-						isOpen={showHowToPlayModal}
-						onclose={() => setShowHowToPlayModal(false)}
-					/>
 
 					{/* 難易度選択モーダル */}
 					<DifficultySelectModal
