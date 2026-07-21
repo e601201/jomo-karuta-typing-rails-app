@@ -11,6 +11,11 @@ Rails.application.routes.draw do
   get "profile",     to: "profiles#show"
   get "how-to-play", to: "pages#how_to_play"
 
+  # フィードバック（#7）。ゲストも送れるため require_login は付けない。
+  # GET/POST とも同じ /feedback。GET はフォーム、POST は送信を受ける。
+  get  "feedback", to: "feedbacks#new", as: :feedback
+  post "feedback", to: "feedbacks#create"
+
   # 認証 (OmniAuth)。request phase (POST /auth/:provider) は OmniAuth ミドルウェアが処理する
   get    "auth/login",              to: "sessions#new"
   get    "auth/error",              to: "sessions#error"

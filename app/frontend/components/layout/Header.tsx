@@ -34,7 +34,6 @@ const DIFFICULTY_LABELS: Record<RandomModeDifficulty, string> = {
 
 interface Props {
 	user: AuthUser | null;
-	onFeedback?: () => void;
 }
 
 const DROPDOWN_SHELL =
@@ -97,7 +96,7 @@ function MenuPointer() {
 	);
 }
 
-function GuestDropdown({ onFeedback, close }: { onFeedback?: () => void; close: () => void }) {
+function GuestDropdown({ close }: { close: () => void }) {
 	return (
 		<div role="menu" aria-label="メニュー" className={DROPDOWN_SHELL}>
 			<div className="flex items-center gap-3 bg-[#132D57] p-4">
@@ -159,10 +158,8 @@ function GuestDropdown({ onFeedback, close }: { onFeedback?: () => void; close: 
 				<MenuItem
 					icon={<MessageCircle size={16} />}
 					label="フィードバック"
-					onClick={() => {
-						close();
-						onFeedback?.();
-					}}
+					href="/feedback"
+					onClick={close}
 				/>
 			</div>
 		</div>
@@ -218,13 +215,11 @@ function ScoreCard({
 function UserDropdown({
 	user,
 	bestScores,
-	onFeedback,
 	onLogout,
 	close
 }: {
 	user: AuthUser;
 	bestScores: BestScores | null;
-	onFeedback?: () => void;
 	onLogout: () => void;
 	close: () => void;
 }) {
@@ -334,17 +329,15 @@ function UserDropdown({
 				<MenuItem
 					icon={<MessageCircle size={16} />}
 					label="フィードバック"
-					onClick={() => {
-						close();
-						onFeedback?.();
-					}}
+					href="/feedback"
+					onClick={close}
 				/>
 			</div>
 		</div>
 	);
 }
 
-export default function Header({ user, onFeedback }: Props) {
+export default function Header({ user }: Props) {
 	const [menuOpen, setMenuOpen] = useState(false);
 	const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 	const { best_scores: bestScores } = usePage().props as unknown as SharedProps;
@@ -443,12 +436,11 @@ export default function Header({ user, onFeedback }: Props) {
 										<UserDropdown
 											user={user}
 											bestScores={bestScores}
-											onFeedback={onFeedback}
 											onLogout={requestLogout}
 											close={close}
 										/>
 									) : (
-										<GuestDropdown onFeedback={onFeedback} close={close} />
+										<GuestDropdown close={close} />
 									)}
 								</>
 							)}
