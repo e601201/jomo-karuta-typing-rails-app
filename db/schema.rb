@@ -10,17 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_18_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_21_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "difficulty", ["beginner", "standard", "advanced"]
+  create_enum "feedback_category", ["bug_report", "feature_request", "usage_question", "other"]
   create_enum "font_size", ["small", "medium", "large", "extra-large"]
   create_enum "game_mode", ["random", "timeattack"]
   create_enum "input_method", ["romaji", "kana"]
   create_enum "theme", ["light", "dark", "auto"]
+
+  create_table "feedbacks", force: :cascade do |t|
+    t.text "body", null: false
+    t.enum "category", null: false, enum_type: "feedback_category"
+    t.datetime "created_at", null: false
+    t.string "email"
+    t.string "subject"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_feedbacks_on_user_id"
+  end
 
   create_table "identities", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -74,6 +86,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_18_000000) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "feedbacks", "users"
   add_foreign_key "identities", "users"
   add_foreign_key "scores", "users"
   add_foreign_key "user_settings", "users"
