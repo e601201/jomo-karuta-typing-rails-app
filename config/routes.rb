@@ -18,6 +18,8 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :scores, only: :create
+    # プレイ記録の自動保存（ログインユーザーのみ・ゲーム自然完了時。#20 / ADR 0005）
+    resources :game_results, only: :create
     resource :settings, only: :update
   end
 
