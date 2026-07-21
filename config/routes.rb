@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   get "settings", to: "pages#settings"
   get "ranking",  to: "rankings#index"
   get "profile",  to: "profiles#show"
+  get "history",  to: "histories#index" # プレイ履歴（ログイン必須。#20）
 
   # 認証 (OmniAuth)。request phase (POST /auth/:provider) は OmniAuth ミドルウェアが処理する
   get    "auth/login",              to: "sessions#new"

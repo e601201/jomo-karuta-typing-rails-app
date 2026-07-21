@@ -307,13 +307,7 @@ function UserDropdown({
 			<div className="flex flex-col py-2">
 				<MenuItem icon={<House size={16} />} label="TOPページ" href="/" onClick={close} />
 				<MenuItem icon={<User size={16} />} label="プロフィール" href="/profile" onClick={close} />
-				<MenuItem
-					icon={<History size={16} />}
-					label="プレイ履歴"
-					onClick={() => {
-						close();
-					}}
-				/>
+				<MenuItem icon={<History size={16} />} label="プレイ履歴" href="/history" onClick={close} />
 				<MenuItem
 					icon={<Medal size={16} />}
 					label="実績・バッジ"
