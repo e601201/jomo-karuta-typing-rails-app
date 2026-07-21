@@ -50,7 +50,8 @@ RSpec.describe User, type: :model do
   end
 
   describe "#best_scores" do
-    it "returns nil for both modes when the user has no scores" do
+    # 全プレイ記録（game_results）から導出する。ランキング登録（scores）ではない（ADR 0005）
+    it "returns nil for both modes when the user has no play records" do
       user = create(:user)
 
       expect(user.best_scores).to eq(random: nil, timeattack: nil)
@@ -58,10 +59,10 @@ RSpec.describe User, type: :model do
 
     it "returns the highest score for random and the lowest time for timeattack, with their difficulties" do
       user = create(:user)
-      create(:score, :random_score, user: user, score: 800, difficulty: "beginner")
-      create(:score, :random_score, user: user, score: 1200, difficulty: "advanced")
-      create(:score, :timeattack_score, user: user, time_ms: 45_000, difficulty: "standard")
-      create(:score, :timeattack_score, user: user, time_ms: 30_000, difficulty: "beginner")
+      create(:game_result, :random_result, user: user, score: 800, difficulty: "beginner")
+      create(:game_result, :random_result, user: user, score: 1200, difficulty: "advanced")
+      create(:game_result, :timeattack_result, user: user, time_ms: 45_000, difficulty: "standard")
+      create(:game_result, :timeattack_result, user: user, time_ms: 30_000, difficulty: "beginner")
 
       expect(user.best_scores).to eq(
         random: { score: 1200, difficulty: "advanced" },
@@ -69,19 +70,28 @@ RSpec.describe User, type: :model do
       )
     end
 
-    it "ignores other users' scores" do
+    it "derives from all plays regardless of ranking registration" do
       user = create(:user)
-      create(:score, :random_score, score: 9999)
-      create(:score, :timeattack_score, time_ms: 1)
+      # ランキング登録（scores）はベストスコアに影響しない
+      create(:score, :random_score, user: user, score: 9999)
+      create(:game_result, :random_result, user: user, score: 1200, difficulty: "advanced")
+
+      expect(user.best_scores[:random]).to eq(score: 1200, difficulty: "advanced")
+    end
+
+    it "ignores other users' play records" do
+      user = create(:user)
+      create(:game_result, :random_result, score: 9999)
+      create(:game_result, :timeattack_result, time_ms: 1)
 
       expect(user.best_scores).to eq(random: nil, timeattack: nil)
     end
 
     it "breaks ties by created_at like the leaderboard (first achiever wins)" do
       user = create(:user)
-      first = create(:score, :random_score, user: user, score: 1000, difficulty: "beginner",
+      first = create(:game_result, :random_result, user: user, score: 1000, difficulty: "beginner",
                      created_at: 2.days.ago)
-      create(:score, :random_score, user: user, score: 1000, difficulty: "advanced",
+      create(:game_result, :random_result, user: user, score: 1000, difficulty: "advanced",
              created_at: 1.day.ago)
 
       expect(user.best_scores[:random]).to eq(score: 1000, difficulty: first.difficulty)
