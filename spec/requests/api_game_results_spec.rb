@@ -49,6 +49,16 @@ RSpec.describe "Api::GameResults", type: :request do
         expect(result).to have_attributes(game_mode: "timeattack", time_ms: 30_000, score: nil)
       end
 
+      it "rounds a fractional accuracy to an integer percent" do
+        # フロントは表示用の小数（例 98.32）を送りうる。整数列に丸めて保存する
+        expect {
+          post "/api/game_results", params: random_payload.merge(accuracy: 98.319), as: :json
+        }.to change(GameResult, :count).by(1)
+
+        expect(response).to have_http_status(:created)
+        expect(GameResult.last.accuracy).to eq(98)
+      end
+
       it "returns 422 for an invalid payload (random without score)" do
         expect {
           post "/api/game_results", params: random_payload.merge(score: nil), as: :json

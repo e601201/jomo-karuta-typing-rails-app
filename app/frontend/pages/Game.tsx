@@ -252,11 +252,12 @@ export default function Game(props: GameProps) {
 		void saveGameResult({
 			game_mode: gameMode,
 			difficulty: currentDifficulty,
-			score: gameMode === 'random' ? score.total || 0 : undefined,
-			time: gameMode === 'timeattack' ? timeAttackFinalTime : undefined,
-			accuracy: score.accuracy ?? 100,
-			wpm: score.speed ?? 0,
-			max_combo: score.maxCombo ?? 0,
+			// score.accuracy は表示用の小数（例 98.32）なので整数パーセントへ丸める
+			score: gameMode === 'random' ? Math.round(score.total || 0) : undefined,
+			time: gameMode === 'timeattack' ? Math.round(timeAttackFinalTime) : undefined,
+			accuracy: Math.round(score.accuracy ?? 100),
+			wpm: Math.round(score.speed ?? 0),
+			max_combo: Math.round(score.maxCombo ?? 0),
 			correct_cards: completedCardsCount
 		});
 	}, [

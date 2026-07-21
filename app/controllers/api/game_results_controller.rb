@@ -1,5 +1,8 @@
 module Api
   class GameResultsController < ApplicationController
+    # フラットな JSON を受けるため、model 名での自動パラメータラップ（params[:game_result]）を無効化する
+    wrap_parameters format: []
+
     # プレイ記録はログインユーザーのみ（ADR 0005）。API なので HTML リダイレクトではなく JSON 401 を返す。
     before_action :require_logged_in
 
@@ -30,14 +33,15 @@ module Api
       params.permit(:game_mode, :difficulty, :score, :time, :accuracy, :wpm, :max_combo, :correct_cards)
     end
 
-    # フロントは経過時間を 'time'（ms）で送るため、time_ms カラムへ詰め替える（scores と同じ流儀）
+    # フロントは経過時間を 'time'（ms）で送るため、time_ms カラムへ詰め替える（scores と同じ流儀）。
+    # accuracy は表示用の小数で届きうるので整数パーセントへ丸める（列は整数）。
     def game_result_attributes
       {
         game_mode: game_result_params[:game_mode],
         difficulty: game_result_params[:difficulty],
         score: game_result_params[:score],
         time_ms: game_result_params[:time],
-        accuracy: game_result_params[:accuracy],
+        accuracy: game_result_params[:accuracy]&.to_f&.round,
         wpm: game_result_params[:wpm],
         max_combo: game_result_params[:max_combo],
         correct_cards: game_result_params[:correct_cards]
