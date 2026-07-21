@@ -1,29 +1,44 @@
+import type { ComponentType } from 'react';
 import { Head, Link, useForm, usePage } from '@inertiajs/react';
-import { BookOpen, CheckCircle2, MessageCircle } from 'lucide-react';
+import {
+	BookOpen,
+	Bug,
+	CheckCircle2,
+	CircleQuestionMark,
+	Info,
+	MessageCircle,
+	MessageSquareHeart,
+	RotateCcw,
+	Send,
+	Sparkles
+} from 'lucide-react';
 import type { SharedProps } from '@/types';
 import Header from '@/components/layout/Header';
 import backgroundImage from '@/assets/images/background.webp';
 
+// 見出し・ラベルは明朝、本文・入力値・補足はゴシック（デザイン wNwWp 準拠）
 const SERIF = { fontFamily: "'Noto Serif JP', serif" } as const;
+const SANS = { fontFamily: "'Noto Sans JP', sans-serif" } as const;
 
-const BODY_MAX_LENGTH = 2000;
+const BODY_MAX_LENGTH = 1000;
+const SUBJECT_MAX_LENGTH = 100;
 
 // カテゴリは Feedback モデルの enum と一致させる（CONTEXT.md「フィードバック」参照）。
-const CATEGORIES: { value: string; label: string }[] = [
-	{ value: 'bug_report', label: 'バグ報告' },
-	{ value: 'feature_request', label: '機能リクエスト' },
-	{ value: 'usage_question', label: '使い方の質問' },
-	{ value: 'other', label: 'その他' }
+const CATEGORIES: { value: string; label: string; icon: ComponentType<{ size?: number }> }[] = [
+	{ value: 'bug_report', label: 'バグ報告', icon: Bug },
+	{ value: 'feature_request', label: '機能リクエスト', icon: Sparkles },
+	{ value: 'usage_question', label: '使い方の質問', icon: CircleQuestionMark },
+	{ value: 'other', label: 'その他', icon: MessageCircle }
 ];
 
-const FIELD_LABEL = 'text-sm font-bold text-[#E5C875]';
-const FIELD_CONTROL =
+const FIELD_LABEL = 'text-sm font-semibold text-[#C9A961]';
+const TEXT_INPUT =
 	'w-full rounded-lg border border-[#C9A961] bg-[#132D57] px-4 py-3 text-[15px] text-[#F5E9C8] outline-none placeholder:text-[#B8A874]/60 focus:border-[#E5C875]';
 
 function FieldError({ messages }: { messages?: string[] }) {
 	if (!messages || messages.length === 0) return null;
 	return (
-		<p className="text-[13px] font-semibold text-[#F1A5A0]" role="alert">
+		<p className="text-[13px] font-semibold text-[#F1A5A0]" style={SANS} role="alert">
 			{messages.join(' ')}
 		</p>
 	);
@@ -34,6 +49,7 @@ export default function Feedback() {
 
 	const form = useForm({
 		category: '',
+		subject: '',
 		body: '',
 		// ログイン時はアカウントのメールを既定表示（返信先。任意）
 		email: auth?.user?.email ?? '',
@@ -42,8 +58,25 @@ export default function Feedback() {
 	});
 	const { data, setData, errors, processing } = form;
 
+	const selectCategory = (value: string) => {
+		setData('category', value);
+		if (errors.category) form.clearErrors('category');
+	};
+
 	const submit = (e: React.FormEvent) => {
 		e.preventDefault();
+
+		// クライアント側の必須チェック（種類・メッセージ）。サーバ側 presence が最終権威。
+		const nextErrors: Partial<Record<'category' | 'body', string[]>> = {};
+		if (!data.category) nextErrors.category = ['種類を選択してください'];
+		if (!data.body.trim()) nextErrors.body = ['メッセージを入力してください'];
+
+		form.clearErrors();
+		if (Object.keys(nextErrors).length > 0) {
+			form.setError(nextErrors);
+			return;
+		}
+
 		form.post('/feedback', { preserveScroll: true });
 	};
 
@@ -57,20 +90,21 @@ export default function Feedback() {
 			<Header user={auth?.user ?? null} />
 
 			<div className="p-8">
-				<div className="mx-auto flex w-full max-w-[720px] flex-col gap-5">
+				<div className="mx-auto flex w-full max-w-[880px] flex-col gap-5">
 					{/* ヒーロー */}
-					<header className="flex flex-wrap items-center gap-4 rounded-[10px] border border-[#C9A961] bg-[#0A1A35CC] px-8 py-4">
-						<div className="flex items-center gap-3">
-							<span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#C9A961]">
-								<MessageCircle className="h-[22px] w-[22px] text-[#0F2952]" />
-							</span>
-							<h1
-								className="text-[32px] font-black text-white"
-								style={{ textShadow: '0 2px 4px rgba(0,0,0,0.67)' }}
-							>
-								フィードバック
-							</h1>
-						</div>
+					<header className="flex flex-wrap items-center gap-3 rounded-[10px] border border-[#C9A961] bg-[#0A1A35CC] px-8 py-4">
+						<span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#C9A961]">
+							<MessageSquareHeart className="h-[22px] w-[22px] text-[#0A1A35]" />
+						</span>
+						<h1
+							className="text-[32px] font-black text-white"
+							style={{ textShadow: '0 2px 4px rgba(0,0,0,0.67)' }}
+						>
+							フィードバック
+						</h1>
+						<span className="text-sm font-medium text-[#B8A874]" style={SANS}>
+							ご意見・ご要望をお聞かせください
+						</span>
 					</header>
 
 					{flash?.notice ? (
@@ -93,14 +127,20 @@ export default function Feedback() {
 							</div>
 						</section>
 					) : (
-						<main className="flex flex-col gap-7 rounded-[10px] border-2 border-[#C9A961] bg-[#0A1A35DD] px-9 py-8">
-							<p className="text-[15px] leading-[1.9] text-[#F5E9C8]">
-								ゲーム改善のためのご意見・不具合報告をお寄せください。ログインは不要です。返信が必要な場合はメールアドレスをご記入ください。
+						<main className="flex flex-col gap-6 rounded-[10px] border-2 border-[#C9A961] bg-[#0A1A35DD] px-9 py-7">
+							{/* セクション見出し */}
+							<div className="flex items-center gap-2.5">
+								<span className="h-6 w-1 rounded-sm bg-[#C8302A]" />
+								<h2 className="text-[22px] font-extrabold text-[#E5C875]">フィードバックを送信</h2>
+							</div>
+							<p className="text-[13px] leading-[1.7] text-[#B8A874]" style={SANS}>
+								上毛かるたタイピングをより良くするため、皆様の声をお聞かせください。すべての項目を入力後、送信ボタンを押してください。
 							</p>
 
 							{flash?.alert && (
 								<p
 									className="rounded-lg border border-[#C8302A] bg-[#2A0E0C] px-4 py-3 text-sm font-semibold text-[#F1A5A0]"
+									style={SANS}
 									role="alert"
 								>
 									{flash.alert}
@@ -108,30 +148,36 @@ export default function Feedback() {
 							)}
 
 							<form onSubmit={submit} className="flex flex-col gap-6" noValidate>
-								{/* カテゴリ */}
-								<div className="flex flex-col gap-2">
-									<label htmlFor="feedback-category" className={FIELD_LABEL}>
-										種類
-									</label>
-									<select
-										id="feedback-category"
-										value={data.category}
-										onChange={(e) => setData('category', e.target.value)}
-										required
-										className={`${FIELD_CONTROL} cursor-pointer appearance-none font-bold`}
-									>
-										<option value="" disabled className="bg-[#132D57] text-[#B8A874]">
-											選択してください
-										</option>
-										{CATEGORIES.map((c) => (
-											<option key={c.value} value={c.value} className="bg-[#132D57] text-[#F5E9C8]">
-												{c.label}
-											</option>
-										))}
-									</select>
+								{/* 種類 */}
+								<div className="flex flex-col gap-2.5">
+									<span className={FIELD_LABEL}>種類</span>
+									<div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+										{CATEGORIES.map(({ value, label, icon: Icon }) => {
+											const selected = data.category === value;
+											return (
+												<button
+													key={value}
+													type="button"
+													aria-pressed={selected}
+													onClick={() => selectCategory(value)}
+													className={`flex flex-col items-center justify-center gap-2 rounded-lg px-2.5 py-3.5 text-center transition-colors ${
+														selected
+															? 'border-2 border-[#E5C875] bg-[#C8302A] text-white'
+															: 'border border-[#C9A961] bg-[#132D57]/60 text-[#F5E9C8] hover:bg-[#132D57]'
+													}`}
+												>
+													<Icon size={22} />
+													<span className="text-[13px] font-bold">{label}</span>
+												</button>
+											);
+										})}
+									</div>
 									<FieldError messages={errors.category} />
 									{data.category === 'usage_question' && (
-										<p className="flex items-start gap-2 rounded-lg border border-[#C9A961]/60 bg-[#132D57]/60 px-4 py-3 text-[13px] leading-[1.7] text-[#F5E9C8]">
+										<p
+											className="flex items-start gap-2 rounded-lg border border-[#C9A961]/60 bg-[#132D57]/60 px-4 py-3 text-[13px] leading-[1.7] text-[#F5E9C8]"
+											style={SANS}
+										>
 											<BookOpen className="mt-0.5 h-4 w-4 shrink-0 text-[#E5C875]" />
 											<span>
 												操作やルールのご質問は{' '}
@@ -144,33 +190,63 @@ export default function Feedback() {
 									)}
 								</div>
 
-								{/* 本文 */}
-								<div className="flex flex-col gap-2">
-									<label htmlFor="feedback-body" className={FIELD_LABEL}>
-										内容
+								{/* 件名（任意） */}
+								<div className="flex flex-col gap-2.5">
+									<label htmlFor="feedback-subject" className={FIELD_LABEL}>
+										件名
 									</label>
-									<textarea
-										id="feedback-body"
-										value={data.body}
-										onChange={(e) => setData('body', e.target.value)}
-										required
-										maxLength={BODY_MAX_LENGTH}
-										rows={7}
-										placeholder="お気づきの点、ご要望などをご記入ください。"
-										className={`${FIELD_CONTROL} resize-y leading-[1.8]`}
+									<input
+										id="feedback-subject"
+										type="text"
+										value={data.subject}
+										onChange={(e) => setData('subject', e.target.value)}
+										maxLength={SUBJECT_MAX_LENGTH}
+										placeholder="例: タイピング判定について"
+										className={TEXT_INPUT}
+										style={SANS}
 									/>
+									<FieldError messages={errors.subject} />
+								</div>
+
+								{/* メッセージ（必須） */}
+								<div className="flex flex-col gap-2.5">
 									<div className="flex items-center justify-between">
-										<FieldError messages={errors.body} />
-										<span className="ml-auto text-xs text-[#B8A874]">
+										<div className="flex items-center gap-2">
+											<label htmlFor="feedback-body" className={FIELD_LABEL}>
+												メッセージ
+											</label>
+											<span
+												className="rounded-[4px] bg-[#C8302A] px-2 py-0.5 text-[10px] font-bold text-white"
+												style={SANS}
+											>
+												必須
+											</span>
+										</div>
+										<span className="text-xs font-medium text-[#B8A874]" style={SANS}>
 											{data.body.length} / {BODY_MAX_LENGTH}
 										</span>
 									</div>
+									<textarea
+										id="feedback-body"
+										value={data.body}
+										onChange={(e) => {
+											setData('body', e.target.value);
+											if (errors.body) form.clearErrors('body');
+										}}
+										required
+										maxLength={BODY_MAX_LENGTH}
+										rows={8}
+										placeholder="お気づきの点、ご要望などをご記入ください。"
+										className={`${TEXT_INPUT} resize-y py-3.5 leading-[1.8]`}
+										style={SANS}
+									/>
+									<FieldError messages={errors.body} />
 								</div>
 
-								{/* メール（任意） */}
-								<div className="flex flex-col gap-2">
+								{/* 返信用メールアドレス（任意） */}
+								<div className="flex flex-col gap-2.5">
 									<label htmlFor="feedback-email" className={FIELD_LABEL}>
-										メールアドレス（任意）
+										返信用メールアドレス（任意）
 									</label>
 									<input
 										id="feedback-email"
@@ -178,7 +254,8 @@ export default function Feedback() {
 										value={data.email}
 										onChange={(e) => setData('email', e.target.value)}
 										placeholder="返信が必要な場合のみ"
-										className={FIELD_CONTROL}
+										className={TEXT_INPUT}
+										style={SANS}
 									/>
 									<FieldError messages={errors.email} />
 								</div>
@@ -196,14 +273,34 @@ export default function Feedback() {
 									/>
 								</div>
 
-								<button
-									type="submit"
-									disabled={processing}
-									className="flex items-center justify-center gap-2.5 self-start rounded-lg border border-[#E5C875] bg-linear-to-b from-[#E5C875] to-[#C9A961] px-8 py-3 text-[15px] font-extrabold text-[#0F2952] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-								>
-									<MessageCircle className="h-[18px] w-[18px]" />
-									送信する
-								</button>
+								{/* 注意文 + アクション */}
+								<div className="flex flex-wrap items-center gap-x-4 gap-y-3">
+									<p
+										className="flex flex-1 items-center gap-1.5 text-xs font-medium text-[#B8A874]"
+										style={SANS}
+									>
+										<Info className="h-3.5 w-3.5 shrink-0 text-[#C9A961]" />
+										送信された内容はサービス改善のためにのみ利用されます
+									</p>
+									<div className="flex items-center gap-3">
+										<button
+											type="button"
+											onClick={() => form.reset()}
+											className="flex items-center gap-2 rounded-lg border border-[#C9A961] bg-[#0A1A35]/60 px-6 py-3 text-sm font-bold text-[#F5E9C8] transition-colors hover:bg-[#0A1A35]"
+										>
+											<RotateCcw className="h-4 w-4 text-[#E5C875]" />
+											クリア
+										</button>
+										<button
+											type="submit"
+											disabled={processing}
+											className="flex items-center gap-2.5 rounded-lg border border-[#E5C875] bg-linear-to-b from-[#E04A43] to-[#C8302A] px-7 py-3 text-[15px] font-extrabold text-white shadow-[0_2px_6px_#00000066] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+										>
+											<Send className="h-4 w-4" />
+											送信する
+										</button>
+									</div>
+								</div>
 							</form>
 						</main>
 					)}

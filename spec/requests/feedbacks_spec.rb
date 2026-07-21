@@ -25,7 +25,9 @@ RSpec.describe "Feedbacks", type: :request do
   end
 
   describe "POST /feedback" do
-    let(:payload) { { category: "bug_report", body: "スコアが表示されません。", email: "" } }
+    let(:payload) do
+      { category: "bug_report", subject: "スコア表示の不具合", body: "スコアが表示されません。", email: "" }
+    end
 
     context "with a valid payload" do
       it "creates a feedback row and redirects back to the form" do
@@ -37,8 +39,17 @@ RSpec.describe "Feedbacks", type: :request do
 
         feedback = Feedback.last
         expect(feedback.category).to eq("bug_report")
+        expect(feedback.subject).to eq("スコア表示の不具合")
         expect(feedback.body).to eq("スコアが表示されません。")
         expect(feedback.email).to be_blank
+      end
+
+      it "keeps subject optional" do
+        expect {
+          post "/feedback", params: payload.merge(subject: "")
+        }.to change(Feedback, :count).by(1)
+
+        expect(Feedback.last.subject).to be_blank
       end
 
       it "stores user_id nil when logged out" do

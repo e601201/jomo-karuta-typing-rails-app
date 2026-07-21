@@ -33,6 +33,6 @@ class FeedbacksController < ApplicationController
 
   # user_id は許可しない（session から決めるため）
   def feedback_params
-    params.permit(:category, :body, :email)
+    params.permit(:category, :subject, :body, :email)
   end
 end

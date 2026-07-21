@@ -38,6 +38,23 @@ RSpec.describe Feedback, type: :model do
       end
     end
 
+    describe "subject" do
+      it "is valid when blank (optional)" do
+        expect(build(:feedback, subject: nil)).to be_valid
+        expect(build(:feedback, subject: "")).to be_valid
+      end
+
+      it "is valid at exactly the max length" do
+        expect(build(:feedback, subject: "あ" * Feedback::SUBJECT_MAX_LENGTH)).to be_valid
+      end
+
+      it "is invalid past the max length" do
+        feedback = build(:feedback, subject: "あ" * (Feedback::SUBJECT_MAX_LENGTH + 1))
+        expect(feedback).not_to be_valid
+        expect(feedback.errors[:subject]).to be_present
+      end
+    end
+
     describe "email" do
       it "is valid when blank (optional)" do
         expect(build(:feedback, email: nil)).to be_valid
