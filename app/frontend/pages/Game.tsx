@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Head, router } from '@inertiajs/react';
-import type { GameMode, RandomModeDifficulty } from '@/types';
+import { Head, router, usePage } from '@inertiajs/react';
+import type { GameMode, RandomModeDifficulty, SharedProps } from '@/types';
 import { gameStore, useGameStore, type GameScore } from '@/stores/game-store';
+import { saveGameResult } from '@/lib/api/game-results';
 import { InputValidator } from '@/lib/typing/input-validator';
 import { TypingSoundManager } from '@/lib/audio/typing-sounds';
 import { resolveGameParams } from '@/features/game/resolve-game-params';
@@ -81,6 +82,9 @@ export default function Game(props: GameProps) {
 	const sessionIsManualExit = useGameStore((s) => s.session?.isManualExit);
 	const sessionTotalCards = useGameStore((s) => s.session?.totalCards);
 
+	// プレイ記録の自動保存はログインユーザーのみ（ADR 0005）
+	const { auth } = usePage().props as unknown as SharedProps;
+
 	// タイムアタックモード用の状態
 	const timeAttackElapsedTime = useGameStore((s) => s.timer.elapsedTime);
 	const timeAttackPenalty = useGameStore((s) => s.timer.penalty || 0);
@@ -113,6 +117,7 @@ export default function Game(props: GameProps) {
 	const soundManagerRef = useRef<TypingSoundManager | null>(null);
 	const hintTimerRef = useRef<number | null>(null);
 	const previousCardIdRef = useRef<string | null>(null);
+	const gameResultSavedRef = useRef(false); // プレイ記録の二重保存防止
 	const totalCards = gameMode === 'timeattack' ? 10 : data.cards?.length || 0;
 
 	// 初期化（マウント時にセッション開始、アンマウント時に終了）
@@ -234,6 +239,37 @@ export default function Game(props: GameProps) {
 		isLoading
 	]);
 	/* eslint-enable react-hooks/set-state-in-effect */
+
+	// 自然完了時に一度だけプレイ記録を保存する（ログインのみ・中断は保存しない。ADR 0005 / #20）
+	useEffect(() => {
+		if (!isGameComplete || sessionIsManualExit) return;
+		if (gameResultSavedRef.current) return;
+		if (!auth.user) return;
+		// 永続化対象は random / timeattack のみ（scores と同じ enum。将来フェーズのモードは対象外）
+		if (gameMode !== 'random' && gameMode !== 'timeattack') return;
+
+		gameResultSavedRef.current = true;
+		void saveGameResult({
+			game_mode: gameMode,
+			difficulty: currentDifficulty,
+			// score.accuracy は表示用の小数（例 98.32）なので整数パーセントへ丸める
+			score: gameMode === 'random' ? Math.round(score.total || 0) : undefined,
+			time: gameMode === 'timeattack' ? Math.round(timeAttackFinalTime) : undefined,
+			accuracy: Math.round(score.accuracy ?? 100),
+			wpm: Math.round(score.speed ?? 0),
+			max_combo: Math.round(score.maxCombo ?? 0),
+			correct_cards: completedCardsCount
+		});
+	}, [
+		isGameComplete,
+		sessionIsManualExit,
+		auth.user,
+		gameMode,
+		currentDifficulty,
+		score,
+		timeAttackFinalTime,
+		completedCardsCount
+	]);
 
 	// ヒント表示機能（上級者モードで Enter キー）
 	const showHintText = () => {

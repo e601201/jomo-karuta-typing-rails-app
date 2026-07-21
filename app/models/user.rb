@@ -7,14 +7,17 @@ class User < ApplicationRecord
   # 退会してもランキングの記録は残す（nick_name は scores 行が持っており、
   # リーダーボードは users を参照しないため、:destroy だと公開順位が書き換わる）
   has_many :scores, dependent: :nullify
+  # プレイ記録は非公開の個人データなので、退会時は一緒に消す
+  has_many :game_results, dependent: :destroy
 
   validates :email, presence: true, uniqueness: true
 
-  # ベストスコア（ランキング登録したスコアの中での自己最高。CONTEXT.md 参照）。
+  # ベストスコア（全プレイ記録の中での自己最高。CONTEXT.md / ADR 0005 参照）。
+  # 導出元はランキング登録済みの scores ではなく game_results（全プレイ）。
   # 並び順はリーダーボードとタイブレーク（created_at 先着優先)まで揃える
   def best_scores
-    random = scores.random.where.not(score: nil).order(score: :desc, created_at: :asc).first
-    timeattack = scores.timeattack.where.not(time_ms: nil).order(time_ms: :asc, created_at: :asc).first
+    random = game_results.random.where.not(score: nil).order(score: :desc, created_at: :asc).first
+    timeattack = game_results.timeattack.where.not(time_ms: nil).order(time_ms: :asc, created_at: :asc).first
     {
       random: random && { score: random.score, difficulty: random.difficulty },
       timeattack: timeattack && { time_ms: timeattack.time_ms, difficulty: timeattack.difficulty }

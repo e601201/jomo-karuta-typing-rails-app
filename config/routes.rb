@@ -9,6 +9,7 @@ Rails.application.routes.draw do
   get "settings",    to: "pages#settings"
   get "ranking",     to: "rankings#index"
   get "profile",     to: "profiles#show"
+  get "history",     to: "histories#index" # プレイ履歴（ログイン必須。#20）
   get "how-to-play", to: "pages#how_to_play"
 
   # フィードバック（#7）。ゲストも送れるため require_login は付けない。
@@ -24,6 +25,8 @@ Rails.application.routes.draw do
 
   namespace :api do
     resources :scores, only: :create
+    # プレイ記録の自動保存（ログインユーザーのみ・ゲーム自然完了時。#20 / ADR 0005）
+    resources :game_results, only: :create
     resource :settings, only: :update
   end
 

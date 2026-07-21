@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_21_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_22_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -32,6 +32,21 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_000001) do
     t.datetime "updated_at", null: false
     t.bigint "user_id"
     t.index ["user_id"], name: "index_feedbacks_on_user_id"
+  end
+
+  create_table "game_results", force: :cascade do |t|
+    t.integer "accuracy", null: false
+    t.integer "correct_cards", null: false
+    t.datetime "created_at", null: false
+    t.enum "difficulty", null: false, enum_type: "difficulty"
+    t.enum "game_mode", null: false, enum_type: "game_mode"
+    t.integer "max_combo", null: false
+    t.integer "score"
+    t.integer "time_ms"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.integer "wpm", null: false
+    t.index ["user_id", "created_at"], name: "idx_game_results_user_recent", order: { created_at: :desc }
   end
 
   create_table "identities", force: :cascade do |t|
@@ -87,6 +102,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_21_000001) do
   end
 
   add_foreign_key "feedbacks", "users"
+  add_foreign_key "game_results", "users"
   add_foreign_key "identities", "users"
   add_foreign_key "scores", "users"
   add_foreign_key "user_settings", "users"
