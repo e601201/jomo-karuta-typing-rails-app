@@ -47,7 +47,8 @@ const CATEGORY_INFO: {
 		icon: CircleQuestionMark,
 		color: '#E5C875'
 	},
-	{ label: 'その他', desc: '感想・お問い合わせ', icon: MessageCircle, color: '#0F2952' }
+	// デザインは #0F2952 だが背景 #0A1A35 とほぼ同色で埋もれるため、視認できる控えめな金にする
+	{ label: 'その他', desc: '感想・お問い合わせ', icon: MessageCircle, color: '#B8A874' }
 ];
 
 const FIELD_LABEL = 'text-sm font-semibold text-[#C9A961]';
