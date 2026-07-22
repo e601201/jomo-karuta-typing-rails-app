@@ -11,7 +11,6 @@ import { createStore, type StoreApi } from 'zustand/vanilla';
 import { useStore } from 'zustand';
 import { InputValidator } from '@/lib/typing/input-validator';
 import type { KarutaCard, GameMode, RandomModeDifficulty } from '@/types';
-import { LocalStorageService } from '@/lib/storage/local-storage';
 import { calcTypingScore } from '@/lib/game/score';
 import { ImagePreloader } from '@/lib/image-preloader';
 
@@ -217,12 +216,6 @@ export function createGameStore() {
 	// タイマー更新用のインターバル
 	let timerInterval: ReturnType<typeof setInterval> | null = null;
 
-	// 自動保存用のインターバル
-	let autoSaveInterval: ReturnType<typeof setInterval> | null = null;
-
-	// ストレージサービス
-	let storageService: LocalStorageService | null = null;
-
 	// セッション開始
 	async function startSession(
 		mode: GameMode,
@@ -324,12 +317,6 @@ export function createGameStore() {
 		}
 
 		// タイマーはカウントダウン後に開始されるため、ここでは開始しない
-
-		// LocalStorageServiceを初期化
-		storageService = new LocalStorageService();
-
-		// 自動保存を開始（5秒ごとに保存）
-		startAutoSave();
 	}
 
 	// スキップ（完了扱いにしない）
@@ -671,78 +658,6 @@ export function createGameStore() {
 		});
 	}
 
-	// セッションを保存
-	function saveSession() {
-		const state = store.getState();
-		if (!storageService || !state.session?.isActive || !state.timer.startTime) return;
-
-		const elapsedTime = state.timer.elapsedTime;
-		const accuracy =
-			state.statistics.totalKeystrokes > 0
-				? state.statistics.correctKeystrokes / state.statistics.totalKeystrokes
-				: 1;
-
-		// WPM計算
-		const elapsedMinutes = elapsedTime / 60000;
-		const words = state.statistics.correctKeystrokes / 5;
-		const wpm = elapsedMinutes > 0 ? Math.round(words / elapsedMinutes) : 0;
-
-		const total = calcTypingScore(
-			{
-				Q: state.cards.completed.length,
-				accuracy,
-				wpm,
-				maxCombo: state.statistics.maxCombo
-			},
-			state.session?.difficulty
-		);
-
-		const session = {
-			id: state.session.id,
-			mode: state.session.mode,
-			startTime: state.timer.startTime.toISOString(),
-			cards: {
-				current: state.cards.current,
-				currentIndex: state.cards.currentIndex,
-				remaining: state.cards.remaining,
-				completed: state.cards.completed
-			},
-			score: {
-				total,
-				accuracy: accuracy * 100,
-				speed: wpm,
-				combo: state.statistics.currentCombo,
-				maxCombo: state.statistics.maxCombo
-			},
-			timer: {
-				elapsedTime,
-				pausedDuration: state.timer.totalPauseTime
-			}
-		};
-
-		try {
-			storageService.saveSession(session);
-		} catch (error) {
-			console.warn('Failed to save session:', error);
-		}
-	}
-
-	// 自動保存を開始
-	function startAutoSave() {
-		stopAutoSave();
-		autoSaveInterval = setInterval(() => {
-			saveSession();
-		}, 5000); // 5秒ごとに保存
-	}
-
-	// 自動保存を停止
-	function stopAutoSave() {
-		if (autoSaveInterval) {
-			clearInterval(autoSaveInterval);
-			autoSaveInterval = null;
-		}
-	}
-
 	// 一時停止
 	function pauseGame() {
 		update((state) => ({
@@ -760,9 +675,6 @@ export function createGameStore() {
 			clearInterval(timerInterval);
 			timerInterval = null;
 		}
-
-		// 自動保存も停止
-		stopAutoSave();
 	}
 
 	// 再開
@@ -788,9 +700,6 @@ export function createGameStore() {
 
 		// タイマー再開
 		startTimer();
-
-		// 自動保存再開
-		startAutoSave();
 	}
 
 	// セッション終了
@@ -804,9 +713,6 @@ export function createGameStore() {
 		if (state.session.mode === 'timeattack' && !isManualExit) {
 			finalTime = state.timer.elapsedTime + state.timer.penalty;
 		}
-
-		// 最後にセッションを保存
-		saveSession();
 
 		update((s) => ({
 			...s,
@@ -830,14 +736,6 @@ export function createGameStore() {
 			clearInterval(timerInterval);
 			timerInterval = null;
 		}
-
-		// 自動保存停止
-		stopAutoSave();
-
-		// LocalStorageのセッションをクリア
-		if (storageService) {
-			storageService.clearSession();
-		}
 	}
 
 	// セッションリセット
@@ -847,9 +745,6 @@ export function createGameStore() {
 			clearInterval(timerInterval);
 			timerInterval = null;
 		}
-
-		// 自動保存停止
-		stopAutoSave();
 
 		set(initialState);
 	}
@@ -924,9 +819,6 @@ export function createGameStore() {
 
 		// タイマー開始
 		startTimer();
-
-		// 自動保存もここで開始（カウントダウン後）
-		startAutoSave();
 	}
 
 	// ユーティリティ関数
@@ -977,9 +869,6 @@ export function createGameStore() {
 			clearInterval(timerInterval);
 			timerInterval = null;
 		}
-
-		// 自動保存も停止
-		stopAutoSave();
 	}
 
 	return {
@@ -1005,9 +894,6 @@ export function createGameStore() {
 		resetSession,
 		updateTimer,
 		startGameAfterCountdown,
-		saveSession,
-		startAutoSave,
-		stopAutoSave,
 		calculateWPM,
 		calculateKeystrokeAccuracy,
 		destroy

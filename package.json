@@ -39,7 +39,6 @@
 		"@tailwindcss/typography": "^0.5.20",
 		"@tailwindcss/vite": "^4.3.3",
 		"@vitejs/plugin-react": "^6.0.3",
-		"dexie": "^4.4.4",
 		"lucide-react": "^1.25.0",
 		"react": "^19.2.7",
 		"react-dom": "^19.2.7",
