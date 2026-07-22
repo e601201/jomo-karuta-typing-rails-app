@@ -36,7 +36,7 @@ describe('matchHiraganaProgress', () => {
 		});
 	});
 
-	it("単独の'n'は「ん」の部分入力として保持する", () => {
+	it("単独の'n'は「ん」の打鍵途中として保持する", () => {
 		expect(progressFor('ぐんまけん', 'gun')).toEqual({
 			completedCount: 1,
 			partiallyCompleteIndex: 1
@@ -89,7 +89,7 @@ describe('matchHiraganaProgress', () => {
 		});
 	});
 
-	it('途中までの子音は部分入力として現在位置を指す', () => {
+	it('途中までの子音は打鍵途中として現在位置を指す', () => {
 		expect(progressFor('つるまう', 'tsur')).toEqual({
 			completedCount: 1,
 			partiallyCompleteIndex: 1
@@ -102,7 +102,7 @@ describe('状態配列ビルダー', () => {
 		expect(buildInputStatesAfterInput(4, 2)).toEqual(['correct', 'correct', 'pending', 'pending']);
 	});
 
-	it('buildInputStatesAfterBackspace: 部分入力中の単位は current', () => {
+	it('buildInputStatesAfterBackspace: 打鍵途中の単位は current', () => {
 		expect(buildInputStatesAfterBackspace(4, 1, 1)).toEqual([
 			'correct',
 			'current',
@@ -111,7 +111,7 @@ describe('状態配列ビルダー', () => {
 		]);
 	});
 
-	it('buildInputStatesAfterBackspace: 部分入力が無ければ pending のみ', () => {
+	it('buildInputStatesAfterBackspace: 打鍵途中が無ければ pending のみ', () => {
 		expect(buildInputStatesAfterBackspace(3, 1, -1)).toEqual(['correct', 'pending', 'pending']);
 	});
 

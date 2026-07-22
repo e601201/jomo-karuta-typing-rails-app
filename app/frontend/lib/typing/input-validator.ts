@@ -160,14 +160,11 @@ const ROMAJI_MAP: Record<string, string[]> = {
 /**
  * ローマ字入力検証クラス
  */
-import type { PartialInputRange } from '@/types';
-
 export class InputValidator {
 	private currentPosition: number = 0;
 	private currentInput: string = '';
 	private mistakeCount: number = 0;
 	private validPatterns: string[] = [];
-	private partialRange: PartialInputRange | null = null;
 	private targetText: string = '';
 
 	/**
@@ -490,52 +487,5 @@ export class InputValidator {
 		this.currentPosition = 0;
 		this.currentInput = '';
 		this.mistakeCount = 0;
-	}
-
-	/**
-	 * 部分入力範囲を設定
-	 */
-	setPartialRange(range: PartialInputRange): void {
-		this.partialRange = range;
-		this.targetText = range.text;
-		this.validPatterns = this.getRomajiPatterns(range.text);
-		this.reset();
-	}
-
-	/**
-	 * 部分入力の検証
-	 */
-	validatePartialInput(input: string, position: number): ValidationResult {
-		if (!this.partialRange) {
-			return this.validateInput(this.targetText, input);
-		}
-
-		// 範囲外の入力は無効
-		if (position >= this.partialRange.text.length) {
-			return {
-				isValid: false,
-				progress: 1.0,
-				isComplete: true
-			};
-		}
-
-		const result = this.validateInput(this.partialRange.text, input);
-
-		// 部分入力の完了判定
-		if (result.isValid && result.progress === 1.0) {
-			result.isComplete = true;
-		}
-
-		return result;
-	}
-
-	/**
-	 * 部分入力用のローマ字パターンを取得
-	 */
-	getPartialRomajiPatterns(): string[] {
-		if (!this.partialRange) {
-			return this.validPatterns;
-		}
-		return this.getRomajiPatterns(this.partialRange.text);
 	}
 }

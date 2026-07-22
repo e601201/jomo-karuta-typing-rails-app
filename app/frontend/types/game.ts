@@ -43,36 +43,6 @@ export type GameMode =
 	| 'multiplayer'; // 対戦モード (Phase 4)
 
 /**
- * 部分入力モード設定
- */
-export interface PartialInputConfig {
-	enabled: boolean; // 部分入力モードの有効/無効
-	characterCount: number; // 入力対象文字数
-	mode: PartialInputMode; // 範囲決定モード
-	highlightRange: boolean; // 範囲ハイライトの有無
-}
-
-/**
- * 部分入力モードの種類
- */
-export type PartialInputMode = 'start' | 'random' | 'important';
-
-/**
- * 部分入力範囲
- */
-export interface PartialInputRange {
-	start: number; // 開始位置（0ベース）
-	end: number; // 終了位置（含まない）
-	text: string; // 対象テキスト
-	fullText: string; // 全文
-}
-
-/**
- * 部分入力プリセット
- */
-export type PartialInputPreset = 'beginner' | 'intermediate' | 'advanced' | 'custom';
-
-/**
  * ランダムモード難易度
  */
 export type RandomModeDifficulty = 'beginner' | 'standard' | 'advanced';
