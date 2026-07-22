@@ -7,7 +7,7 @@ import type { InputValidator } from '@/lib/typing/input-validator';
  * 旧実装では「入力がどのひらがな単位まで到達しているか」を求めるループが
  * handleCharacterInput と handleBackspace にほぼ同一のコードとして2回
  * 出現していた。ここでは matchHiraganaProgress として1つに統合する。
- * 状態配列の組み立ては旧実装の非対称性（文字入力後は部分入力中の単位も
+ * 状態配列の組み立ては旧実装の非対称性（文字入力後は打鍵途中の単位も
  * 'pending'、バックスペース後のみ 'current'）をそのまま保存している。
  */
 
@@ -119,7 +119,7 @@ export function matchHiraganaProgress(
 
 /**
  * 正しい文字入力後のひらがな状態配列。
- * 旧実装は部分入力中の単位（partiallyCompleteIndex）にも 'pending' を
+ * 旧実装は打鍵途中の単位（partiallyCompleteIndex）にも 'pending' を
  * 割り当てていたため、completedCount までが 'correct'、残りは 'pending'。
  */
 export function buildInputStatesAfterInput(
@@ -135,7 +135,7 @@ export function buildInputStatesAfterInput(
 
 /**
  * バックスペース後のひらがな状態配列。
- * こちらは部分入力中の単位を 'current' として表示する（旧実装の非対称性を保存）。
+ * こちらは打鍵途中の単位を 'current' として表示する（旧実装の非対称性を保存）。
  */
 export function buildInputStatesAfterBackspace(
 	unitCount: number,

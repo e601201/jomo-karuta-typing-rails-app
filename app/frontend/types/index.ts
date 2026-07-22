@@ -1,15 +1,7 @@
 import type { RandomModeDifficulty, UserSettings } from './game';
 
 // ゲーム関連（旧リポジトリ $lib/types の再エクスポートを踏襲）
-export type {
-	KarutaCard,
-	GameMode,
-	PartialInputConfig,
-	PartialInputMode,
-	PartialInputRange,
-	PartialInputPreset,
-	RandomModeDifficulty
-} from './game';
+export type { KarutaCard, GameMode, RandomModeDifficulty } from './game';
 
 // Inertia 共有 props
 export type FlashData = {

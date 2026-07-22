@@ -259,7 +259,7 @@ describe('GameStore - 入力管理', () => {
 		expect(state.cards.completed).toHaveLength(1);
 	});
 
-	it('部分入力が正しく判定される', async () => {
+	it('打鍵途中でも入力バッファ（current/position）が保たれる', async () => {
 		const { gameStore, startSession, updateInput } = store;
 
 		await startSession('random', mockCards);
