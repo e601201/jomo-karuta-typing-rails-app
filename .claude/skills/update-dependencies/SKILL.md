@@ -1,6 +1,6 @@
 ---
 name: update-dependencies
-description: Update Ruby gems and Node (bun) packages to their latest versions for the jomo-karuta-typing-rails-app. Use whenever the user says "依存関係を更新して", "依存関係をアップデート", asks to run bundle update / ncu, or asks to update gems or Node packages. Runs bundle update --all and npx npm-check-updates -u, validates gems with rubocop / brakeman / rails test and Node with bun run check / lint / test, holds back known-incompatible majors (TypeScript 7, @types/node ahead of the Node runtime), rolls back on failure, and creates a single combined commit matching the project convention (依存関係を…更新する).
+description: Update Ruby gems and Node (bun) packages to their latest versions for the jomo-karuta-typing-rails-app. Use whenever the user says "依存関係を更新して", "依存関係をアップデート", asks to run bundle update / ncu, or asks to update gems or Node packages. Runs bundle update --all and npx npm-check-updates -u, validates gems with rubocop / brakeman / rspec and Node with bun run check / lint / test, holds back known-incompatible majors (TypeScript 7, @types/node ahead of the Node runtime), rolls back on failure, and creates a single combined commit matching the project convention (依存関係を…更新する).
 ---
 
 # 依存関係更新スキル
@@ -47,9 +47,11 @@ Run the checks in this order — fail fast on cheap checks before paying for the
 
 1. `bin/rubocop`
 2. `bin/brakeman -q --no-pager`
-3. `bin/rails test`
+3. `bundle exec rspec`
 
 Any non-zero exit is a failure. Capture the failing command's output for the report.
+
+**`bin/rails test` を使わない。** このリポジトリの Ruby テストは minitest ではなく `spec/` 配下の RSpec。`test/` ディレクトリは Rails の雛形が残っているだけで中身が無いため、`bin/rails test` は `0 runs, 0 assertions` で **exit 0** する — 検証したつもりで何も検証していない状態になる。rspec の出力が `N examples, 0 failures`（N は 3 桁台）であることを確認すること。0 examples ならコマンドかパスを疑う。
 
 ### 1.4 失敗時のロールバック
 
@@ -159,7 +161,7 @@ Node / bun（package.json / bun.lock）:
 - typescript 7.x — typescript-eslint 未対応で lint がクラッシュ（tsc は通る、#10940）
 - @types/node 26 — ランタイムの Node v24 に合わせて据え置き
 
-検証: bin/rubocop / brakeman / rails test、bun run check / lint / test すべて green。
+検証: bin/rubocop / brakeman / rspec、bun run check / lint / test すべて green。
 ```
 
 コミット末尾には、このリポジトリの他コミット（`ead7097` / `783c082` 等）と同じく `Co-Authored-By:` と `Claude-Session:` トレーラーを付ける。`git commit` を直接実行してよい。
