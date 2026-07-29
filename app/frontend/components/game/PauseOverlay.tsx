@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Play, Settings, X } from 'lucide-react';
+import { formatClock } from '@/lib/format-clock';
 
 // デザインカンプ（design.pen）準拠のフォント指定
 const SERIF = { fontFamily: "'Noto Serif JP', serif" } as const;
@@ -23,14 +24,6 @@ interface Props {
 	showCountdown?: boolean;
 	countdownDuration?: number;
 	isCountingDown?: boolean;
-}
-
-// Format time to mm:ss
-function formatTime(ms: number): string {
-	const totalSeconds = Math.floor(ms / 1000);
-	const minutes = Math.floor(totalSeconds / 60);
-	const seconds = totalSeconds % 60;
-	return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
 export default function PauseOverlay({
@@ -197,7 +190,7 @@ export default function PauseOverlay({
 						<div className="mb-8 space-y-4">
 							<div className="grid grid-cols-2 gap-4">
 								{statBox('進捗', `${gameStats.currentCard}/${gameStats.totalCards}枚完了`)}
-								{statBox('経過時間', formatTime(gameStats.elapsedTime))}
+								{statBox('経過時間', formatClock(gameStats.elapsedTime))}
 							</div>
 
 							<div className="grid grid-cols-2 gap-4">

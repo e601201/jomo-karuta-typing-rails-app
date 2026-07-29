@@ -3,6 +3,7 @@ import { Head, router, usePage } from '@inertiajs/react';
 import type { GameMode, RandomModeDifficulty, SharedProps } from '@/types';
 import { gameStore, useGameStore, type GameScore } from '@/stores/game-store';
 import { saveGameResult } from '@/lib/api/game-results';
+import { formatClock } from '@/lib/format-clock';
 import { InputValidator } from '@/lib/typing/input-validator';
 import { TypingSoundManager } from '@/lib/audio/typing-sounds';
 import { resolveGameParams } from '@/features/game/resolve-game-params';
@@ -517,13 +518,6 @@ export default function Game(props: GameProps) {
 		return () => document.removeEventListener('keydown', listener);
 	}, []);
 
-	const formatTime = (ms: number): string => {
-		const seconds = Math.floor(ms / 1000);
-		const minutes = Math.floor(seconds / 60);
-		const secs = seconds % 60;
-		return `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-	};
-
 	const modeLabel =
 		gameMode === 'random'
 			? 'ランダム'
@@ -795,7 +789,7 @@ ${modeLabel} ${difficultyLabel}で${score.total.toLocaleString()}点獲得！
 											}`}
 											style={SERIF}
 										>
-											{formatTime(remainingTime)}
+											{formatClock(remainingTime)}
 										</span>
 									</div>
 								)}
