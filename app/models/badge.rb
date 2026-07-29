@@ -13,6 +13,10 @@ class Badge
   class Stats
     JST = ActiveSupport::TimeZone["Asia/Tokyo"]
 
+    # 網羅系（モード・難易度・モード×難易度）の進み具合。
+    # completed_at は全種が揃ったプレイの created_at（未達なら nil）
+    Coverage = Data.define(:count, :completed_at)
+
     attr_reader :results
 
     def initialize(results)
@@ -29,7 +33,7 @@ class Badge
 
     def best_min(&) = results.filter_map(&).min
 
-    # モード網羅（2種）: [到達種数, 全種が揃ったプレイの created_at | nil]
+    # モード網羅（2種）
     def mode_coverage = @mode_coverage ||= coverage(2, &:game_mode)
 
     # 難易度網羅（3種）
@@ -83,7 +87,7 @@ class Badge
         seen[k] = true
         unlocked_at = r.created_at if seen.size == target_count
       end
-      [ seen.size, unlocked_at ]
+      Coverage.new(count: seen.size, completed_at: unlocked_at)
     end
   end
 
@@ -97,14 +101,14 @@ class Badge
     Definition.new(
       id: "dual_wielder", name: "両刀使い", category: "初級",
       description: "ランダムとタイムアタックの両モードをプレイする",
-      unlock: ->(s) { s.mode_coverage.last },
-      progress: ->(s) { { current: s.mode_coverage.first.to_s, target: "2モード" } }
+      unlock: ->(s) { s.mode_coverage.completed_at },
+      progress: ->(s) { { current: s.mode_coverage.count.to_s, target: "2モード" } }
     ),
     Definition.new(
       id: "all_difficulties", name: "三段構え", category: "初級",
       description: "3つの難易度すべてでプレイする",
-      unlock: ->(s) { s.difficulty_coverage.last },
-      progress: ->(s) { { current: s.difficulty_coverage.first.to_s, target: "3難易度" } }
+      unlock: ->(s) { s.difficulty_coverage.completed_at },
+      progress: ->(s) { { current: s.difficulty_coverage.count.to_s, target: "3難易度" } }
     ),
     Definition.new(
       id: "perfect_accuracy", name: "百発百中", category: "精度",
@@ -199,8 +203,8 @@ class Badge
     Definition.new(
       id: "gunma_master", name: "群馬の主", category: "特別",
       description: "全モード×全難易度の6通りを制覇する",
-      unlock: ->(s) { s.combo_coverage.last },
-      progress: ->(s) { { current: s.combo_coverage.first.to_s, target: "6通り" } }
+      unlock: ->(s) { s.combo_coverage.completed_at },
+      progress: ->(s) { { current: s.combo_coverage.count.to_s, target: "6通り" } }
     )
   ].freeze
 
