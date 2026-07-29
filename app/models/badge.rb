@@ -92,7 +92,7 @@ class Badge
       id: "first_play", name: "初陣", category: "初級",
       description: "初めてゲームをプレイする",
       unlock: ->(s) { s.nth_play_at(1) },
-      progress: ->(s) { nil }
+      progress: ->(s) { { current: s.total_plays.to_s, target: "1回" } }
     ),
     Definition.new(
       id: "dual_wielder", name: "両刀使い", category: "初級",
@@ -133,14 +133,20 @@ class Badge
     Definition.new(
       id: "lightning", name: "電光石火", category: "スピード",
       description: "タイムアタックを2分30秒以内で完走する",
-      unlock: ->(s) { s.first_at { |r| r.time_ms && r.time_ms <= 150_000 } },
-      progress: ->(s) { (best = s.best_min(&:time_ms)) && { current: Badge.format_time(best), target: "2:30" } }
+      unlock: ->(s) { s.first_at { |r| r.game_mode == "timeattack" && r.time_ms && r.time_ms <= 150_000 } },
+      progress: ->(s) {
+        best = s.best_min { |r| r.time_ms if r.game_mode == "timeattack" }
+        best && { current: Badge.format_time(best), target: "2:30" }
+      }
     ),
     Definition.new(
       id: "godspeed", name: "神速", category: "スピード",
       description: "タイムアタックを1分30秒以内で完走する",
-      unlock: ->(s) { s.first_at { |r| r.time_ms && r.time_ms <= 90_000 } },
-      progress: ->(s) { (best = s.best_min(&:time_ms)) && { current: Badge.format_time(best), target: "1:30" } }
+      unlock: ->(s) { s.first_at { |r| r.game_mode == "timeattack" && r.time_ms && r.time_ms <= 90_000 } },
+      progress: ->(s) {
+        best = s.best_min { |r| r.time_ms if r.game_mode == "timeattack" }
+        best && { current: Badge.format_time(best), target: "1:30" }
+      }
     ),
     Definition.new(
       id: "gale", name: "疾風", category: "スピード",
@@ -175,8 +181,11 @@ class Badge
     Definition.new(
       id: "monument", name: "金字塔", category: "特別",
       description: "ランダムモードでスコア5,000以上を達成する",
-      unlock: ->(s) { s.first_at { |r| r.score && r.score >= 5_000 } },
-      progress: ->(s) { (best = s.best_max(&:score)) && { current: Badge.delimit(best), target: "5,000" } }
+      unlock: ->(s) { s.first_at { |r| r.game_mode == "random" && r.score && r.score >= 5_000 } },
+      progress: ->(s) {
+        best = s.best_max { |r| r.score if r.game_mode == "random" }
+        best && { current: Badge.delimit(best), target: "5,000" }
+      }
     ),
     Definition.new(
       id: "kokushi", name: "国士無双", category: "特別",

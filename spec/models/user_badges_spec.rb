@@ -30,6 +30,8 @@ RSpec.describe "User#badges" do
       )
       # カテゴリはカタログ定義順（タブ表示もこの順に従う）
       expect(badges.map { |b| b[:category] }.uniq).to eq(%w[初級 精度 スピード 継続 特別])
+      # 初陣は積算進捗を持つ（進捗なしは複合条件の完全無欠のみ）
+      expect(badges.first[:progress]).to eq(current: "0", target: "1回")
     end
   end
 
@@ -63,7 +65,7 @@ RSpec.describe "User#badges" do
   end
 
   describe "進捗表示" do
-    it "タイム系は自己ベストタイムを mm:ss で表示する（1:52 / 1:30）" do
+    it "タイム系はベストタイムを mm:ss で表示する（1:52 / 1:30）" do
       user = create(:user)
       create(:game_result, :timeattack_result, user: user, time_ms: 145_000)
       create(:game_result, :timeattack_result, user: user, time_ms: 112_000)
@@ -80,13 +82,27 @@ RSpec.describe "User#badges" do
       expect(badge(user, "lightning")[:progress]).to be_nil
     end
 
-    it "スコア系は自己最高スコアを桁区切りで表示する" do
+    it "スコア系はベストスコアを桁区切りで表示する" do
       user = create(:user)
       create(:game_result, :random_result, user: user, score: 3200)
       create(:game_result, :random_result, user: user, score: 4100)
 
       expect(badge(user, "monument")[:progress]).to eq(current: "4,100", target: "5,000")
       expect(badge(user, "monument")).to include(unlocked: false)
+    end
+
+    it "タイム系・スコア系はモードも判定する（逆モードに値が紛れても解除・進捗に使わない）" do
+      user = create(:user)
+      # API はモードに関係なく score/time を permit しているため、逆モードに値が載った行を防げない。
+      # バッジの条件は「タイムアタックのタイム」「ランダムのスコア」なのでモードで弾く
+      create(:game_result, user: user, game_mode: "random", score: 1_000, time_ms: 80_000)
+      create(:game_result, user: user, game_mode: "timeattack", score: 6_000, time_ms: 200_000)
+
+      expect(badge(user, "lightning")).to include(unlocked: false)
+      expect(badge(user, "godspeed")).to include(unlocked: false)
+      expect(badge(user, "godspeed")[:progress]).to eq(current: "3:20", target: "1:30")
+      expect(badge(user, "monument")).to include(unlocked: false)
+      expect(badge(user, "monument")[:progress]).to eq(current: "1,000", target: "5,000")
     end
 
     it "国士無双の進捗は上級プレイの正確率だけを見る" do
