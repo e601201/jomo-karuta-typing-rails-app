@@ -1,3 +1,5 @@
+import { formatTime } from '@/lib/format-time';
+
 interface Props {
 	elapsedTime: number; // ミリ秒
 	penalty: number; // ミリ秒
@@ -7,13 +9,6 @@ interface Props {
 // デザインカンプ（design.pen）準拠のフォント指定
 const SERIF = { fontFamily: "'Noto Serif JP', serif" } as const;
 const MONO = { fontFamily: "'JetBrains Mono', monospace" } as const;
-
-// 時間をフォーマット (SS.ms形式)
-function formatTime(ms: number): string {
-	const seconds = Math.floor(ms / 1000);
-	const milliseconds = Math.floor((ms % 1000) / 10); // 10ms単位
-	return `${seconds}.${milliseconds.toString().padStart(2, '0')}`;
-}
 
 export default function TimeAttackTimer({ elapsedTime, penalty, isCompleted }: Props) {
 	// 最終タイムを計算

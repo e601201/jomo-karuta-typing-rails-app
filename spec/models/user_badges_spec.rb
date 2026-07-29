@@ -65,13 +65,25 @@ RSpec.describe "User#badges" do
   end
 
   describe "進捗表示" do
-    it "タイム系はベストタイムを mm:ss で表示する（1:52 / 1:30）" do
+    it "タイム系はベストタイムを m:ss で表示する（1:52 / 1:30）" do
       user = create(:user)
       create(:game_result, :timeattack_result, user: user, time_ms: 145_000)
       create(:game_result, :timeattack_result, user: user, time_ms: 112_000)
 
       expect(badge(user, "godspeed")[:progress]).to eq(current: "1:52", target: "1:30")
       expect(badge(user, "lightning")).to include(unlocked: true) # 145s ≤ 2:30
+    end
+
+    it "タイム表示は秒未満を切り上げる（未達の記録が目標ちょうどに見えない）" do
+      user = create(:user)
+      create(:game_result, :timeattack_result, user: user, time_ms: 90_500)
+
+      expect(badge(user, "godspeed")[:progress]).to eq(current: "1:31", target: "1:30")
+      expect(badge(user, "godspeed")).to include(unlocked: false)
+
+      create(:game_result, :timeattack_result, user: user, time_ms: 90_000)
+      expect(badge(user, "godspeed")[:progress]).to eq(current: "1:30", target: "1:30")
+      expect(badge(user, "godspeed")).to include(unlocked: true)
     end
 
     it "最良値方式のバッジは該当する記録が無ければ進捗を持たない" do
