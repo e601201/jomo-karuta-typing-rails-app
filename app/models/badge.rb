@@ -224,8 +224,10 @@ class Badge
     end
   end
 
+  # 進行・目標表示用の m:ss 表記（ADR 0008）。秒未満は切り上げる:
+  # 切り捨てだと未達の 90,500ms が目標ちょうど（1:30 / 1:30）に見えてしまう
   def self.format_time(ms)
-    sec = ms / 1000
+    sec = ms.fdiv(1000).ceil
     format("%d:%02d", sec / 60, sec % 60)
   end
 
