@@ -36,7 +36,7 @@ class Badge
     def difficulty_coverage = @difficulty_coverage ||= coverage(3, &:difficulty)
 
     # モード×難易度網羅（6通り）
-    def combo_coverage = @combo_coverage ||= coverage(6) { |r| [r.game_mode, r.difficulty] }
+    def combo_coverage = @combo_coverage ||= coverage(6) { |r| [ r.game_mode, r.difficulty ] }
 
     # n日連続を最初に達成した日の、その日最初のプレイの created_at（未達成なら nil）。
     # 判定は現在ではなく史上最大の連続に対して行う（CONTEXT.md「連続プレイ」）
@@ -55,7 +55,7 @@ class Badge
     def current_streak
       days = play_days.to_set
       today = Time.current.in_time_zone(JST).to_date
-      anchor = [today, today - 1].find { |d| days.include?(d) }
+      anchor = [ today, today - 1 ].find { |d| days.include?(d) }
       return 0 unless anchor
 
       run = 0
@@ -83,7 +83,7 @@ class Badge
         seen[k] = true
         unlocked_at = r.created_at if seen.size == target_count
       end
-      [seen.size, unlocked_at]
+      [ seen.size, unlocked_at ]
     end
   end
 

@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   get "ranking",     to: "rankings#index"
   get "profile",     to: "profiles#show"
   get "history",     to: "histories#index" # プレイ履歴（ログイン必須。#20）
+  get "achievements", to: "achievements#index" # 実績・バッジ（ログイン必須。#21）
   get "how-to-play", to: "pages#how_to_play"
 
   # フィードバック（#7）。ゲストも送れるため require_login は付けない。
