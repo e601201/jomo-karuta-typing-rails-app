@@ -293,9 +293,8 @@ function UserDropdown({
 				<MenuItem
 					icon={<Medal size={16} />}
 					label="実績・バッジ"
-					onClick={() => {
-						close();
-					}}
+					href="/achievements"
+					onClick={close}
 				/>
 				<MenuItem
 					icon={<Settings size={16} />}
