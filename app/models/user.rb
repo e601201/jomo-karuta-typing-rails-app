@@ -24,6 +24,17 @@ class User < ApplicationRecord
     }
   end
 
+  # バッジの評価結果（全カタログ + 各自の解除状態・解除日時・進捗）。
+  # 解除テーブルは持たず全プレイ記録から毎回導出する（ADR 0007）
+  def badges
+    Badge.evaluate(game_results.order(created_at: :asc, id: :asc).to_a)
+  end
+
+  # 現在進行中の連続プレイ（JST 暦日で数える。実績・バッジ画面のパネル統計用）
+  def current_play_streak
+    Badge::Stats.new(game_results.order(created_at: :asc, id: :asc).to_a).current_streak
+  end
+
   # OmniAuth の auth ハッシュからユーザーを解決する。
   # (a) 既存 Identity → その user を返す
   # (b) メールアドレス一致の既存ユーザー → Identity を紐付けて返す
