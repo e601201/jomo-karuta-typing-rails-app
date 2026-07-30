@@ -666,3 +666,46 @@ describe('GameStore - パフォーマンス', () => {
 		expect(state.cards.completed.length).toBeLessThanOrEqual(100);
 	});
 });
+
+describe('GameStore - presetDeck（対戦用の山札注入）', () => {
+	let store: ReturnType<typeof createGameStore>;
+
+	beforeEach(() => {
+		store = createGameStore();
+		vi.clearAllMocks();
+	});
+
+	it('ランダムモードで presetDeck の順序をそのまま使う（シャッフルしない）', async () => {
+		const { gameStore, startSession } = store;
+		const presetDeck = [mockCards[2], mockCards[0]];
+
+		await startSession('random', mockCards, 'standard', { presetDeck });
+		const state = gameStore.getState();
+
+		expect(state.session?.totalCards).toBe(2);
+		expect(state.cards.current).toEqual(mockCards[2]);
+		expect(state.cards.remaining).toEqual([mockCards[0]]);
+	});
+
+	it('タイムアタックモードで presetDeck を再抽選せずそのまま使う', async () => {
+		const { gameStore, startSession } = store;
+		const presetDeck = [mockCards[1], mockCards[2]];
+
+		await startSession('timeattack', mockCards, 'standard', { presetDeck });
+		const state = gameStore.getState();
+
+		expect(state.session?.totalCards).toBe(2);
+		expect(state.cards.current).toEqual(mockCards[1]);
+		expect(state.cards.selectedCards).toEqual(presetDeck);
+		expect(state.cards.allCards).toEqual(mockCards);
+	});
+
+	it('presetDeck なしの従来動作は変わらない（ランダムは全札を使う）', async () => {
+		const { gameStore, startSession } = store;
+
+		await startSession('random', mockCards, 'standard');
+		const state = gameStore.getState();
+
+		expect(state.session?.totalCards).toBe(3);
+	});
+});

@@ -10,18 +10,33 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_22_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_30_000001) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "battle_room_status", ["waiting", "matched", "finished", "canceled"]
   create_enum "difficulty", ["beginner", "standard", "advanced"]
   create_enum "feedback_category", ["bug_report", "feature_request", "usage_question", "other"]
   create_enum "font_size", ["small", "medium", "large", "extra-large"]
   create_enum "game_mode", ["random", "timeattack"]
   create_enum "input_method", ["romaji", "kana"]
   create_enum "theme", ["light", "dark", "auto"]
+
+  create_table "battle_rooms", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.jsonb "deck", default: [], null: false
+    t.enum "game_mode", null: false, enum_type: "game_mode"
+    t.bigint "guest_id"
+    t.bigint "host_id", null: false
+    t.string "passphrase", limit: 20, null: false
+    t.enum "status", default: "waiting", null: false, enum_type: "battle_room_status"
+    t.datetime "updated_at", null: false
+    t.index ["game_mode", "passphrase"], name: "idx_battle_rooms_waiting_key", unique: true, where: "(status = 'waiting'::battle_room_status)"
+    t.index ["guest_id"], name: "index_battle_rooms_on_guest_id"
+    t.index ["host_id"], name: "index_battle_rooms_on_host_id"
+  end
 
   create_table "feedbacks", force: :cascade do |t|
     t.text "body", null: false
@@ -73,6 +88,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_000000) do
     t.index ["user_id"], name: "index_scores_on_user_id"
   end
 
+  create_table "solid_cable_messages", force: :cascade do |t|
+    t.binary "channel", null: false
+    t.bigint "channel_hash", null: false
+    t.datetime "created_at", null: false
+    t.binary "payload", null: false
+    t.index ["channel"], name: "index_solid_cable_messages_on_channel"
+    t.index ["channel_hash"], name: "index_solid_cable_messages_on_channel_hash"
+    t.index ["created_at"], name: "index_solid_cable_messages_on_created_at"
+  end
+
   create_table "user_settings", force: :cascade do |t|
     t.boolean "animations", default: true, null: false
     t.boolean "bgm_enabled", default: true, null: false
@@ -101,6 +126,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_22_000000) do
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
+  add_foreign_key "battle_rooms", "users", column: "guest_id"
+  add_foreign_key "battle_rooms", "users", column: "host_id"
   add_foreign_key "feedbacks", "users"
   add_foreign_key "game_results", "users"
   add_foreign_key "identities", "users"
