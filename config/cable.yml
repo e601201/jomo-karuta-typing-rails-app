@@ -4,7 +4,9 @@ development:
 test:
   adapter: test
 
+# 対戦モードのリアルタイム通信。Redis は導入せず、既存の PostgreSQL を pub/sub に使う（ADR 0009）
+# connects_to を指定しないことで専用 DB ではなくプライマリ DB に接続する
 production:
-  adapter: redis
-  url: <%= ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } %>
-  channel_prefix: jomo_karuta_typing_rails_app_production
+  adapter: solid_cable
+  polling_interval: 0.1.seconds
+  message_retention: 1.day

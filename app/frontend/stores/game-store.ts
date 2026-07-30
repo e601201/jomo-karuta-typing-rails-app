@@ -220,7 +220,8 @@ export function createGameStore() {
 	async function startSession(
 		mode: GameMode,
 		cards: KarutaCard[],
-		difficulty?: RandomModeDifficulty
+		difficulty?: RandomModeDifficulty,
+		options?: { presetDeck?: KarutaCard[] }
 	) {
 		if (cards.length === 0) return;
 
@@ -228,7 +229,10 @@ export function createGameStore() {
 		const allCards = cards; // 元の全カードを保持
 
 		// モードごとの処理
-		if (mode === 'random') {
+		if (options?.presetDeck) {
+			// 対戦用: サーバが確定した山札をそのまま使う（両者同一順序。シャッフル・枚数調整をしない）
+			gameCards = [...options.presetDeck];
+		} else if (mode === 'random') {
 			// ランダムモードの場合はカードをシャッフル
 			gameCards = shuffleArray(gameCards);
 		} else if (mode === 'timeattack') {

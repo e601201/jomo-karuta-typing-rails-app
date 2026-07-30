@@ -11,6 +11,8 @@ gem "puma", ">= 5.0"
 # Use JavaScript with ESM import maps [https://github.com/rails/importmap-rails]
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
+# 対戦モードのリアルタイム通信。Action Cable のアダプタを PostgreSQL で賄う（ADR 0009）
+gem "solid_cable"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"

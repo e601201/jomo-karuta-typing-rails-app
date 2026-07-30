@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   get "history",     to: "histories#index" # プレイ履歴（ログイン必須。#20）
   get "achievements", to: "achievements#index" # 実績・バッジ（ログイン必須。#21）
   get "how-to-play", to: "pages#how_to_play"
+  get "battle/:id",  to: "battles#show", as: :battle # 対戦プレイ画面（ログイン必須・マッチ成立済みのみ）
 
   # フィードバック（#7）。ゲストも送れるため require_login は付けない。
   # GET/POST とも同じ /feedback。GET はフォーム、POST は送信を受ける。
@@ -29,6 +30,8 @@ Rails.application.routes.draw do
     # プレイ記録の自動保存（ログインユーザーのみ・ゲーム自然完了時。#20 / ADR 0005）
     resources :game_results, only: :create
     resource :settings, only: :update
+    # 対戦の合言葉マッチング（ログインユーザーのみ。create = join-or-create / destroy = 待機キャンセル）
+    resources :battle_rooms, only: %i[create destroy]
   end
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
