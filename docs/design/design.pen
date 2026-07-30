@@ -648,6 +648,230 @@
                   "height": 140
                 }
               ]
+            },
+            {
+              "type": "frame",
+              "id": "eUJsY",
+              "name": "Versus Grid",
+              "gap": 24,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Pm6tv",
+                  "name": "Random Versus Button",
+                  "width": 500,
+                  "height": 140,
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 90,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#153823",
+                        "position": 0
+                      },
+                      {
+                        "color": "#0A1F12",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "cornerRadius": 8,
+                  "stroke": "$accent-gold",
+                  "strokeWidth": 2,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#00000066",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 12
+                  },
+                  "gap": 18,
+                  "padding": [
+                    0,
+                    36
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "yePCF",
+                      "layoutPosition": "absolute",
+                      "x": 6,
+                      "y": 6,
+                      "name": "Inner Border",
+                      "width": 488,
+                      "height": 128,
+                      "cornerRadius": 5,
+                      "stroke": "#C9A96166",
+                      "strokeWidth": 1
+                    },
+                    {
+                      "type": "frame",
+                      "id": "p5ZZtT",
+                      "name": "Swords Emblem",
+                      "width": 56,
+                      "height": 56,
+                      "fill": "#0A1A3566",
+                      "cornerRadius": 28,
+                      "stroke": "$accent-gold-bright",
+                      "strokeWidth": 2,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "VDD79",
+                          "name": "Swords Icon",
+                          "width": 28,
+                          "height": 28,
+                          "icon": "dices",
+                          "library": "lucide",
+                          "fill": "$accent-gold-bright"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "q8v66P",
+                      "name": "Versus Texts",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "D7kqe2",
+                          "name": "Versus Title",
+                          "fill": "$accent-gold-bright",
+                          "content": "ランダムモード対戦",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 26,
+                          "fontWeight": "800",
+                          "letterSpacing": 4
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "P1HhR",
+                  "name": "Time Attack Versus Button",
+                  "width": 500,
+                  "height": 140,
+                  "fill": {
+                    "type": "gradient",
+                    "gradientType": "linear",
+                    "enabled": true,
+                    "rotation": 90,
+                    "size": {
+                      "height": 1
+                    },
+                    "colors": [
+                      {
+                        "color": "#153823",
+                        "position": 0
+                      },
+                      {
+                        "color": "#0A1F12",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "cornerRadius": 8,
+                  "stroke": "$accent-gold",
+                  "strokeWidth": 2,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#00000066",
+                    "offset": {
+                      "x": 0,
+                      "y": 4
+                    },
+                    "blur": 12
+                  },
+                  "gap": 18,
+                  "padding": [
+                    0,
+                    36
+                  ],
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "k2kLSn",
+                      "layoutPosition": "absolute",
+                      "x": 6,
+                      "y": 6,
+                      "name": "Inner Border",
+                      "width": 488,
+                      "height": 128,
+                      "cornerRadius": 5,
+                      "stroke": "#C9A96166",
+                      "strokeWidth": 1
+                    },
+                    {
+                      "type": "frame",
+                      "id": "fBArY",
+                      "name": "Swords Emblem",
+                      "width": 56,
+                      "height": 56,
+                      "fill": "#0A1A3566",
+                      "cornerRadius": 28,
+                      "stroke": "$accent-gold-bright",
+                      "strokeWidth": 2,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "CBxH8",
+                          "name": "Swords Icon",
+                          "width": 28,
+                          "height": 28,
+                          "icon": "timer",
+                          "library": "lucide",
+                          "fill": "$accent-gold-bright"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "txjIJ",
+                      "name": "Versus Texts",
+                      "layout": "vertical",
+                      "gap": 6,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "v5Qdk",
+                          "name": "Versus Title",
+                          "fill": "$accent-gold-bright",
+                          "content": "タイムアタック対戦",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 26,
+                          "fontWeight": "800",
+                          "letterSpacing": 4
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -656,8 +880,8 @@
     {
       "type": "frame",
       "id": "YJ8ZJ",
-      "x": 4634,
-      "y": 2131,
+      "x": 7903,
+      "y": 2301,
       "name": "Play Screen",
       "clip": true,
       "width": 1440,
@@ -1100,8 +1324,8 @@
     {
       "type": "frame",
       "id": "d9RDk",
-      "x": 4634,
-      "y": 3592,
+      "x": 7903,
+      "y": 3762,
       "name": "Time Attack Play",
       "clip": true,
       "width": 1440,
@@ -1646,8 +1870,8 @@
     {
       "type": "frame",
       "id": "W06vTo",
-      "x": 6334,
-      "y": 2131,
+      "x": 9603,
+      "y": 2301,
       "name": "Result Screen",
       "clip": true,
       "width": 1440,
@@ -8726,8 +8950,8 @@
     {
       "type": "frame",
       "id": "G0Wfhp",
-      "x": 6334,
-      "y": 3592,
+      "x": 9603,
+      "y": 3762,
       "name": "Result Random",
       "clip": true,
       "width": 1440,
@@ -14110,6 +14334,3259 @@
                       ]
                     }
                   ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "MD0Pi",
+      "x": 11123,
+      "y": 2301,
+      "name": "Random Versus Play",
+      "clip": true,
+      "width": 1440,
+      "height": 1024,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "../../app/frontend/assets/images/background.webp",
+        "mode": "fill"
+      },
+      "layout": "vertical",
+      "gap": 20,
+      "padding": [
+        32,
+        80,
+        40,
+        80
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "Z6M7Q",
+          "name": "Play Header",
+          "width": "fill_container",
+          "fill": "#0A1A35CC",
+          "cornerRadius": 8,
+          "stroke": "$accent-gold",
+          "strokeWidth": 1,
+          "padding": [
+            16,
+            32
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "eOX6g",
+              "name": "Progress Wrap",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "PEtYE",
+                  "name": "Progress Label",
+                  "fill": "$accent-gold",
+                  "content": "進捗:",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "H6VYmj",
+                  "name": "Progress Value",
+                  "fill": "$text-primary",
+                  "content": "22 / 44",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 18,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "mmJOl",
+              "name": "Timer Wrap",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "mlU6L",
+                  "name": "Clock",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "timer",
+                  "library": "lucide",
+                  "fill": "$accent-gold"
+                },
+                {
+                  "type": "text",
+                  "id": "dGXVN",
+                  "name": "Timer Label",
+                  "fill": "$accent-gold",
+                  "content": "残り時間:",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "nQVHX",
+                  "name": "Timer Value",
+                  "fill": "$text-primary",
+                  "content": "00:50",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 20,
+                  "fontWeight": "700"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "QzAGM",
+          "name": "VS Bar",
+          "width": "fill_container",
+          "fill": "#0A1A35CC",
+          "cornerRadius": 8,
+          "stroke": "$accent-gold",
+          "strokeWidth": 1,
+          "padding": [
+            10,
+            32
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "Sz7mt",
+              "name": "You Side",
+              "gap": 10,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "Ntnjc",
+                  "name": "You Icon",
+                  "width": 20,
+                  "height": 20,
+                  "icon": "user",
+                  "library": "lucide",
+                  "fill": "$accent-gold-bright"
+                },
+                {
+                  "type": "text",
+                  "id": "y6P3tl",
+                  "name": "You Name",
+                  "fill": "$text-primary",
+                  "content": "あなた",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "a11Fi",
+                  "name": "You Count Label",
+                  "fill": "$text-secondary",
+                  "content": "取得札",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "C9BpP",
+                  "name": "You Count",
+                  "fill": "$accent-gold-bright",
+                  "content": "12",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 28,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "lTMFd",
+                  "name": "You Count Unit",
+                  "fill": "$text-secondary",
+                  "content": "枚",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "v7uPr",
+              "name": "VS Mark",
+              "fill": "#E5453D",
+              "content": "VS",
+              "fontFamily": "Noto Serif JP",
+              "fontSize": 22,
+              "fontWeight": "800"
+            },
+            {
+              "type": "frame",
+              "id": "bjBCr",
+              "name": "Opponent Side",
+              "gap": 10,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "f9i5Z",
+                  "name": "Opponent Icon",
+                  "width": 20,
+                  "height": 20,
+                  "icon": "user-round",
+                  "library": "lucide",
+                  "fill": "$text-secondary"
+                },
+                {
+                  "type": "text",
+                  "id": "G9euZ",
+                  "name": "Opponent Name",
+                  "fill": "$text-primary",
+                  "content": "相手",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "Y6oaB",
+                  "name": "Opponent Count Label",
+                  "fill": "$text-secondary",
+                  "content": "取得札",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 13,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "ZgXlY",
+                  "name": "Opponent Count",
+                  "fill": "$text-primary",
+                  "content": "9",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 28,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "E2m9f",
+                  "name": "Opponent Count Unit",
+                  "fill": "$text-secondary",
+                  "content": "枚",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "BByB5",
+          "name": "Card Panel Placeholder",
+          "width": "fill_container",
+          "height": 420,
+          "fill": "#F5E9C8F0",
+          "cornerRadius": 12,
+          "stroke": "$accent-gold",
+          "strokeWidth": 2,
+          "gap": 48,
+          "padding": 32,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "fR9Kr",
+              "name": "Efuda (Illustration Card)",
+              "clip": true,
+              "width": 300,
+              "height": 380,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "../../public/images/karuta/torifuda/ya.webp",
+                "mode": "fill"
+              },
+              "cornerRadius": 8,
+              "stroke": "#8B6F3E",
+              "strokeWidth": 1,
+              "layout": "none"
+            },
+            {
+              "type": "frame",
+              "id": "r41DTL",
+              "name": "Yomifuda (Reading Card)",
+              "clip": true,
+              "width": 300,
+              "height": 380,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "../../public/images/karuta/yomifuda/ya.webp",
+                "mode": "fill"
+              },
+              "cornerRadius": 8,
+              "stroke": "#8B6F3E",
+              "strokeWidth": 1,
+              "layout": "none"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "oxtEk",
+          "name": "Typing Panel",
+          "width": "fill_container",
+          "fill": "#0A1A35CC",
+          "cornerRadius": 8,
+          "stroke": "$accent-gold",
+          "strokeWidth": 1,
+          "layout": "vertical",
+          "gap": 10,
+          "padding": [
+            20,
+            32
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "o0es6",
+              "name": "Hiragana Line",
+              "fill": "$text-primary",
+              "content": "やばけいしのぐあがつまきょう",
+              "fontFamily": "Noto Serif JP",
+              "fontSize": 36,
+              "fontWeight": "700",
+              "letterSpacing": 4
+            },
+            {
+              "type": "text",
+              "id": "S4LVt1",
+              "name": "Romaji Line",
+              "fill": "$accent-gold-bright",
+              "content": "YABAKEISHINOGUAGATSUMAKYOU",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 32,
+              "fontWeight": "700",
+              "letterSpacing": 2
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "YYBPM",
+          "name": "Stats Panel",
+          "width": "fill_container",
+          "fill": "#0A1A35CC",
+          "cornerRadius": 8,
+          "stroke": "$accent-gold",
+          "strokeWidth": 1,
+          "padding": [
+            20,
+            32
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "l8c23",
+              "name": "正確率 Stat",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "H1O1I",
+                  "name": "正確率 Label",
+                  "fill": "$text-secondary",
+                  "content": "正確率",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "hX8T5",
+                  "name": "正確率 Value",
+                  "fill": "$accent-gold-bright",
+                  "content": "100.00%",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 28,
+                  "fontWeight": "800"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "G1LgXi",
+              "name": "コンボ Stat",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "qw8Az",
+                  "name": "コンボ Label",
+                  "fill": "$text-secondary",
+                  "content": "コンボ",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "SS1ae",
+                  "name": "コンボ Value",
+                  "fill": "$text-primary",
+                  "content": "0",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 28,
+                  "fontWeight": "800"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ii8iG",
+              "name": "スコア Stat",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "mekNn",
+                  "name": "スコア Label",
+                  "fill": "$text-secondary",
+                  "content": "スコア",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "y1rxW",
+                  "name": "スコア Value",
+                  "fill": "$text-primary",
+                  "content": "0",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 28,
+                  "fontWeight": "800"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "SJNfK",
+      "x": 11123,
+      "y": 3762,
+      "name": "Time Attack Versus Play",
+      "clip": true,
+      "width": 1440,
+      "height": 1024,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "../../app/frontend/assets/images/background.webp",
+        "mode": "fill"
+      },
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        32,
+        80,
+        40,
+        80
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "S16sR",
+          "name": "Top Row",
+          "width": "fill_container",
+          "gap": 25,
+          "children": [
+            {
+              "type": "frame",
+              "id": "X5ZTVr",
+              "name": "Timer Card",
+              "width": "fill_container",
+              "fill": "#0A1A35CC",
+              "cornerRadius": 8,
+              "stroke": "$accent-gold",
+              "strokeWidth": 1,
+              "gap": 8,
+              "padding": [
+                28,
+                32
+              ],
+              "justifyContent": "center",
+              "alignItems": "end",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "SYqrE",
+                  "name": "Timer Number",
+                  "fill": "$accent-gold-bright",
+                  "content": "9.50",
+                  "fontFamily": "JetBrains Mono",
+                  "fontSize": 64,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "text",
+                  "id": "SgcMP",
+                  "name": "Timer Unit",
+                  "fill": "$text-primary",
+                  "content": "秒",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 22,
+                  "fontWeight": "600"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "tX6KC",
+              "name": "Versus Card",
+              "width": "fill_container",
+              "fill": "#0A1A35CC",
+              "cornerRadius": 8,
+              "stroke": "$accent-gold",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 10,
+              "padding": [
+                20,
+                32
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "uGQbF",
+                  "name": "Versus Label",
+                  "fill": "$accent-gold",
+                  "content": "取得札",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "GJ159",
+                  "name": "Versus Counts",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "O5iTy",
+                      "name": "You Col",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "vuLpQ",
+                          "name": "You Col Label",
+                          "fill": "$text-secondary",
+                          "content": "あなた",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "g5t5e9",
+                          "name": "You Num Row",
+                          "gap": 4,
+                          "alignItems": "end",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "rgoTG",
+                              "name": "You Num",
+                              "fill": "$accent-gold-bright",
+                              "content": "4",
+                              "fontFamily": "JetBrains Mono",
+                              "fontSize": 30,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "zymZA",
+                              "name": "You Num Unit",
+                              "fill": "$text-secondary",
+                              "content": "枚",
+                              "fontFamily": "Noto Serif JP",
+                              "fontSize": 14,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "jUQN9",
+                      "name": "TA VS Mark",
+                      "fill": "#E5453D",
+                      "content": "VS",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 18,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "RxJK5",
+                      "name": "Opponent Col",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "SViks",
+                          "name": "Opponent Col Label",
+                          "fill": "$text-secondary",
+                          "content": "相手",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "oLFqT",
+                          "name": "Opponent Num Row",
+                          "gap": 4,
+                          "alignItems": "end",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "krLFC",
+                              "name": "Opponent Num",
+                              "fill": "$text-primary",
+                              "content": "2",
+                              "fontFamily": "JetBrains Mono",
+                              "fontSize": 30,
+                              "fontWeight": "800"
+                            },
+                            {
+                              "type": "text",
+                              "id": "YHaYr",
+                              "name": "Opponent Num Unit",
+                              "fill": "$text-secondary",
+                              "content": "枚",
+                              "fontFamily": "Noto Serif JP",
+                              "fontSize": 14,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "nsbee",
+              "name": "Progress Card",
+              "width": "fill_container",
+              "fill": "#0A1A35CC",
+              "cornerRadius": 8,
+              "stroke": "$accent-gold",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 12,
+              "padding": [
+                20,
+                32
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "KzAXC",
+                  "name": "Prog Header",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "C85cR0",
+                      "name": "Prog Label",
+                      "fill": "$accent-gold",
+                      "content": "進捗",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 16,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "FWxIl",
+                      "name": "Prog Value",
+                      "fill": "$accent-gold-bright",
+                      "content": "7 / 10",
+                      "fontFamily": "JetBrains Mono",
+                      "fontSize": 22,
+                      "fontWeight": "800"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Myt2k",
+                  "name": "Progress Bar BG",
+                  "width": "fill_container",
+                  "height": 8,
+                  "fill": "#1E3560",
+                  "cornerRadius": 4,
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 4,
+                      "id": "A3Rjw",
+                      "name": "Progress Bar Fill",
+                      "fill": "$accent-gold-bright",
+                      "width": 240,
+                      "height": 8
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Pfi6p",
+                  "name": "Prog Stats",
+                  "width": "fill_container",
+                  "gap": 32,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "ct3J5",
+                      "name": "Miss Col",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "cXppf",
+                          "name": "Miss Label",
+                          "fill": "$text-secondary",
+                          "content": "ミス",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "TsE77",
+                          "name": "Miss Value",
+                          "fill": "$text-primary",
+                          "content": "0回",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 18,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "xFByU",
+                      "name": "Skip Col",
+                      "width": "fill_container",
+                      "gap": 12,
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "a7QC6",
+                          "name": "Skip Label",
+                          "fill": "$text-secondary",
+                          "content": "スキップ",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "lehtv",
+                          "name": "Skip Value",
+                          "fill": "$text-primary",
+                          "content": "0回",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 18,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "xIVVj",
+          "name": "TA Card Panel",
+          "width": "fill_container",
+          "height": 420,
+          "fill": "#F5E9C8F0",
+          "cornerRadius": 12,
+          "stroke": "$accent-gold",
+          "strokeWidth": 2,
+          "gap": 48,
+          "padding": 32,
+          "justifyContent": "center",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "KBnbe",
+              "name": "Efuda (Illustration)",
+              "clip": true,
+              "width": 300,
+              "height": 380,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "../../public/images/karuta/torifuda/tsu.webp",
+                "mode": "fill"
+              },
+              "cornerRadius": 8,
+              "stroke": "#8B6F3E",
+              "strokeWidth": 1,
+              "layout": "none"
+            },
+            {
+              "type": "frame",
+              "id": "Vc6OJ",
+              "name": "Yomifuda (Reading)",
+              "clip": true,
+              "width": 300,
+              "height": 380,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "../../public/images/karuta/yomifuda/tsu.webp",
+                "mode": "fill"
+              },
+              "cornerRadius": 8,
+              "stroke": "#8B6F3E",
+              "strokeWidth": 1,
+              "layout": "none"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "bTWMa",
+          "name": "TA Typing Panel",
+          "width": "fill_container",
+          "fill": "#0A1A35CC",
+          "cornerRadius": 8,
+          "stroke": "$accent-gold",
+          "strokeWidth": 1,
+          "layout": "vertical",
+          "gap": 10,
+          "padding": [
+            20,
+            32
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "Z7Kxvx",
+              "name": "TA Hiragana",
+              "fill": "$text-primary",
+              "content": "つるまうかたちのぐんまけん",
+              "fontFamily": "Noto Serif JP",
+              "fontSize": 34,
+              "fontWeight": "700",
+              "letterSpacing": 4
+            },
+            {
+              "type": "text",
+              "id": "Peh8c",
+              "name": "TA Romaji",
+              "fill": "$accent-gold-bright",
+              "content": "TSURUMAUKATACHINOGUNMAKENN",
+              "fontFamily": "JetBrains Mono",
+              "fontSize": 30,
+              "fontWeight": "700",
+              "letterSpacing": 2
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "TeGXf",
+          "name": "TA Stats Panel",
+          "width": "fill_container",
+          "fill": "#0A1A35CC",
+          "cornerRadius": 8,
+          "stroke": "$accent-gold",
+          "strokeWidth": 1,
+          "padding": [
+            20,
+            32
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "iexuE",
+              "name": "正確率 TA",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "k3GwY",
+                  "name": "正確率 TA Label",
+                  "fill": "$text-secondary",
+                  "content": "正確率",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "DpTXf",
+                  "name": "正確率 TA Value",
+                  "fill": "$accent-gold-bright",
+                  "content": "100.00%",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 28,
+                  "fontWeight": "800"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "sJ6bb",
+              "name": "コンボ TA",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "v5pM8f",
+                  "name": "コンボ TA Label",
+                  "fill": "$text-secondary",
+                  "content": "コンボ",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "b9TZ1",
+                  "name": "コンボ TA Value",
+                  "fill": "$text-primary",
+                  "content": "0",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 28,
+                  "fontWeight": "800"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "xWgeG",
+              "name": "スコア TA",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "QqIwv",
+                  "name": "スコア TA Label",
+                  "fill": "$text-secondary",
+                  "content": "スコア",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                },
+                {
+                  "type": "text",
+                  "id": "fENhd",
+                  "name": "スコア TA Value",
+                  "fill": "$text-primary",
+                  "content": "0",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 28,
+                  "fontWeight": "800"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "mTD8W",
+      "x": 12643,
+      "y": 2301,
+      "name": "Random Versus Result",
+      "clip": true,
+      "width": 1440,
+      "height": 1024,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "../../app/frontend/assets/images/background.webp",
+        "mode": "fill"
+      },
+      "layout": "vertical",
+      "padding": [
+        40,
+        80
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "R71Ac",
+          "name": "Result Card",
+          "width": 720,
+          "fill": "#0A1A35DD",
+          "cornerRadius": 12,
+          "stroke": "$accent-gold",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            40,
+            48
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "ySi9r",
+              "name": "Win Title",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "Efu97",
+                  "name": "Crown",
+                  "width": 40,
+                  "height": 40,
+                  "icon": "crown",
+                  "library": "lucide",
+                  "fill": "$accent-gold-bright"
+                },
+                {
+                  "type": "text",
+                  "id": "Ro2Oc",
+                  "name": "Title Text",
+                  "fill": "$accent-gold-bright",
+                  "content": "あなたの勝ち！",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 44,
+                  "fontWeight": "900"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "EEREq",
+              "name": "Mode Chips",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "CNX14",
+                  "name": "Chip TA",
+                  "fill": "$accent-navy-deep",
+                  "cornerRadius": 20,
+                  "stroke": "$accent-gold",
+                  "strokeWidth": 1,
+                  "padding": [
+                    8,
+                    20
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "EDA31",
+                      "name": "Chip TA Text",
+                      "fill": "$text-primary",
+                      "content": "ランダム",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "U3jzE",
+                  "name": "Chip Std",
+                  "fill": "$accent-navy-deep",
+                  "cornerRadius": 20,
+                  "stroke": "$accent-gold",
+                  "strokeWidth": 1,
+                  "padding": [
+                    8,
+                    20
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Sxbbz",
+                      "name": "Chip Std Text",
+                      "fill": "$text-primary",
+                      "content": "対戦モード",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Mogoq",
+              "name": "Versus Panel",
+              "width": "fill_container",
+              "fill": "#132D57",
+              "cornerRadius": 10,
+              "stroke": "$accent-gold",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 14,
+              "padding": [
+                24,
+                28
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "jgo4y",
+                  "name": "Versus Columns",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "zMByd",
+                      "name": "あなた Col",
+                      "width": "fill_container",
+                      "fill": "#1E3A6B",
+                      "cornerRadius": 8,
+                      "stroke": "$accent-gold-bright",
+                      "strokeWidth": 2,
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": [
+                        16,
+                        20
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "Ptb5G",
+                          "name": "Win Chip",
+                          "fill": "#D4A017",
+                          "cornerRadius": 12,
+                          "padding": [
+                            4,
+                            14
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "Adb6Z",
+                              "name": "Chip Text",
+                              "fill": "#FFFFFF",
+                              "content": "勝ち",
+                              "fontFamily": "Noto Serif JP",
+                              "fontSize": 13,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "jFSmf",
+                          "name": "Name Row",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "hF6mB",
+                              "name": "Player Icon",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "user",
+                              "library": "lucide",
+                              "fill": "$accent-gold-bright"
+                            },
+                            {
+                              "type": "text",
+                              "id": "BPtem",
+                              "name": "Player Name",
+                              "fill": "$text-primary",
+                              "content": "あなた",
+                              "fontFamily": "Noto Serif JP",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "zcpXa",
+                          "name": "Player Score",
+                          "fill": "$accent-gold-bright",
+                          "content": "8,450",
+                          "fontFamily": "JetBrains Mono",
+                          "fontSize": 44,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "text",
+                          "id": "a5G4VG",
+                          "name": "Score Caption",
+                          "fill": "$text-secondary",
+                          "content": "スコア",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "PZMCO",
+                          "name": "Fuda Count",
+                          "fill": "$text-primary",
+                          "content": "取得札 12枚",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "TpO6r",
+                      "name": "VS Mark",
+                      "fill": "#E5453D",
+                      "content": "VS",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 22,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "W7EW4U",
+                      "name": "相手 Col",
+                      "width": "fill_container",
+                      "fill": "#0F2952",
+                      "cornerRadius": 8,
+                      "stroke": "$accent-navy-deep",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": [
+                        16,
+                        20
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "zZMxp",
+                          "name": "Lose Chip",
+                          "fill": "#3A4552",
+                          "cornerRadius": 12,
+                          "padding": [
+                            4,
+                            14
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "PJBXW",
+                              "name": "Chip Text",
+                              "fill": "#FFFFFF",
+                              "content": "負け",
+                              "fontFamily": "Noto Serif JP",
+                              "fontSize": 13,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "KotsI",
+                          "name": "Name Row",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "gUeuw",
+                              "name": "Player Icon",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "user-round",
+                              "library": "lucide",
+                              "fill": "$text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "WibEf",
+                              "name": "Player Name",
+                              "fill": "$text-primary",
+                              "content": "相手",
+                              "fontFamily": "Noto Serif JP",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "g6msmb",
+                          "name": "Player Score",
+                          "fill": "$text-primary",
+                          "content": "6,920",
+                          "fontFamily": "JetBrains Mono",
+                          "fontSize": 44,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "text",
+                          "id": "RYdaP",
+                          "name": "Score Caption",
+                          "fill": "$text-secondary",
+                          "content": "スコア",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "x737a",
+                          "name": "Fuda Count",
+                          "fill": "$text-primary",
+                          "content": "取得札 9枚",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "J7XHM",
+              "name": "My Stats",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ISVA1",
+                  "name": "My Stats Label",
+                  "fill": "$accent-gold",
+                  "content": "あなたの成績",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "KVGVR",
+                  "name": "My Stats Row",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "CHisq",
+                      "name": "正確率 Box",
+                      "width": "fill_container",
+                      "fill": "#132D57",
+                      "cornerRadius": 8,
+                      "stroke": "$accent-gold",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": [
+                        16,
+                        24
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "X51r9",
+                          "name": "正確率 Label",
+                          "fill": "$text-secondary",
+                          "content": "正確率",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "ycdRW",
+                          "name": "正確率 Value",
+                          "fill": "$text-primary",
+                          "content": "96.80%",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 26,
+                          "fontWeight": "800"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "eB4w3",
+                      "name": "WPM Box",
+                      "width": "fill_container",
+                      "fill": "#132D57",
+                      "cornerRadius": 8,
+                      "stroke": "$accent-gold",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": [
+                        16,
+                        24
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "qkTiY",
+                          "name": "WPM Label",
+                          "fill": "$text-secondary",
+                          "content": "WPM",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "jQIR5",
+                          "name": "WPM Value",
+                          "fill": "$text-primary",
+                          "content": "72",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 26,
+                          "fontWeight": "800"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ZJeuX",
+                      "name": "最大コンボ Box",
+                      "width": "fill_container",
+                      "fill": "#132D57",
+                      "cornerRadius": 8,
+                      "stroke": "$accent-gold",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": [
+                        16,
+                        24
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "dVUbS",
+                          "name": "最大コンボ Label",
+                          "fill": "$text-secondary",
+                          "content": "最大コンボ",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Fhzsm",
+                          "name": "最大コンボ Value",
+                          "fill": "$text-primary",
+                          "content": "18",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 26,
+                          "fontWeight": "800"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "PilKV",
+              "name": "Btn Again",
+              "width": "fill_container",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 90,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#3A6BC8",
+                    "position": 0
+                  },
+                  {
+                    "color": "#1E3A6B",
+                    "position": 1
+                  }
+                ]
+              },
+              "cornerRadius": 8,
+              "stroke": "$accent-gold-bright",
+              "strokeWidth": 1,
+              "gap": 10,
+              "padding": [
+                16,
+                24
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "TyBnu",
+                  "name": "Refresh",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "rotate-ccw",
+                  "library": "lucide",
+                  "fill": "#FFFFFF"
+                },
+                {
+                  "type": "text",
+                  "id": "xpV65",
+                  "name": "Again Text",
+                  "fill": "#FFFFFF",
+                  "content": "もう一度対戦する",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 18,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "axVRI",
+              "name": "Btn Menu",
+              "width": "fill_container",
+              "fill": "#0A1A3500",
+              "cornerRadius": 8,
+              "stroke": "$accent-gold",
+              "strokeWidth": 1,
+              "gap": 10,
+              "padding": [
+                14,
+                24
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "PxqUd",
+                  "name": "Home",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "house",
+                  "library": "lucide",
+                  "fill": "$accent-gold-bright"
+                },
+                {
+                  "type": "text",
+                  "id": "WXcNW",
+                  "name": "Menu Text",
+                  "fill": "$text-primary",
+                  "content": "メインメニューに戻る",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "O4Hnjv",
+      "x": 12643,
+      "y": 3762,
+      "name": "Time Attack Versus Result",
+      "clip": true,
+      "width": 1440,
+      "height": 1024,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "../../app/frontend/assets/images/background.webp",
+        "mode": "fill"
+      },
+      "layout": "vertical",
+      "padding": [
+        40,
+        80
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "kKrNb",
+          "name": "Result Card",
+          "width": 720,
+          "fill": "#0A1A35DD",
+          "cornerRadius": 12,
+          "stroke": "$accent-gold",
+          "strokeWidth": 2,
+          "layout": "vertical",
+          "gap": 24,
+          "padding": [
+            40,
+            48
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "PpIPj",
+              "name": "Win Title",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "yflgQ",
+                  "name": "Crown",
+                  "width": 40,
+                  "height": 40,
+                  "icon": "crown",
+                  "library": "lucide",
+                  "fill": "$accent-gold-bright"
+                },
+                {
+                  "type": "text",
+                  "id": "o1Pr8",
+                  "name": "Title Text",
+                  "fill": "$accent-gold-bright",
+                  "content": "あなたの勝ち！",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 44,
+                  "fontWeight": "900"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "XcvI5",
+              "name": "Mode Chips",
+              "gap": 12,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Hmrj4",
+                  "name": "Chip TA",
+                  "fill": "#C8302A",
+                  "cornerRadius": 20,
+                  "stroke": "$accent-gold",
+                  "strokeWidth": 1,
+                  "padding": [
+                    8,
+                    20
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "lBH7H",
+                      "name": "Chip TA Text",
+                      "fill": "$text-primary",
+                      "content": "タイムアタック",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "HXNEy",
+                  "name": "Chip Std",
+                  "fill": "$accent-navy-deep",
+                  "cornerRadius": 20,
+                  "stroke": "$accent-gold",
+                  "strokeWidth": 1,
+                  "padding": [
+                    8,
+                    20
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "BLq2f",
+                      "name": "Chip Std Text",
+                      "fill": "$text-primary",
+                      "content": "対戦モード",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "fyZLY",
+              "name": "Versus Panel",
+              "width": "fill_container",
+              "fill": "#132D57",
+              "cornerRadius": 10,
+              "stroke": "$accent-gold",
+              "strokeWidth": 1,
+              "layout": "vertical",
+              "gap": 14,
+              "padding": [
+                24,
+                28
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "mWedU",
+                  "name": "Versus Columns",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "gGDwa",
+                      "name": "あなた Col",
+                      "width": "fill_container",
+                      "fill": "#1E3A6B",
+                      "cornerRadius": 8,
+                      "stroke": "$accent-gold-bright",
+                      "strokeWidth": 2,
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": [
+                        16,
+                        20
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "EE4EF",
+                          "name": "Win Chip",
+                          "fill": "#D4A017",
+                          "cornerRadius": 12,
+                          "padding": [
+                            4,
+                            14
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "IISrh",
+                              "name": "Chip Text",
+                              "fill": "#FFFFFF",
+                              "content": "勝ち",
+                              "fontFamily": "Noto Serif JP",
+                              "fontSize": 13,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "ZQGjD",
+                          "name": "Name Row",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "TXt51",
+                              "name": "Player Icon",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "user",
+                              "library": "lucide",
+                              "fill": "$accent-gold-bright"
+                            },
+                            {
+                              "type": "text",
+                              "id": "YxJ2M",
+                              "name": "Player Name",
+                              "fill": "$text-primary",
+                              "content": "あなた",
+                              "fontFamily": "Noto Serif JP",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "R7AL2",
+                          "name": "Player Score",
+                          "fill": "$accent-gold-bright",
+                          "content": "9,120",
+                          "fontFamily": "JetBrains Mono",
+                          "fontSize": 44,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "text",
+                          "id": "ywBc9",
+                          "name": "Score Caption",
+                          "fill": "$text-secondary",
+                          "content": "スコア",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "gLGQx",
+                          "name": "Fuda Count",
+                          "fill": "$text-primary",
+                          "content": "取得札 6枚",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "dS7s2",
+                      "name": "VS Mark",
+                      "fill": "#E5453D",
+                      "content": "VS",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 22,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "GjF3Y",
+                      "name": "相手 Col",
+                      "width": "fill_container",
+                      "fill": "#0F2952",
+                      "cornerRadius": 8,
+                      "stroke": "$accent-navy-deep",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": [
+                        16,
+                        20
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "qx6y9",
+                          "name": "Lose Chip",
+                          "fill": "#3A4552",
+                          "cornerRadius": 12,
+                          "padding": [
+                            4,
+                            14
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "TVUK8",
+                              "name": "Chip Text",
+                              "fill": "#FFFFFF",
+                              "content": "負け",
+                              "fontFamily": "Noto Serif JP",
+                              "fontSize": 13,
+                              "fontWeight": "700"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "iZHVt",
+                          "name": "Name Row",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "zwLoX",
+                              "name": "Player Icon",
+                              "width": 18,
+                              "height": 18,
+                              "icon": "user-round",
+                              "library": "lucide",
+                              "fill": "$text-secondary"
+                            },
+                            {
+                              "type": "text",
+                              "id": "RWPO6",
+                              "name": "Player Name",
+                              "fill": "$text-primary",
+                              "content": "相手",
+                              "fontFamily": "Noto Serif JP",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "dt6qW",
+                          "name": "Player Score",
+                          "fill": "$text-primary",
+                          "content": "7,860",
+                          "fontFamily": "JetBrains Mono",
+                          "fontSize": 44,
+                          "fontWeight": "800"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Fpdug",
+                          "name": "Score Caption",
+                          "fill": "$text-secondary",
+                          "content": "スコア",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "w6iZVC",
+                          "name": "Fuda Count",
+                          "fill": "$text-primary",
+                          "content": "取得札 4枚",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 14,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "GRXnq",
+              "name": "My Stats",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Zs2oC",
+                  "name": "My Stats Label",
+                  "fill": "$accent-gold",
+                  "content": "あなたの成績",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "Q2h9u",
+                  "name": "My Stats Row",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "kGhUT",
+                      "name": "タイム Box",
+                      "width": "fill_container",
+                      "fill": "#132D57",
+                      "cornerRadius": 8,
+                      "stroke": "$accent-gold",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": [
+                        16,
+                        24
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "R9soh",
+                          "name": "タイム Label",
+                          "fill": "$text-secondary",
+                          "content": "タイム",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "QbIcC",
+                          "name": "タイム Value",
+                          "fill": "$text-primary",
+                          "content": "58.32秒",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 26,
+                          "fontWeight": "800"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "WGWb6",
+                      "name": "正確率 Box",
+                      "width": "fill_container",
+                      "fill": "#132D57",
+                      "cornerRadius": 8,
+                      "stroke": "$accent-gold",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": [
+                        16,
+                        24
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "GHMVt",
+                          "name": "正確率 Label",
+                          "fill": "$text-secondary",
+                          "content": "正確率",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "y8PZR",
+                          "name": "正確率 Value",
+                          "fill": "$text-primary",
+                          "content": "97.20%",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 26,
+                          "fontWeight": "800"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "W96q2",
+                      "name": "最大コンボ Box",
+                      "width": "fill_container",
+                      "fill": "#132D57",
+                      "cornerRadius": 8,
+                      "stroke": "$accent-gold",
+                      "strokeWidth": 1,
+                      "layout": "vertical",
+                      "gap": 8,
+                      "padding": [
+                        16,
+                        24
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "TDGwq",
+                          "name": "最大コンボ Label",
+                          "fill": "$text-secondary",
+                          "content": "最大コンボ",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        },
+                        {
+                          "type": "text",
+                          "id": "IHVnZ",
+                          "name": "最大コンボ Value",
+                          "fill": "$text-primary",
+                          "content": "14",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 26,
+                          "fontWeight": "800"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "P3klN",
+              "name": "Btn Again",
+              "width": "fill_container",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 90,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#3A6BC8",
+                    "position": 0
+                  },
+                  {
+                    "color": "#1E3A6B",
+                    "position": 1
+                  }
+                ]
+              },
+              "cornerRadius": 8,
+              "stroke": "$accent-gold-bright",
+              "strokeWidth": 1,
+              "gap": 10,
+              "padding": [
+                16,
+                24
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "N7hCtr",
+                  "name": "Refresh",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "rotate-ccw",
+                  "library": "lucide",
+                  "fill": "#FFFFFF"
+                },
+                {
+                  "type": "text",
+                  "id": "cAr3A",
+                  "name": "Again Text",
+                  "fill": "#FFFFFF",
+                  "content": "もう一度対戦する",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 18,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "LrxcX",
+              "name": "Btn Menu",
+              "width": "fill_container",
+              "fill": "#0A1A3500",
+              "cornerRadius": 8,
+              "stroke": "$accent-gold",
+              "strokeWidth": 1,
+              "gap": 10,
+              "padding": [
+                14,
+                24
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "m5Sm7H",
+                  "name": "Home",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "house",
+                  "library": "lucide",
+                  "fill": "$accent-gold-bright"
+                },
+                {
+                  "type": "text",
+                  "id": "dBlBW",
+                  "name": "Menu Text",
+                  "fill": "$text-primary",
+                  "content": "メインメニューに戻る",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "n4OYA",
+      "x": 2293,
+      "y": 3762,
+      "name": "Versus Mode Modal",
+      "clip": true,
+      "width": 1440,
+      "height": 1024,
+      "fill": "#0A1A35EE",
+      "layout": "vertical",
+      "padding": 60,
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "qXMD3",
+          "name": "Modal Card",
+          "width": 560,
+          "fill": "#0F2145",
+          "cornerRadius": 14,
+          "stroke": "$accent-gold",
+          "strokeWidth": 2,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#00000066",
+            "offset": {
+              "x": 0,
+              "y": 8
+            },
+            "blur": 32
+          },
+          "layout": "vertical",
+          "gap": 22,
+          "padding": [
+            36,
+            40
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "fJhZY",
+              "name": "Modal Title Wrap",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "u8JmT",
+                  "name": "Modal Title",
+                  "fill": "$accent-gold-bright",
+                  "content": "対戦モード",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 26,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "frame",
+                  "id": "hIIPy",
+                  "name": "Title Deco",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "MZP6W",
+                      "name": "L Line",
+                      "opacity": 0.5,
+                      "fill": "$accent-gold",
+                      "width": 40,
+                      "height": 1
+                    },
+                    {
+                      "type": "text",
+                      "id": "xRs0m",
+                      "name": "Diamond",
+                      "fill": "$accent-gold",
+                      "content": "◆",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 10,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "xwSdZ",
+                      "name": "R Line",
+                      "opacity": 0.5,
+                      "fill": "$accent-gold",
+                      "width": 40,
+                      "height": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Q9tHTj",
+              "name": "合言葉を設定 Opt",
+              "width": "fill_container",
+              "fill": "#132D57",
+              "cornerRadius": 10,
+              "stroke": "#E5C875",
+              "strokeWidth": 1,
+              "gap": 16,
+              "padding": [
+                18,
+                20
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "B23IUY",
+                  "name": "合言葉を設定 Icon Box",
+                  "width": 48,
+                  "height": 48,
+                  "fill": "#E5C87533",
+                  "cornerRadius": 10,
+                  "stroke": "#E5C875",
+                  "strokeWidth": 1,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "WMKL3",
+                      "name": "合言葉を設定 Icon",
+                      "width": 24,
+                      "height": 24,
+                      "icon": "key-round",
+                      "library": "lucide",
+                      "fill": "#E5C875"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "U2qT81",
+                  "name": "合言葉を設定 Text",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "sOY66",
+                      "name": "合言葉を設定 Title",
+                      "fill": "$text-primary",
+                      "content": "合言葉を設定",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 18,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "V5cFm",
+                      "name": "合言葉を設定 Desc",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "部屋を作って友達を招待",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 13,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "rfX2u",
+                      "name": "合言葉を設定 Sub",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "好きな合言葉を決めて、相手に伝えよう",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "icon",
+                  "id": "TEd51",
+                  "name": "合言葉を設定 Arrow",
+                  "width": 20,
+                  "height": 20,
+                  "icon": "chevron-right",
+                  "library": "lucide",
+                  "fill": "#E5C875"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Y320b7",
+              "name": "合言葉を入れる Opt",
+              "width": "fill_container",
+              "fill": "#132D57",
+              "cornerRadius": 10,
+              "stroke": "#3FB56B",
+              "strokeWidth": 1,
+              "gap": 16,
+              "padding": [
+                18,
+                20
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "OVmKj",
+                  "name": "合言葉を入れる Icon Box",
+                  "width": 48,
+                  "height": 48,
+                  "fill": "#3FB56B33",
+                  "cornerRadius": 10,
+                  "stroke": "#3FB56B",
+                  "strokeWidth": 1,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "H6zyM6",
+                      "name": "合言葉を入れる Icon",
+                      "width": 24,
+                      "height": 24,
+                      "icon": "log-in",
+                      "library": "lucide",
+                      "fill": "#3FB56B"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "mImm1",
+                  "name": "合言葉を入れる Text",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "fjLUJ",
+                      "name": "合言葉を入れる Title",
+                      "fill": "$text-primary",
+                      "content": "合言葉を入れる",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 18,
+                      "fontWeight": "800"
+                    },
+                    {
+                      "type": "text",
+                      "id": "sllO1",
+                      "name": "合言葉を入れる Desc",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "相手の部屋に参加",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 13,
+                      "fontWeight": "500"
+                    },
+                    {
+                      "type": "text",
+                      "id": "XlLUe",
+                      "name": "合言葉を入れる Sub",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "教えてもらった合言葉を入力して参加",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "icon",
+                  "id": "yylWH",
+                  "name": "合言葉を入れる Arrow",
+                  "width": 20,
+                  "height": 20,
+                  "icon": "chevron-right",
+                  "library": "lucide",
+                  "fill": "#3FB56B"
+                }
+              ]
+            },
+            {
+              "type": "rectangle",
+              "id": "VMCUN",
+              "name": "Modal Divider",
+              "opacity": 0.3,
+              "fill": "$accent-gold",
+              "width": "fill_container",
+              "height": 1
+            },
+            {
+              "type": "frame",
+              "id": "C5E5R",
+              "name": "Cancel Btn",
+              "width": "fill_container",
+              "fill": "#0A1A3599",
+              "cornerRadius": 8,
+              "stroke": "$accent-gold",
+              "strokeWidth": 1,
+              "gap": 8,
+              "padding": [
+                12,
+                20
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "sjmbJ",
+                  "name": "X Icon",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "x",
+                  "library": "lucide",
+                  "fill": "$text-secondary"
+                },
+                {
+                  "type": "text",
+                  "id": "Z8b4E",
+                  "name": "Cancel Text",
+                  "fill": "$text-secondary",
+                  "content": "キャンセル",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "w1HpZ",
+      "x": 3830,
+      "y": 3762,
+      "name": "Passphrase Form Modal",
+      "clip": true,
+      "width": 1440,
+      "height": 1024,
+      "fill": "#0A1A35EE",
+      "layout": "vertical",
+      "padding": 60,
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "X6R0mT",
+          "name": "Modal Card",
+          "width": 560,
+          "fill": "#0F2145",
+          "cornerRadius": 14,
+          "stroke": "$accent-gold",
+          "strokeWidth": 2,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#00000066",
+            "offset": {
+              "x": 0,
+              "y": 8
+            },
+            "blur": 32
+          },
+          "layout": "vertical",
+          "gap": 22,
+          "padding": [
+            36,
+            40
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "GXVf7",
+              "name": "Modal Title Wrap",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Qzqsl",
+                  "name": "Modal Title",
+                  "fill": "$accent-gold-bright",
+                  "content": "合言葉を入力",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 26,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "frame",
+                  "id": "eze9A",
+                  "name": "Title Deco",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "SO9pv",
+                      "name": "L Line",
+                      "opacity": 0.5,
+                      "fill": "$accent-gold",
+                      "width": 40,
+                      "height": 1
+                    },
+                    {
+                      "type": "text",
+                      "id": "gC0op",
+                      "name": "Diamond",
+                      "fill": "$accent-gold",
+                      "content": "◆",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 10,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "JVkQf",
+                      "name": "R Line",
+                      "opacity": 0.5,
+                      "fill": "$accent-gold",
+                      "width": 40,
+                      "height": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "aEtvh",
+              "name": "Passphrase Form",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 10,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "sf7AX",
+                  "name": "Field Label",
+                  "fill": "$accent-gold",
+                  "content": "合言葉",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 15,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "frame",
+                  "id": "WEZk1",
+                  "name": "Passphrase Input",
+                  "width": "fill_container",
+                  "fill": "#0A1A35",
+                  "cornerRadius": 8,
+                  "stroke": "$accent-gold",
+                  "strokeWidth": 1,
+                  "gap": 10,
+                  "padding": [
+                    14,
+                    18
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "p9Tml",
+                      "name": "Input Key Icon",
+                      "width": 18,
+                      "height": 18,
+                      "icon": "key-round",
+                      "library": "lucide",
+                      "fill": "$text-secondary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "U7UaN",
+                      "name": "Input Value",
+                      "fill": "$text-primary",
+                      "content": "ぐんまちゃん",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 16,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "KHrbA",
+                      "name": "Caret",
+                      "fill": "$accent-gold-bright",
+                      "width": 2,
+                      "height": 20
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "fGqap",
+                  "name": "Field Helper",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "部屋を作るときは好きな合言葉を、参加するときは相手から聞いた合言葉を入力してください",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "WCnKo",
+              "name": "Start Matching Btn",
+              "width": "fill_container",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 90,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#E5C875",
+                    "position": 0
+                  },
+                  {
+                    "color": "#D4681A",
+                    "position": 1
+                  }
+                ]
+              },
+              "cornerRadius": 8,
+              "stroke": "$accent-gold-bright",
+              "strokeWidth": 1,
+              "gap": 10,
+              "padding": [
+                14,
+                24
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "rCzRc",
+                  "name": "CTA Swords",
+                  "width": 18,
+                  "height": 18,
+                  "icon": "swords",
+                  "library": "lucide",
+                  "fill": "#FFFFFF"
+                },
+                {
+                  "type": "text",
+                  "id": "lAspX",
+                  "name": "CTA Text",
+                  "fill": "#FFFFFF",
+                  "content": "マッチングを開始",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 17,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "rectangle",
+              "id": "SmXAV",
+              "name": "Modal Divider",
+              "opacity": 0.3,
+              "fill": "$accent-gold",
+              "width": "fill_container",
+              "height": 1
+            },
+            {
+              "type": "frame",
+              "id": "H7Yms",
+              "name": "Cancel Btn",
+              "width": "fill_container",
+              "fill": "#0A1A3599",
+              "cornerRadius": 8,
+              "stroke": "$accent-gold",
+              "strokeWidth": 1,
+              "gap": 8,
+              "padding": [
+                12,
+                20
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "H06Uh",
+                  "name": "X Icon",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "x",
+                  "library": "lucide",
+                  "fill": "$text-secondary"
+                },
+                {
+                  "type": "text",
+                  "id": "X8T4m",
+                  "name": "Cancel Text",
+                  "fill": "$text-secondary",
+                  "content": "戻る",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 15,
+                  "fontWeight": "600"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "N5baE",
+      "x": 5350,
+      "y": 3762,
+      "name": "Matching Wait Modal",
+      "clip": true,
+      "width": 1440,
+      "height": 1024,
+      "fill": "#0A1A35EE",
+      "layout": "vertical",
+      "padding": 60,
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "AkwzI",
+          "name": "Modal Card",
+          "width": 560,
+          "fill": "#0F2145",
+          "cornerRadius": 14,
+          "stroke": "$accent-gold",
+          "strokeWidth": 2,
+          "effect": {
+            "type": "shadow",
+            "shadowType": "outer",
+            "color": "#00000066",
+            "offset": {
+              "x": 0,
+              "y": 8
+            },
+            "blur": 32
+          },
+          "layout": "vertical",
+          "gap": 22,
+          "padding": [
+            36,
+            40
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "MTt7R",
+              "name": "Modal Title Wrap",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "An2aj",
+                  "name": "Modal Title",
+                  "fill": "$accent-gold-bright",
+                  "content": "マッチング中",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 26,
+                  "fontWeight": "900"
+                },
+                {
+                  "type": "frame",
+                  "id": "U2DWMP",
+                  "name": "Title Deco",
+                  "gap": 8,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "id": "Cpb9Z",
+                      "name": "L Line",
+                      "opacity": 0.5,
+                      "fill": "$accent-gold",
+                      "width": 40,
+                      "height": 1
+                    },
+                    {
+                      "type": "text",
+                      "id": "lpKpK",
+                      "name": "Diamond",
+                      "fill": "$accent-gold",
+                      "content": "◆",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 10,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "eKIft",
+                      "name": "R Line",
+                      "opacity": 0.5,
+                      "fill": "$accent-gold",
+                      "width": 40,
+                      "height": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "a7ZG5R",
+              "name": "Waiting Block",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 14,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "qvh22",
+                  "name": "Spinner",
+                  "width": 48,
+                  "height": 48,
+                  "icon": "loader-circle",
+                  "library": "lucide",
+                  "fill": "$accent-gold-bright"
+                },
+                {
+                  "type": "text",
+                  "id": "BcN2V",
+                  "name": "Waiting Text",
+                  "fill": "$text-primary",
+                  "content": "相手の参加を待っています…",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 16,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "l86HP",
+                  "name": "Passphrase Chip",
+                  "fill": "#132D57",
+                  "cornerRadius": 20,
+                  "stroke": "$accent-gold",
+                  "strokeWidth": 1,
+                  "gap": 8,
+                  "padding": [
+                    8,
+                    20
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "O93uxD",
+                      "name": "Chip Key",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "key-round",
+                      "library": "lucide",
+                      "fill": "$accent-gold"
+                    },
+                    {
+                      "type": "text",
+                      "id": "D4bJDf",
+                      "name": "Chip Text",
+                      "fill": "$accent-gold-bright",
+                      "content": "合言葉：ぐんまちゃん",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 14,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "PN73X",
+                  "name": "Waiting Sub",
+                  "fill": "$text-secondary",
+                  "content": "同じ合言葉を入力した相手とマッチングします",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "S1dr5O",
+              "name": "Players Row",
+              "width": "fill_container",
+              "gap": 16,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "xhu6Z",
+                  "name": "あなた Card",
+                  "width": "fill_container",
+                  "fill": "#132D57",
+                  "cornerRadius": 10,
+                  "stroke": "#3FB56B",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 6,
+                  "padding": [
+                    12,
+                    20
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "bpxOe",
+                      "name": "あなた Name Row",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "Zl8jE",
+                          "name": "あなた Icon",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "user",
+                          "library": "lucide",
+                          "fill": "$text-primary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "N1B2c3",
+                          "name": "あなた Name",
+                          "fill": "$text-primary",
+                          "content": "あなた",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "ugTJB",
+                      "name": "あなた Status",
+                      "fill": "#3FB56B",
+                      "content": "準備完了",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "y0UGn",
+                  "name": "Wait VS Mark",
+                  "fill": "#E5453D",
+                  "content": "VS",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 18,
+                  "fontWeight": "800"
+                },
+                {
+                  "type": "frame",
+                  "id": "Z66G2",
+                  "name": "相手 Card",
+                  "width": "fill_container",
+                  "fill": "#132D57",
+                  "cornerRadius": 10,
+                  "stroke": "#5A6472",
+                  "strokeWidth": 1,
+                  "layout": "vertical",
+                  "gap": 6,
+                  "padding": [
+                    12,
+                    20
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "osFKq",
+                      "name": "相手 Name Row",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "carOj",
+                          "name": "相手 Icon",
+                          "width": 16,
+                          "height": 16,
+                          "icon": "user-round",
+                          "library": "lucide",
+                          "fill": "$text-primary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "yQhPj",
+                          "name": "相手 Name",
+                          "fill": "$text-primary",
+                          "content": "相手",
+                          "fontFamily": "Noto Serif JP",
+                          "fontSize": 14,
+                          "fontWeight": "700"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "EzQW0",
+                      "name": "相手 Status",
+                      "fill": "$text-secondary",
+                      "content": "待機中…",
+                      "fontFamily": "Noto Serif JP",
+                      "fontSize": 12,
+                      "fontWeight": "700"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "rectangle",
+              "id": "Gmgf1",
+              "name": "Modal Divider",
+              "opacity": 0.3,
+              "fill": "$accent-gold",
+              "width": "fill_container",
+              "height": 1
+            },
+            {
+              "type": "frame",
+              "id": "op0Es",
+              "name": "Cancel Btn",
+              "width": "fill_container",
+              "fill": "#0A1A3599",
+              "cornerRadius": 8,
+              "stroke": "$accent-gold",
+              "strokeWidth": 1,
+              "gap": 8,
+              "padding": [
+                12,
+                20
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "atTlT",
+                  "name": "X Icon",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "x",
+                  "library": "lucide",
+                  "fill": "$text-secondary"
+                },
+                {
+                  "type": "text",
+                  "id": "ToM6Q",
+                  "name": "Cancel Text",
+                  "fill": "$text-secondary",
+                  "content": "マッチングをやめる",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 15,
+                  "fontWeight": "600"
                 }
               ]
             }
