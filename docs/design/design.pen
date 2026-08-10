@@ -15733,6 +15733,16 @@
                       ]
                     }
                   ]
+                },
+                {
+                  "type": "text",
+                  "id": "o6lNyO",
+                  "name": "Rule Note",
+                  "fill": "$text-secondary",
+                  "content": "※ スコアが高い方が勝ちです",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 13,
+                  "fontWeight": "500"
                 }
               ]
             },
@@ -16348,6 +16358,16 @@
                       ]
                     }
                   ]
+                },
+                {
+                  "type": "text",
+                  "id": "HNlFN",
+                  "name": "Rule Note",
+                  "fill": "$text-secondary",
+                  "content": "※ スコアが高い方が勝ちです",
+                  "fontFamily": "Noto Serif JP",
+                  "fontSize": 13,
+                  "fontWeight": "500"
                 }
               ]
             },
