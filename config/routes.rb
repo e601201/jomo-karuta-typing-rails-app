@@ -1,7 +1,11 @@
 Rails.application.routes.draw do
-  # Redirect to localhost from 127.0.0.1 to use same IP address with Vite server
-  constraints(host: "127.0.0.1") do
-    get "(*path)", to: redirect { |params, req| "#{req.protocol}localhost:#{req.port}/#{params[:path]}" }
+  # Redirect to localhost from 127.0.0.1 to use same IP address with Vite server.
+  # 開発専用。本番ではプロキシが付ける X-Forwarded-Host が 127.0.0.1 のとき
+  # ヘルスチェック等まで localhost へ 301 してしまうため development に限定する。
+  if Rails.env.development?
+    constraints(host: "127.0.0.1") do
+      get "(*path)", to: redirect { |params, req| "#{req.protocol}localhost:#{req.port}/#{params[:path]}" }
+    end
   end
 
   root "pages#home"

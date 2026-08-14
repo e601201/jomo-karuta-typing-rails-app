@@ -82,3 +82,5 @@ production:
   database: jomo_karuta_typing_rails_app_production
   username: jomo_karuta_typing_rails_app
   password: <%= ENV["JOMO_KARUTA_TYPING_RAILS_APP_DATABASE_PASSWORD"] %>
+  # Kamal accessory の PostgreSQL コンテナ名（config/deploy.yml の env.clear.DB_HOST）
+  host: <%= ENV["DB_HOST"] %>
