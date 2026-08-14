@@ -26,10 +26,10 @@ PostgreSQL はアプリ DB と Solid Cable（対戦モードの pub/sub）を兼
 
 開発用とは別に、本番ドメインのコールバック URL で発行する。
 
-| プロバイダ | 発行場所 | コールバック URL |
-|---|---|---|
-| Google | [Google Cloud Console](https://console.cloud.google.com/apis/credentials) | `https://<ドメイン>/auth/google_oauth2/callback` |
-| GitHub | [Developer settings](https://github.com/settings/developers) | `https://<ドメイン>/auth/github/callback` |
+| プロバイダ | 発行場所                                                                  | コールバック URL                                 |
+| ---------- | ------------------------------------------------------------------------- | ------------------------------------------------ |
+| Google     | [Google Cloud Console](https://console.cloud.google.com/apis/credentials) | `https://<ドメイン>/auth/google_oauth2/callback` |
+| GitHub     | [Developer settings](https://github.com/settings/developers)              | `https://<ドメイン>/auth/github/callback`        |
 
 ### 4. シークレットの設定
 
