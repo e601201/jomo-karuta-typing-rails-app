@@ -13,11 +13,13 @@
 
 ## 1. サマリ
 
+**本書は確定版であり、そのまま実装に着手できる。** 2026-09-02 にリポジトリオーナーから設計上の未確認事項 3 点（管理者のログインプロバイダ / アドレスの種別 / 未ログイン時のレスポンス）すべてに回答があり、いずれも本計画の前提どおりで承認された（§9.1）。設計判断の変更は無く、残るのはデプロイ時の設定作業（`ADMIN_EMAILS` に入れる実際のアドレス）だけである。
+
 `GET /admin/feedbacks` に、保存済みフィードバックを新しい順に読むための Inertia + React ページを新設する。書き込み側（`/feedback`）と `feedbacks` テーブルは一切変更しない。**マイグレーションは不要。**
 
 要判断 3 点の最終決定:
 
-- **認可モデル**: 既存 OAuth ログインに乗せ、**「サーバ側のメール許可リスト（ENV `ADMIN_EMAILS`）に載っている」かつ「今回のログインが `google_oauth2` である」**の両方を満たすユーザーだけを管理者とする。後者は `SessionsController#create` でログイン時のプロバイダをセッションに記録して判定する。`users` へのロール列追加と HTTP Basic 認証はいずれも却下。未ログイン・非管理者はどちらも `head :not_found`。
+- **認可モデル**: 既存 OAuth ログインに乗せ、**「サーバ側のメール許可リスト（ENV `ADMIN_EMAILS`）に載っている」かつ「今回のログインが `google_oauth2` である」**の両方を満たすユーザーだけを管理者とする。後者は `SessionsController#create` でログイン時のプロバイダをセッションに記録して判定する。`users` へのロール列追加と HTTP Basic 認証はいずれも却下。未ログイン・非管理者はどちらも `head :not_found`。管理者アドレスは Gmail であることがオーナー回答で確定しているため、`(provider, uid)` によるピン留めは採らない（§2.2）。
 - **ページネーション・カテゴリ絞り込み**: **1 ページ 50 件の offset ページネーションを入れる**（`?page=`、`created_at DESC, id DESC`）。「上限 N 件だけ返す」方式は、issue の目的（console 以外に読む手段が無い状態の解消）を古い行について解消しないため却下。カテゴリ絞り込みは今回入れない（クライアント側絞り込みは「ページ内だけ」に効くので誤解を招く。必要になったらサーバ側 `?category=` として別 issue）。
 - **既読 / 対応済みフラグ**: **持たせない。** ただし 3 計画が却下根拠に使った ADR の引用は誤用なので、根拠を差し替えたうえで同じ結論を出す（§2.6）。
 
@@ -77,13 +79,15 @@
 
 | 処方箋 | 出典 | 判定 |
 | --- | --- | --- |
-| メールではなく `(provider, uid)` の組を許可リストにする | レビュー gpt | **正しく、かつ実装可能。** ただし「今回ログインした Identity」をセッションに残す変更が前提になる（現状は残っていない）。3 計画いずれもこの変更を含んでいない |
+| メールではなく `(provider, uid)` の組を許可リストにする | レビュー gpt | **技術的には正しく、実装可能。** ただし「今回ログインした Identity」をセッションに残す変更が前提になる（現状は残っていない）。3 計画いずれもこの変更を含んでいない。**採用はしない** — Gmail 確定によりメール許可リスト + プロバイダ固定との強度差が無くなるため（後述） |
 | メール許可リスト + `current_user.identities.exists?(provider: "google_oauth2")` を 1 行足す | レビュー opus | **穴を塞げない。** 経路 (b) は新しい Identity を**同じ User** に紐付ける（`user.rb:55`）。管理者の User には既に Google の Identity があるので、攻撃者が GitHub でログインして合流しても `identities.exists?(provider: "google_oauth2")` は true のままで通過する。判定対象が「User が持つ Identity 集合」であって「今回のログイン」ではないことが原因。`spec/models/user_spec.rb:115-127` が経路 (b) の挙動を既にテストしている |
 | メール許可リストのまま、verified メールを課題として残す | レビュー grok | **課題認識としては現状に合わない**（上記のとおり gem 側で閉じている）。かつ乗っ取り経路としての手当てが無い |
 
 #### 決定
 
 **メール許可リスト（`ENV["ADMIN_EMAILS"]`）かつ「今回のログインが `google_oauth2` である」を要求する。** ログインプロバイダは `SessionsController#create` で `session[:auth_provider] = auth.provider` として記録する（セッション cookie は署名・暗号化されているのでクライアントからは改ざんできない）。判定は `User#admin?(auth_provider:)` 1 メソッドに閉じる。
+
+**この決定はオーナー回答（2026-09-02）で確定している。** 管理者は Google（Gmail）でログインし、GitHub ログインで管理画面に入る要件は無い、という回答を得た（§9.1）。したがって `ADMIN_PROVIDER = "google_oauth2"` は暫定値ではなく確定値であり、複数プロバイダを許可する分岐も設けない。
 
 ```ruby
 # app/models/user.rb
@@ -104,12 +108,16 @@ def self.admin_emails
 end
 ```
 
-**`(provider, uid)` 許可リスト（レビュー gpt の推奨）を初回に採らない理由**: ブートストラップが鶏と卵になる。任命 UI が無いので、uid を知るには一度ログインしてから `bin/kamal console` で `Identity` を引き、credentials を書き換えて再デプロイする必要がある。プロバイダ固定はその往復なしで、**クロスプロバイダ合流という現実的な経路をコードで閉じる**。残留リスクは「同じプロバイダで当該メールアドレスを他人が取得できる場合」だけで、Gmail アドレスは再割り当てされないため実質「管理者本人の Google アカウント乗っ取り」に収束する。ただし**独自ドメイン（Google Workspace）のアドレスを使う場合はアドレス再割り当てが可能**なので、その場合は uid ピン留めへ移行する。`User#admin?` の中身だけを差し替えれば済むよう seam を 1 メソッドに閉じておく（§9 の確認事項 2）。
+**`(provider, uid)` 許可リスト（レビュー gpt の推奨）を採らない理由**: ブートストラップが鶏と卵になる。任命 UI が無いので、uid を知るには一度ログインしてから `bin/kamal console` で `Identity` を引き、credentials を書き換えて再デプロイする必要がある。プロバイダ固定はその往復なしで、**クロスプロバイダ合流という現実的な経路をコードで閉じる**。残留リスクは「同じプロバイダで当該メールアドレスを他人が取得できる場合」だけである。
+
+**この残留リスクは Gmail 確定により該当しない。** オーナー回答（2026-09-02）で管理者アドレスは Gmail（Google Workspace の独自ドメインではない）と確定した。Google は Gmail アドレスを再割り当てしないため、「同じプロバイダで当該アドレスを他人が取得する」経路は存在せず、残留リスクは「管理者本人の Google アカウント乗っ取り」に収束する。これは `(provider, uid)` ピン留めでも同じく残るもので、uid ピン留めに切り替えても得られる強度の差は無い。**したがって `(provider, uid)` ピン留めは本 issue でも将来の必須事項としても採らない。**
+
+<a id="premise-gmail"></a>**この前提が崩れたら再検討する条件（本書で条件を展開する唯一の箇所。他は ADR 0011 の Consequences に 1 行再掲するだけ）**: 管理者アドレスを Gmail から **Google Workspace の独自ドメイン**へ移す場合。Workspace ではドメイン管理者が退職者のアドレスを別人へ再割り当てでき、新しいアカウントには別の `sub`（＝ Identity の `uid`）が振られる一方、メールアドレスは同一なので `from_omniauth` の経路 (b) でその新アカウントが管理者 User に合流する。そのときは許可リストを `(provider, uid)` へ切り替える（`User#admin?` の中身だけを差し替えればよいよう seam を 1 メソッドに閉じてある）。この条件と対処は ADR 0011 の Consequences にも 1 行残し、本文の他の箇所では繰り返さない。
 
 #### メールの大文字小文字
 
 - **許可リスト比較**: 両辺 `strip` + `downcase` の完全一致（上記コード）。
-- **DB 保存**: **本 issue では変更しない。** `db/schema.rb:126` の `index_users_on_email` は通常の unique index で PostgreSQL の既定どおり**大文字小文字を区別**し、`from_omniauth` の `find_by(email: email)`（`user.rb:49`）も区別する。したがって `Admin@example.com` と `admin@example.com` は別 User 行になり得て、比較を小文字化する `admin?` は両方を管理者と見なす。これはレビュー gpt が唯一指摘した実在の不整合だが、**修正は全ユーザーのログイン経路（`from_omniauth`）とデータ移行（既存の大小違い重複の検出・統合）を伴う**ため、閲覧ページの issue に混ぜない。§8 で別 issue に切り出し、ADR 0011 の Consequences に既知の性質として書く。プロバイダ固定により、実際に大小違いの行を作れるのは「Google が当該アドレスの大文字混じり表記を返す」場合に限られ、Gmail では起きにくい。
+- **DB 保存**: **本 issue では変更しない。** `db/schema.rb:126` の `index_users_on_email` は通常の unique index で PostgreSQL の既定どおり**大文字小文字を区別**し、`from_omniauth` の `find_by(email: email)`（`user.rb:49`）も区別する。したがって `Admin@example.com` と `admin@example.com` は別 User 行になり得て、比較を小文字化する `admin?` は両方を管理者と見なす。これはレビュー gpt が唯一指摘した実在の不整合だが、**修正は全ユーザーのログイン経路（`from_omniauth`）とデータ移行（既存の大小違い重複の検出・統合）を伴う**ため、閲覧ページの issue に混ぜない。§8 で別 issue に切り出し、ADR 0011 の Consequences に既知の性質として書く。プロバイダ固定と Gmail 確定（§9.1）により、実際に大小違いの行を作れるのは「Google が当該アドレスの大文字混じり表記を返す」場合に限られる。Gmail アカウントの `email` クレームは正規化された表記で返るのが通常なので実務上は起きにくいが、これは実測していない（§3.7）ため、既知の性質として ADR に残し、別 issue で正規化する方針は変えない。
 
 #### フェイルクローズ
 
@@ -125,7 +133,7 @@ end
 
 #### 未ログイン / 非管理者へのレスポンス
 
-**どちらも `head :not_found`。** リダイレクトも 403 も使わない。
+**どちらも `head :not_found`。** リダイレクトも 403 も使わない。**オーナー回答（2026-09-02）で、既存 `require_login` の 302 慣習から外れることを含めて承認済み**（§9.1）。以下は承認の根拠として残す。
 
 - `SessionsController#create` は常に `redirect_to root_path`（`sessions_controller.rb:17`）で、`return_to` / `stored_location` の類はリポジトリに存在しない（確認済み）。したがって未ログイン時に `/auth/login` へ 302 しても、OAuth 後はトップに落ちて `/admin/feedbacks` には戻らない。計画 grok が 302 に払う「運営者の利便」は、このアプリのフローでは実際には得られない。
 - 「未ログインは 302、非管理者は 404」の二段構えは、パスが実在することだけを教える最も弱い組み合わせになる。1 本のルール（`/admin/*` は管理者以外から観測できない）にした方がテストしやすく、後続の実装者が崩しにくい。
@@ -154,7 +162,9 @@ end
 
 計画 gpt が挙げた credentials 直読みの長所（`RAILS_MASTER_KEY` は既にコンテナへ注入済みなので `deploy.yml` / `.kamal/secrets` を触らずに済む）は本物だが、`.kamal/secrets:15-19` に 1 行、`config/deploy.yml` の `env.secret` に 1 行足すだけなので、開発体験の劣化に見合わない。
 
-**格納形式はカンマ区切りの文字列に固定する**（レビュー grok の指摘。`bin/rails credentials:fetch` はスカラー向けで、既存の `google.client_id` と同型。YAML 配列を fetch すると `["a@x.com", "b@x.com"]` のような `to_s` が ENV に入り、許可リストが壊れる）。
+**格納形式はカンマ区切りの文字列に固定する**（レビュー grok の指摘。`bin/rails credentials:fetch` はスカラー向けで、既存の `google.client_id` と同型。YAML 配列を fetch すると `["a@x.com", "b@x.com"]` のような `to_s` が ENV に入り、許可リストが壊れる）。環境ごとの具体的な設定手順は §4.8 に書き下してある。
+
+`config/deploy.yml` の `env.clear` に平文で置く選択肢は**採らない**（当初は人間への確認事項としていたが、オーナー回答で管理者が特定の個人 Gmail アカウント 1 つに固定されたため、そのアドレスをリポジトリへ平文で残すのは認可の集約先を公開するのと同じになる。§9.2 の「取り下げた確認事項」）。
 
 環境ごとにキャッシュせず、判定のたびに `ENV` を読む。計画 grok の initializer キャッシュ（`config.x.admin_emails`）は起動時に固定されるためテストで差し替えて戻し忘れると他の spec に漏れるうえ、このリポジトリに `config.x` の前例が無い。パフォーマンス差は管理者ページの GET だけなので無視できる。
 
@@ -284,7 +294,7 @@ Rails.logger.info("[admin] feedbacks#index user_id=#{current_user.id} page=#{pag
 - `backend_test` は PostgreSQL 16 サービス + bun install + **`bin/vite build`（`:86-89`。request spec がレイアウト経由で Vite マニフェストを参照するため）** + `bin/rails db:test:prepare && bundle exec rspec`。**RSpec に渡る env は `RAILS_ENV` と `DATABASE_URL` のみ（`:91-94`）。`RAILS_MASTER_KEY` は渡っていない。**
 - `config/master.key` はリポジトリに無く、`.gitignore:34` の `/config/*.key` が無視している。`require_master_key` は `config/` に 0 件。
 - 秘密情報は credentials に集約し、`.kamal/secrets:8-19` が `credentials:fetch` で ENV に落とし、`config/deploy.yml` の `env.secret`（`RAILS_MASTER_KEY` / DB パスワード / Google・GitHub の 4 つ）でコンテナへ注入。アプリは素の ENV を読む（`config/initializers/omniauth.rb:4-5`）。
-- 開発・テストは dotenv-rails + `.env`。`.gitignore:11` の `/.env*` が `.env.example` も無視するため、`README.md:20` の `cp .env.example .env` は既存の齟齬（**計画 opus の「README:20」は正しく、レビュー opus の「21 行目」という訂正の方が誤り**）。
+- 開発・テストは dotenv-rails + `.env`。**`.env.example` はワーキングツリーにもインデックスにも存在しない**（`ls .env*` が no such file、`git ls-files` にヒット無し、`git check-ignore -v .env.example` が `.gitignore:11:/.env*` を返す）。したがって `README.md:20` の `cp .env.example .env` は既存の齟齬であり、**`.env.example` に追記するという手順は取れない**（§4.8）。なお計画 opus の「README:20」という行番号は正しく、レビュー opus の「21 行目」という訂正の方が誤り。
 
 ### 3.6 その他の確認事項
 
@@ -345,10 +355,11 @@ Rails.logger.info("[admin] feedbacks#index user_id=#{current_user.id} page=#{pag
 | `spec/requests/sessions_spec.rb` | 変更 | ログイン時に `session[:auth_provider]` が記録されることの回帰テスト |
 | `spec/factories/feedbacks.rb` | 変更 | `trait :from_guest` / `trait :with_email` / `trait :with_subject` を追加（既存 3 属性は壊さない） |
 | `app/frontend/pages/admin/Feedbacks.spec.tsx` | 新規 | Vitest のページ spec（§6） |
-| `.kamal/secrets` | 変更 | `ADMIN_EMAILS=$(bin/rails credentials:fetch admin.emails)` を追記（既存 OAuth 行と同形） |
-| `config/deploy.yml` | 変更 | `env.secret` に `ADMIN_EMAILS` を追記 |
-| `docs/deployment.md` | 変更 | 「4. シークレットの設定」（`:34-46`）に `admin.emails` の項を追記。カンマ区切り文字列であること、**追加前に一度ログインして User 行の存在を確認する**手順、Google でログインすること、そのアカウントに 2FA を設定すること |
-| `README.md` | 変更 | 開発時は `.env` に `ADMIN_EMAILS=you@example.com` を書く旨を追記 |
+| `.kamal/secrets` | 変更 | 末尾（現在 `:18` の GitHub 行の下）に `ADMIN_EMAILS=$(bin/rails credentials:fetch admin.emails)` を追記（既存 OAuth 行と同形。§4.8） |
+| `config/deploy.yml` | 変更 | `env.secret`（`:27-33`）のリスト末尾に `- ADMIN_EMAILS` を追記（§4.8） |
+| `docs/deployment.md` | 変更 | 「4. シークレットの設定」（`:34-46`）に `admin.emails` の項を追記（§4.8 の手順をそのまま書く） |
+| `README.md` | 変更 | `:20` の `cp .env.example .env` 周辺に、`.env` へ `ADMIN_EMAILS=you@example.com` を書く旨を追記（§4.8） |
+| `.github/workflows/ci.yml` | **変更しない** | `backend_test` に `ADMIN_EMAILS` を渡さない。未設定＝管理者ゼロが CI の既定状態であることを保つ（§4.8） |
 | `CONTEXT.md` | 変更 | 「フィードバック」節に「管理者」の定義を追加（§4.6） |
 | `docs/adr/0011-admin-by-email-allowlist-and-provider-pin.md` | 新規 | 認可モデルの決定を ADR 化（§4.7） |
 
@@ -464,10 +475,11 @@ _Avoid_: admin ユーザー、ロール、権限（「運営」は組織を指�
   - `users` のロール列 — 任命 UI が無く運用は console 頼りのまま、スキーマだけ増える。
   - HTTP Basic 認証 — 資格情報の系統が 2 本になり、`current_user` と結びつかず監査できない。
   - アプリ外で閉じる（IP 制限 / VPN） — 同上。
-  - `(provider, uid)` の許可リスト — より強いが、uid を知るために一度ログイン → console → 再デプロイのブートストラップが要る。独自ドメインのアドレスを使う場合はこちらへ移行する。
+  - `(provider, uid)` の許可リスト — uid を知るために一度ログイン → console → 再デプロイのブートストラップが要る。**管理者アドレスが Gmail である前提（オーナー確認済み）では強度の差が出ないため却下。**
   - 既読フラグの代替として「最終閲覧日時をセッション/localStorage に持ち新着に NEW を出す」— スキーマ変更なしで実現できるが今回は入れない。
 - **Consequences**:
   - 管理者の付け外しは credentials 編集 + `bin/kamal deploy`。
+  - **この決定は「管理者アドレスが Gmail である」ことを前提にしている。** Google Workspace の独自ドメインへ移す場合、退職者アドレスの再割り当てで別 `uid` の新アカウントが同じメールで経路 (b) に乗り、管理者 User に合流する。そのときは許可リストを `(provider, uid)` へ切り替える（`User#admin?` の中身だけを差し替えればよい）。
   - **許可リストに載せたメールの `User` 行がまだ無い場合、そのメールで最初に Google ログインした者が管理者になる。** 追加前に User 行の存在を確認する運用手順で緩和する。
   - 信頼の根拠は `omniauth-google-oauth2` 1.2.2 が検証済みメールしか `info.email` に入れない実装（`verified_email`）である。gem を更新するときはこの契約を確認する。
   - `users.email` の一意性と `from_omniauth` の照合は大文字小文字を区別する一方、`admin?` は小文字化して比較する。大小違いの 2 行がどちらも管理者になり得る（別 issue で正規化する）。
@@ -475,6 +487,60 @@ _Avoid_: admin ユーザー、ロール、権限（「運営」は組織を指�
   - `session[:auth_provider]` を持たない既存セッションは管理者になれない（再ログインが必要）。
   - `InertiaRails` の `encrypt_history = true` を外すと、管理者ページの props が history state に平文で残る。外さない。
   - 画面を作っても誰も見に行かなければ #7 が承知した見逃しリスクは残る。確認頻度は運用で決める。
+
+### 4.8 `ADMIN_EMAILS` の設定手順（環境別）
+
+値の形式は全環境共通で **カンマ区切りの文字列**（例: `you@gmail.com` / `you@gmail.com,other@gmail.com`）。要素の前後空白は `User.admin_emails` が `strip` するので気にしなくてよい。YAML 配列にはしない（`bin/rails credentials:fetch` はスカラー向けで、配列を fetch すると `["a@x", "b@x"]` の `to_s` が ENV に入り許可リストが壊れる）。
+
+#### 開発（`.env`）
+
+```sh
+# .env（gitignore 済み。リポジトリには入らない）
+ADMIN_EMAILS=you@gmail.com
+```
+
+`bin/dev` を起動し直してから Google でログインし、`/admin/feedbacks` を直接開く。別アカウントでログインすると 404 になることも確認する。
+
+**`.env.example` には追記できない。** このリポジトリに `.env.example` は存在せず（ワーキングツリーにもインデックスにも無い）、`.gitignore:11` の `/.env*` が将来作っても追跡対象にしない（§3.5 で確認済み）。したがって**開発者向けの案内は `README.md:20` 付近に直接書く**。`.env.example` を追跡対象に戻す（`.gitignore` に `!/.env.example` を足す）のは README の既存の齟齬を直す作業なので §8 で別 issue に切り出す。
+
+#### テスト / CI（設定しない）
+
+`.github/workflows/ci.yml` の `backend_test` に `ADMIN_EMAILS` を**追加しない**。CI の env は `RAILS_ENV` と `DATABASE_URL` のままにする（`:91-94`）。
+
+- CI では `ADMIN_EMAILS` が未設定 → `User.admin_emails` が `[]` → **誰も管理者にならない**のが既定状態になる。これはフェイルクローズの実地確認そのものなので、そのまま維持する価値がある。
+- 正常系（管理者が 200 を受け取る）の spec は、CI の env に依存せず **spec 内の `around` フックで `ENV["ADMIN_EMAILS"]` を退避・設定・復元する**（§6.1 / §6.3）。ワークフローを触らずに済むのは ENV 方式を選んだ利点である（credentials 直読みなら CI に `RAILS_MASTER_KEY` を渡す必要が生じていた。§2.3）。
+- 万一 CI に `ADMIN_EMAILS` を足すと、フェイルクローズの負テスト（未設定なら 404）が env の値に汚染される。足さないことをワークフローのコメントで明示してもよい。
+
+#### 本番（credentials → `.kamal/secrets` → `deploy.yml` → コンテナ ENV）
+
+既存の Google / GitHub OAuth クレデンシャルとまったく同じ経路に 1 行ずつ足す。
+
+1. `bin/rails credentials:edit` で `admin.emails` を追加する（`docs/deployment.md:34-46` の「4. シークレットの設定」に手順がある）。
+
+   ```yaml
+   admin:
+     emails: you@gmail.com
+   ```
+
+2. `.kamal/secrets` の末尾（現在 `:18` の `GITHUB_CLIENT_SECRET` 行の下）に 1 行足す。既存 OAuth 行（`:15-18`）と同形。
+
+   ```sh
+   # 管理者用フィードバック閲覧ページの許可リスト（#26 / ADR 0011）。カンマ区切り。
+   ADMIN_EMAILS=$(bin/rails credentials:fetch admin.emails)
+   ```
+
+3. `config/deploy.yml` の `env.secret`（`:27-33`）の末尾に `- ADMIN_EMAILS` を足す。
+
+4. `bin/kamal deploy` で反映する。ENV はコンテナ起動時に読まれるので、**値を変えたら再デプロイが必要**（管理者の付け外し＝デプロイ操作、という ADR 0011 の Consequence の実体）。
+
+**アドレスを許可リストへ入れる前の確認手順**（§2.2 の「先着で管理者になる」性質の緩和）:
+
+```sh
+bin/kamal console
+# > User.find_by(email: "you@gmail.com")
+```
+
+`nil` が返るなら、そのアドレスではまだ誰もログインしていない。**先に自分で Google ログインして User 行を作ってから**許可リストに入れる。あわせて `docs/deployment.md` に、管理者の Google アカウントに 2 要素認証を設定することを書く（信頼の根拠がその 1 アカウントに収束するため。§7.1）。
 
 ---
 
@@ -488,7 +554,7 @@ _Avoid_: admin ユーザー、ロール、権限（「運営」は組織を指�
 | 2 | `管理者の判定を User#admin? に追加する` | `app/models/user.rb` に `ADMIN_PROVIDER` / `#admin?` / `.admin_emails`。`spec/models/user_spec.rb` に許可リストの正・負・フェイルクローズ・プロバイダ不一致のテスト | **緑。** `bundle exec rspec spec/models/user_spec.rb` + rubocop。呼び出し元がまだ無いので挙動は何も変わらない | 同上 |
 | 3 | `管理者用フィードバック一覧のルーティングとコントローラを追加する` | `Admin::BaseController` / `Admin::FeedbacksController` / `config/routes.rb` / `spec/requests/admin/feedbacks_spec.rb` / factory トレイト、**および最小の `pages/admin/Feedbacks.tsx`（テーブルとページリンクのみ、装飾なし）を同じコミットに入れる** | **緑。** request spec（認可マトリクス + props 形状 + ページング + `no-store` ヘッダ）と `bun run check` / `lint` が通る | **露出しない。** ルートが生えるのと同時に `require_admin` が付く。TSX を同梱するので「request spec は緑だが実ブラウザで壊れる」状態も作らない |
 | 4 | `管理者用フィードバック一覧の画面を整える` | `pages/admin/Feedbacks.tsx` の本実装（ヒーロー・テーブル・空状態・JST 日時・ページネーション UI・未知カテゴリの「不明」）+ `Feedbacks.spec.tsx` | **緑。** `bun run lint` / `check` / `test`。バックエンド無変更なので rspec も据え置きで緑 | 既に認可済み |
-| 5 | `管理者メールの設定手順をデプロイ手順に追記する` | `.kamal/secrets` / `config/deploy.yml` / `docs/deployment.md` / `README.md` | **緑**（設定とドキュメントのみ）| — |
+| 5 | `管理者メールの設定手順をデプロイ手順に追記する` | `.kamal/secrets` / `config/deploy.yml` / `docs/deployment.md` / `README.md`（§4.8 のとおり）。`.github/workflows/ci.yml` は触らない | **緑**（設定とドキュメントのみ。CI の env を変えないので既存ジョブへの影響もゼロ）| — |
 | 6 | `管理者の定義を CONTEXT.md と ADR に追加する` | `CONTEXT.md` の用語追加 + `docs/adr/0011-...md` | **緑** | — |
 
 **レビューが指摘した罠を踏まないための設計**:
@@ -506,7 +572,7 @@ _Avoid_: admin ユーザー、ロール、権限（「運営」は組織を指�
 
 ### 6.1 model spec — `spec/models/user_spec.rb`（追記）
 
-`ENV["ADMIN_EMAILS"]` は `around` フックで退避・復元する（`spec/support/**` の自動 require はコメントアウトのままなので、ヘルパはこの spec 内にローカル定義する）。
+`ENV["ADMIN_EMAILS"]` は `around` フックで退避・復元する（`spec/support/**` の自動 require はコメントアウトのままなので、ヘルパはこの spec 内にローカル定義する）。CI では `ADMIN_EMAILS` を渡さない方針（§4.8）なので、**正常系も含めてすべての example が spec 内で ENV を明示的に組み立てる**。spec の外の環境に依存する example を書いてはならない。
 
 - 許可リストに載るメール + `auth_provider: "google_oauth2"` → true
 - 載っていないメール → false
@@ -600,7 +666,7 @@ CI（`.github/workflows/ci.yml:86-89`）は request spec がレイアウト経�
 - **`Admin::BaseController` を経由しない管理者アクションを作らない。** `namespace :admin` 配下のコントローラは必ずこれを継承する。公開 `FeedbacksController` に `index` を足さない。`Api::` 側に管理者エンドポイントを作らない。
 - **フェイルクローズ**: `ADMIN_EMAILS` 未設定・空・空白のみで誰も管理者にならない。`.presence` で空文字要素を落とし、配列の `include?`（完全一致）で判定する。文字列に対する `include?` は絶対に使わない。model spec と request spec の両層で固定する（§6.1 / §6.3）。
 - **管理者フラグをクライアント入力から決めない。** `params` にも表向きの cookie にも管理者フラグを置かず、常に `current_user` と `session[:auth_provider]`（署名・暗号化された cookie）から計算する。`FeedbacksController:20` の「`user_id` は session からのみ」と同じ原則。
-- **`from_omniauth` のメール合流経路**（`app/models/user.rb:49`）: メール一致で別プロバイダの Identity が同じ User に無条件で紐付く。プロバイダ固定でクロスプロバイダの経路は閉じるが、**同じプロバイダで当該アドレスを取得できる場合は残る**。運用注意として `docs/deployment.md` に「管理者の Google アカウントに 2FA を必須にする」を書く。ADR 0011 の Consequences にも残す。
+- **`from_omniauth` のメール合流経路**（`app/models/user.rb:49`）: メール一致で別プロバイダの Identity が同じ User に無条件で紐付く。プロバイダ固定でクロスプロバイダの経路は閉じる。同一プロバイダ内でアドレスを他人が取得する経路は **Gmail 確定（§9.1）により存在しない**（Google は Gmail アドレスを再割り当てしない）。したがって**残る攻撃面は管理者本人の Google アカウント乗っ取りだけ**であり、`docs/deployment.md` に「管理者の Google アカウントに 2 要素認証を必須にする」を書いて閉じる。ADR 0011 の Consequences にも残す。
 - **未ログイン / 非管理者に 404**（403 でもリダイレクトでもなく）。`require_login` の慣習から意図的に外れる旨をコードコメントに残す。
 - CSRF: 今回は GET のみで状態変更が無いため追加の手当ては不要。将来 PATCH を足すときは既存機構（`ApplicationController:37-39` の `verified_request?`）に乗せる。
 - `rate_limit` は管理ページに付けない（認証済みかつ単一利用者。キャッシュストア依存を増やす意味が無い）。
@@ -646,7 +712,8 @@ CI（`.github/workflows/ci.yml:86-89`）は request spec がレイアウト経�
 | サーバサイドのカテゴリ絞り込み（`?category=`）、全文検索、メールでの絞り込み | `管理者用フィードバック一覧にカテゴリ絞り込みを追加する` |
 | 既読 / 対応済みフラグとそのマイグレーション（`handled_at` など） | `フィードバックの対応状態を記録できるようにする` |
 | 新着フィードバックの通知（メール / Slack） | `新着フィードバックを運営へ通知する` |
-| `(provider, uid)` による管理者ピン留めへの移行（独自ドメインのアドレスを使う場合） | `管理者を (provider, uid) でピン留めする` |
+| `.env.example` をリポジトリに置き直す（`.gitignore` に `!/.env.example` を足す）。`README.md:20` の `cp .env.example .env` が現状は成立しない既存の齟齬（§3.5 / §4.8） | `.env.example をリポジトリに戻して README のセットアップ手順を成立させる` |
+| ~~`(provider, uid)` による管理者ピン留めへの移行~~ — **オーナー回答で管理者アドレスが Gmail と確定したため不要**。Google Workspace の独自ドメインへ移した場合のみ再検討する（§2.2 の「前提が崩れたら再検討する条件」）。issue は事前に立てない | — |
 | CSP の有効化 | `Content-Security-Policy を有効化する` |
 | フィードバックの削除・編集・返信送信、詳細ページ、CSV エクスポート | — |
 | 管理者の任命 UI / ロール管理画面、`users` へのロール列追加 | — |
@@ -658,36 +725,51 @@ CI（`.github/workflows/ci.yml:86-89`）は request spec がレイアウト経�
 
 ---
 
-## 9. 人間に確認すべきこと（優先度順）
+## 9. 確認済みの前提と、残っている未確認事項
 
-| 優先度 | 確認事項 | 決まらないと何が困るか |
-| --- | --- | --- |
-| **高** | **管理者にするメールアドレスと、そのアドレスで使うプロバイダ。** 本計画は `google_oauth2` 固定を前提にしている。GitHub でログインしたい場合は `ADMIN_PROVIDER` を変えるか、複数プロバイダを許可する設計に変える必要がある（許可を広げるほど §2.2 の合流経路が開く） | 実装できるが本番で誰も管理者になれない。設計の中核が変わる可能性がある |
-| **高** | **そのアドレスが Gmail か、独自ドメイン（Google Workspace）か。** 独自ドメインならアドレス再割り当てが可能なので、`(provider, uid)` ピン留めへ切り替えるべき（§2.2） | 認可の強度が変わる |
-| **高** | **未ログイン時に 404 を返す方針でよいか。** 既存の `require_login` はログイン画面へ 302 しており、そこから意図的に外れる。「管理者でログインし直したいのに 404 で気づけない」という不便と、ページの存在を伏せる利益のどちらを取るか（§2.2） | 運用者本人の体験に直結する。後から変えるとテストも書き換えになる |
-| 中 | **`PER_PAGE = 50` は妥当か。** 本番 DB に現在フィードバックが何件溜まっているかを確認したい（§3.7-4） | 適正値が変わる。ただし定数 1 つなので変更は安い |
-| 中 | **`ADMIN_EMAILS` の格納先。** 本計画は既存 OAuth と同じ credentials（`admin.emails`）→ `.kamal/secrets` → ENV に乗せるが、秘密というほどでもないので `config/deploy.yml` の `env.clear` に平文で置く選択肢もある（`clear` に置くとリポジトリにメールアドレスが平文で残る） | 運用手順が変わる |
-| 中 | **日時を JST 固定にしてよいか。** 既存 `History.tsx` はブラウザ依存で、意図的にずらすことになる（§4.5） | 表示だけの問題だが、既存との一貫性の判断が要る |
-| 中 | **ログインユーザーからのフィードバックで `email` 欄が空のとき、連絡手段が無くなることを許容するか。** 本計画はアカウントのメールを props に載せない（§2.5） | 許容しないなら PII の方針を見直す必要がある |
-| 低 | **`subject` を表示列に含めてよいか。** issue #26 の表示項目には無いが、#7 で追加済みの任意件名なので出す想定 | 列が 1 つ増減するだけ |
-| 低 | **`CONTEXT.md` の「管理者」定義と ADR 0011 をこの PR に含めてよいか**（別 PR に分けたい意向があれば分割する） | — |
-| 低 | **フィードバックの確認頻度を運用手順として決める。** 画面を追加しただけでは #7 が承知した「誰も見に行かない」リスク自体は消えない（計画 gpt の指摘） | 機能の価値そのものに関わるが、コードの判断ではない |
+### 9.1 確認済みの前提（2026-09-02、リポジトリオーナー回答）
+
+設計に影響する未確認事項として挙げていた最重要 3 点は、すべてオーナーから回答を得て確定した。**3 点とも本計画の前提どおりで、設計判断の変更は発生していない。**
+
+| # | 確認した事項 | 回答（2026-09-02） | 本計画への反映 |
+| --- | --- | --- | --- |
+| 1 | 管理者のログインプロバイダ。本計画は `google_oauth2` 固定を前提にしていた | **Google（Gmail）。GitHub ログインで管理画面に入る要件は無い** | `ADMIN_PROVIDER = "google_oauth2"` を確定値として実装する（§2.2）。複数プロバイダを許可する分岐は設けない。「許可リストのメールでも GitHub ログインなら 404」は仕様であり、回帰テストで固定する（§6.1 / §6.3） |
+| 2 | そのアドレスが Gmail か、Google Workspace の独自ドメインか | **Gmail（独自ドメインではない）** | Google は Gmail アドレスを再割り当てしないため、`(provider, uid)` ピン留めへ切り替える条件分岐は**発生しない**。メール許可リストで確定とする（§2.2）。この前提が崩れる唯一の条件（Workspace への移行）は §2.2 の「前提が崩れたら再検討する条件」に集約し、ADR 0011 の Consequences に 1 行残す。§8 の別 issue 候補からも外した |
+| 3 | 未ログイン時に 404 を返してよいか（既存 `require_login` の 302 慣習から外れる） | **404 でよい。慣習から外れる件も承認** | 未ログイン・非管理者とも `head :not_found` を確定仕様とする（§2.2）。`Admin::BaseController` に「意図的に `require_login` と揃えていない」旨のコメントを残す方針も維持する |
+
+**実際のメールアドレスの値は未提供。** これは設計判断ではなくデプロイ時の設定作業なので、実装の着手をブロックしない（§9.2-A）。
+
+### 9.2 残っている未確認事項
+
+設計上の未確認事項は無い。以下はいずれも**実装完了後またはデプロイ時に決める運用側の項目**であり、実装の着手をブロックしない。
+
+| # | 優先度 | 残っている事項 | いつ必要になるか |
+| --- | --- | --- | --- |
+| A | **高** | **`ADMIN_EMAILS` に入れる実際の Gmail アドレス。** 複数人にするならカンマ区切りで並べる。値そのものはコードにもこの計画にも書かず、`bin/rails credentials:edit` で本番 credentials に入れる（§4.8） | **デプロイ時。** これが設定されるまで本番は「誰も管理者にならない」（フェイルクローズ）ままで、管理者本人にも 404 が返る。実装・マージは値が無くても進められる |
+| B | 中 | **`PER_PAGE = 50` は妥当か。** 本番 DB に現在フィードバックが何件溜まっているかで適正値が変わる（`bin/kamal console` で `Feedback.count`。§3.7-4） | 実装中またはデプロイ後。定数 1 つなので変更は安い |
+| C | 中 | **日時を JST 固定にしてよいか。** 既存 `History.tsx:56` はブラウザ依存で、意図的にずらすことになる（§4.5） | 実装中。表示だけの問題で、決まらなくても着手できる |
+| D | 中 | **ログインユーザーからのフィードバックで `email` 欄が空のとき、連絡手段が無くなることを許容するか。** 本計画はアカウントのメールを props に載せない（§2.5） | 実装中。許容しないなら PII の方針を見直す |
+| E | 低 | **`subject` を表示列に含めてよいか。** issue #26 の表示項目には無いが、#7 で追加済みの任意件名なので出す想定 | 実装中。列が 1 つ増減するだけ |
+| F | 低 | **`CONTEXT.md` の「管理者」定義と ADR 0011 をこの PR に含めてよいか**（別 PR に分けたい意向があれば分割する） | PR を出すとき |
+| G | 低 | **フィードバックの確認頻度を運用手順として決める。** 画面を追加しただけでは #7 が承知した「誰も見に行かない」リスク自体は消えない（計画 gpt の指摘） | デプロイ後。コードの判断ではない |
+
+**取り下げた確認事項**: 「`ADMIN_EMAILS` の格納先を credentials にするか `config/deploy.yml` の `env.clear` に平文で置くか」は、確認事項から外して credentials に確定した。回答 1・2 で管理者が特定の個人 Gmail アカウント 1 つに固定されたことで、そのアドレスがリポジトリに平文で残る `env.clear` は「認可の全体が 1 アドレスに集約されている」状態と噛み合わないと判断した。既存 OAuth と同じ credentials 経路（§4.8）で統一する。
 
 ---
 
 ## 10. 3 案・3 レビューの一致点と不一致点
 
-**凡例**: 計画は opus / gpt / grok、レビューは R-opus / R-gpt / R-grok。◎ = 推奨、○ = 支持、△ = 条件付き、× = 反対・却下、— = 言及なし。
+**凡例**: 計画は opus / gpt / grok、レビューは R-opus / R-gpt / R-grok。◎ = 推奨、○ = 支持、△ = 条件付き、× = 反対・却下、— = 言及なし。最終決定欄の **【オーナー確定 2026-09-02】** は、§9.1 の回答によって留保が外れた論点を示す。
 
 | # | 論点 | 計画 opus | 計画 gpt | 計画 grok | R-opus | R-gpt | R-grok | **最終決定** |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | 1 | ベース案 | — | — | — | opus 1 位 | gpt 1 位 | opus 1 位 | **opus をベース（ページネーションのみ gpt）** |
-| 2 | 認可の枠組み | メール許可リスト ◎ | メール許可リスト ◎ | メール許可リスト ◎ | 許可リスト + Google Identity 要求 | `(provider, uid)` 許可リスト | 許可リスト（verified メールを課題視） | **メール許可リスト + ログインプロバイダ固定。** R-opus の処方箋は User 単位の判定なので合流を塞げない（自分で確認）。R-gpt の uid 案は正しいがブートストラップが重い。R-grok の verified 懸念は gem 側で既に閉じている（upstream 確認） |
+| 2 | 認可の枠組み | メール許可リスト ◎ | メール許可リスト ◎ | メール許可リスト ◎ | 許可リスト + Google Identity 要求 | `(provider, uid)` 許可リスト | 許可リスト（verified メールを課題視） | **メール許可リスト + ログインプロバイダ固定（`google_oauth2`）。【オーナー確定 2026-09-02】** R-opus の処方箋は User 単位の判定なので合流を塞げない（自分で確認）。R-gpt の uid 案は正しいがブートストラップが重く、**Gmail 確定により強度の差も出ない**ので却下。R-grok の verified 懸念は gem 側で既に閉じている（upstream 確認） |
 | 3 | 判定の置き場 | `User#admin?` | コントローラ | `User#admin?` + initializer | `User#admin?` | 独立ポリシー | `User#admin?` | **`User#admin?(auth_provider:)`。** initializer キャッシュはグローバル状態になるので不採用 |
 | 4 | 設定の置き場 | credentials → ENV | credentials 直読み | credentials → ENV + initializer | ENV | credentials | ENV | **ENV。** master.key がリポジトリに無く CI に `RAILS_MASTER_KEY` も無い（確認済み）。credentials は空として読まれ例外にはならないが、常に stub 必須になる |
 | 5 | 格納形式 | 文字列 | YAML 配列 | 文字列 | — | — | 配列は `credentials:fetch` と非互換 | **カンマ区切り文字列**（R-grok が正しい） |
-| 6 | 未ログイン時 | 404 | 404 | 302 | 404 | 302 + 403 を推奨（ただし統一するなら 404） | 404 | **404。** ログイン後に元 URL へ戻る機構が存在しない（確認済み）ので 302 の利便が実在しない |
-| 7 | 非管理者（ログイン済）| 404 | 404 | 404 | 404 | 403 を推奨 | 404 | **404** |
+| 6 | 未ログイン時 | 404 | 404 | 302 | 404 | 302 + 403 を推奨（ただし統一するなら 404） | 404 | **404。【オーナー確定 2026-09-02】** ログイン後に元 URL へ戻る機構が存在しない（確認済み）ので 302 の利便が実在しない。`require_login` の慣習から外れる点もオーナー承認済み |
+| 7 | 非管理者（ログイン済）| 404 | 404 | 404 | 404 | 403 を推奨 | 404 | **404。【オーナー確定 2026-09-02】** |
 | 8 | 404 の返し方 | `raise RoutingError` | `head` | `head` | `head` | `head` | `head` | **`head :not_found`。** 本番は `consider_all_requests_local = false` なので raise はログを汚す |
 | 9 | 空文字・部分一致 | `filter_map(&:presence)` + テスト ◎ | 方針のみ | 方針のみ | opus が最良 | opus が最良 | opus が最良 | **opus の実装をそのまま採用** |
 | 10 | メールの大小文字 | 比較のみ downcase | 比較のみ downcase | 比較のみ downcase | — | **DB は case-sensitive で不整合**（唯一の指摘） | 同上（アカウント分裂として） | **比較は downcase、DB 正規化は別 issue**（確認済み: `index_users_on_email` は通常の unique index） |
@@ -736,6 +818,17 @@ CI（`.github/workflows/ci.yml:86-89`）は request spec がレイアウト経�
 - [ ] Header にプレイヤー向けの管理者リンクが無い / `inertia_share` に `admin` フラグを足していない
 - [ ] `Rails.logger` に PII を出していない（監査ログは `user_id` と `page` のみ）
 - [ ] `InertiaRails` の `encrypt_history = true` を外していない
-- [ ] 本番手順（credentials `admin.emails` / `.kamal/secrets` / `deploy.yml` / `docs/deployment.md`）が揃っている
+- [ ] 本番手順（credentials `admin.emails` / `.kamal/secrets` / `deploy.yml` / `docs/deployment.md`）が揃っている（§4.8）
+- [ ] `.github/workflows/ci.yml` に `ADMIN_EMAILS` を**足していない**（CI は未設定＝管理者ゼロを既定状態に保つ。§4.8）
+- [ ] request spec / model spec が CI の env に依存せず、`around` で `ADMIN_EMAILS` を自前に組み立てている
+- [ ] 開発者向けの `.env` 手順が `README.md` に書かれている（`.env.example` は存在しないので追記先にできない。§4.8）
 - [ ] `CONTEXT.md` の「管理者」と ADR 0011 がある
+- [ ] ADR 0011 の Consequences に「Gmail 前提が崩れたら `(provider, uid)` へ切り替える」の 1 行がある（§2.2）
 - [ ] 既存 `spec/requests/feedbacks_spec.rb` が緑のまま
+
+---
+
+## 更新履歴
+
+- **2026-09-02（初版）** — 計画 3 本とクロスレビュー 3 本を統合。争点 1〜6 を決着させ、未確認事項を §9 に列挙。
+- **2026-09-02（確定版）** — リポジトリオーナーから最重要 3 点（ログインプロバイダ / アドレス種別 / 未ログイン時のレスポンス）の回答を受領。**3 点とも本計画の前提どおりで、設計判断の変更なし。** 条件付きだった記述を断定形に直し（§1 / §2.2 / §2.3 / §4.7 / §10）、`(provider, uid)` ピン留めの分岐を「Workspace へ移行した場合のみ再検討」として §2.2 に集約、`ADMIN_EMAILS` の環境別設定手順を §4.8 として追加、§9 を「確認済みの前提」と「残っている未確認事項」に再構成した。
