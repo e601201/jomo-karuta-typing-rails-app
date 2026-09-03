@@ -1,0 +1,227 @@
+---
+issue: 26
+author_model: gpt-5.6-terra-xhigh
+kind: implementation-plan
+---
+
+# Issue #26: 管理者用フィードバック閲覧ページ
+
+## 問題定義
+
+#7 で、プレイヤーが送る**フィードバック**を `feedbacks` テーブルへ保存する経路は完成している。一方、運営が内容を読むには Rails console を使うしかなく、送られた連絡が日常運用で見逃される。フィードバックはバグ報告・機能リクエスト・使い方の質問・その他を一つのフォームで受ける単一チャネルなので、4 種類を別々に読む導線を作るのではなく、運営だけが一か所で新着順に確認できる必要がある。
+
+### ユーザー影響
+
+- 運営者は、ブラウザでフィードバックを確認し、必要なら任意で入力された返信先メールアドレスを使える。
+- **ゲスト**を含むプレイヤーの送信方法、公開範囲、送信後の挙動は変わらない。
+- 許可されていないログインユーザーと未ログイン者は、URL を直接開いてもフィードバック本文・メールアドレス・件数を受け取れない。
+
+### 受け入れ条件
+
+1. `GET /admin/feedbacks` は、設定済みの管理者メールアドレスに一致するログインユーザーだけに一覧を返す。
+2. 未ログイン時は既存のログイン画面へリダイレクトし、ログイン済みだが非管理者の場合はトップへ権限不足メッセージ付きでリダイレクトする。いずれも Inertia props に一覧データを含めない。
+3. 管理者には、新しい順（同一 `created_at` なら `id` の降順で安定）にフィードバックが表示される。各項目にはカテゴリ、本文、任意の件名、任意の返信先メールアドレス、送信者種別（ログインユーザー／ゲスト）、送信日時を含める。
+4. 一覧は固定 50 件単位のサーバーサイドページネーションであり、`?page=N` で前後のページを移動できる。空データ、無効なページ番号、最終ページを超えた番号にも一貫して対応する。
+5. ページは既存の Rails + Inertia + React 構成で表示され、本文はテキストとして扱う。送信内容を HTML として解釈しない。
+6. 管理者メールアドレスが未設定なら、全員を拒否する（default deny）。公開ページや一般ログインに障害を起こしてはならない。
+
+### スコープ外
+
+- フィードバック送信フォーム、レート制限、ハニーポット、既存 `Feedback` の検証の変更
+- 管理者自身による返信、削除、エクスポート、全文検索、通知
+- カテゴリ絞り込み、既読・対応済み状態、担当者、コメント
+- `users` テーブルへのロール列追加、管理者を編集する画面、汎用 RBAC
+- ヘッダーへの管理画面リンクや、クライアントへ `isAdmin` を共有すること
+- `feedbacks` 以外のプレイ記録、ランキング登録、バッジの管理
+
+## ドメイン用語と既存方針
+
+- **フィードバック**は、ゲストも送れる非公開の単一チャネルである。今回追加するのはその読み取り側であり、バグ報告だけを独立した管理機能にしない。
+- **ゲスト**は未ログインのプレイヤーである。一覧の送信者表示もこの用語を使い、`user_id` がある送信は「ログインユーザー」、ない送信は「ゲスト」と表示する。送信者のアカウントメールアドレスは、issue の要求ではないため props に含めない。返信先は既存の任意 `Feedback#email` のみを表示する。
+- `Feedback.category` の PostgreSQL native enum は 4 カテゴリのまま使う。フロントエンドのラベルはこの enum と一対一に対応させる。
+- **ユーザー設定**、**アカウント優先**、**初回引き継ぎ**は管理者認可の根拠にしない。認可はログインセッションで得たユーザーのメールアドレスと、運営管理の許可リストだけで決める。
+- ADR 0001〜0003 の「ルートは配線契約を検証し、末端描画を重複検証しない」方針に従う。このルートはストアを所有しないため、リクエスト spec は認可・ルーティング・Inertia component・props 契約を守り、マークアップ専用のテストフックは追加しない。
+- ADR 0008 が扱う「タイム」はゲームの経過時間・記録時間であり、ここで示す `created_at` の日時書式を規定しない。日時は管理画面内で明示的に日本語・JST 表示にする。
+- 既存 ADR と矛盾しない。とくに、対戦やプレイ記録を永続化する ADR 0005 / 0010 の対象をこの管理画面へ広げない。
+
+## 推奨アプローチ
+
+`/admin` 名前空間に、サーバー側で強制される最小のメール許可リスト認可と、読み取り専用のフィードバック一覧を置く。
+
+### 認可と設定
+
+1. Rails credentials に `admin.emails` を文字列配列として保持する。実運用では `bin/rails credentials:edit` で OAuth ログインに使われるメールアドレスを登録する。`config/master.key` は既に Kamal から与えられるため、許可リスト専用の平文環境変数や新しい認証秘密情報は増やさない。
+2. `config/application.rb` で credentials の配列を、空白除去・小文字化・空要素除外した `config.x.admin_emails` に一度だけ正規化する。キーが無い場合は空配列とする。
+3. `Admin::BaseController` を `ApplicationController` の下に新設する。ここを管理ルート共通の深いモジュールとし、呼び出し側の interface は「この基底 controller を継承すれば、ログイン済みかつ許可リスト一致の `current_user` だけが action に到達する」とする。
+   - `require_login` を先に実行する。
+   - 続く管理者検査は、正規化した設定値と `current_user.email` を大文字小文字非依存で比較する。
+   - 非管理者はトップへリダイレクトし、一般的な権限不足メッセージを flash で出す。
+   - 管理ルートのレスポンスには `Cache-Control: no-store` を付け、複数人分の本文・メールアドレスがブラウザキャッシュに残ることを避ける。
+4. `Admin::FeedbacksController#index` は認可済みの状態だけで `Feedback` を読む。クライアントの `auth` props や URL のメールアドレスを認可根拠にしない。
+
+この基底 controller が認可の複雑さを一か所に隠すため、将来別の管理ページを増やしてもメール比較・リダイレクト・キャッシュ禁止を複製しない。一覧専用の repository / service / serializer は導入しない。現時点では読み取り側が一つだけで、汎用化した interface は単なる中継層になり、かえって責務の所在をぼかすためである。
+
+### 一覧のデータ契約
+
+`Admin::FeedbacksController` は `Feedback.order(created_at: :desc, id: :desc)` を基準に、固定 50 件を `limit` / `offset` で取得する。`feedbacks` テーブルにはこの読み順用の複合インデックスを追加する。
+
+Inertia へ渡す項目は次の allowlist に限定する。
+
+- `id`
+- `category`: 既存 enum の値
+- `subject`: `string | null`
+- `body`
+- `email`: `string | null`
+- `senderType`: `"user"` または `"guest"`
+- `createdAt`: ISO 8601 の日時
+- `pagination`: `page`、`perPage`、`totalItems`、`totalPages`
+
+これにより、`user_id`、ユーザーの OAuth 情報、`updated_at`、意図しない関連データを管理画面の props に混入させない。`senderType` は `user_id` の有無だけで導出できるため、`users` を eager load する必要も N+1 も発生しない。
+
+ページ番号は正の整数だけを受け入れ、無効値は 1 に戻す。総ページ数は空一覧でも 1 とし、最後を超えた番号は最終ページに丸める。これにより、空の「page 9999」や負の offset を作らない。
+
+### UI
+
+`app/frontend/pages/admin/Feedbacks.tsx` は既存の `Header` とダークブルー／金色のページ枠を再利用する。ただしヘッダーに管理者専用リンクは追加せず、許可された運営者が直接 URL を開く運用とする。`docs/design/design.pen` にはこの管理画面のノードがないため、既存の `History` / `Profile` の視覚言語を使い、新しいデザイン成果物は作らない。
+
+1000 文字までの本文を横幅の狭い表セルに押し込めないよう、各フィードバックを縦方向のカード行として表示する。ヘッダー行にはカテゴリバッジと JST の送信日時、メタデータ行には送信者種別と返信先メールアドレス、本文領域には任意件名と改行を保った本文を置く。メール未入力は `—`、件名未入力は件名行を出さない。本文は React のテキスト子として描画し、`dangerouslySetInnerHTML` は使わない。
+
+カテゴリの日本語表示と TypeScript のカテゴリ union は `app/frontend/lib/feedback-categories.ts` に集約し、既存の `Feedback.tsx` と新しい管理画面が同じ定義を読む。この小さな module の interface は「enum 値から有効な表示ラベルを得ること」に絞る。Ruby enum にカテゴリを追加・変更する将来の変更で、送信フォームと管理一覧のラベルが別々にずれるのを防ぐ。
+
+前後ページの Inertia `Link` と「N / totalPages」表示を置き、先頭／末尾では対応する操作を無効化する。カテゴリ絞り込みは現時点で追加しない。
+
+## 却下した代替案
+
+### `users.role` enum またはロール管理画面
+
+却下する。将来、複数の管理機能・複数の権限・委譲運用が必要になれば有力だが、現状は管理ページが一つだけであり、ロールの初期管理者をどう作るか、データ移行、管理 UI まで新たな認可ドメインを持ち込む。固定した少人数の運営者に限る今回の目的に対して広すぎる。
+
+### Basic 認証を `/admin` に重ねる
+
+却下する。既存の OAuth セッションと別の資格情報を運営者に要求し、ログアウト・資格情報のローテーション・エラー体験が二重になる。誰がアクセスしたかもアプリの `current_user` と結び付かない。
+
+### クライアントだけで `isAdmin` を隠す、または URL を秘匿する
+
+却下する。画面やリンクを隠しても HTTP レスポンスを保護できない。権限判定は Rails の before action で完結させ、クライアントには管理者フラグを送らない。
+
+### Rails console を読み取り手段として維持する
+
+却下する。issue が解消したい「送信済みでも運営が確認しない」運用リスクを残し、日常の確認に本番 DB 接続権限を要求し続ける。
+
+### `ADMIN_EMAILS` 環境変数を Kamal の secret として追加する
+
+却下する。このリポジトリは機密・運用設定を Rails credentials に集約する方針で、`.kamal/secrets` は credentials からデプロイ用環境変数を取り出す用途である。アプリ自身が credentials を読めるこのケースで、同じ許可リストを環境変数に複製する理由はない。
+
+### 初回からカテゴリ絞り込み・既読／対応済みを持たせる
+
+却下する。カテゴリは 4 種類で新着一覧を目視する要件をまず満たせる。絞り込みは query parameter・状態復元・追加の UI 契約を増やし、既読／対応済みは schema migration と「誰がいつ対応したか」という未決の業務規則を必要とする。必要性が実データから確認されてから別 issue とする。
+
+### ページネーションなしで全件を返す
+
+却下する。開始直後は小さくても、運営上確認できるほど送信が増えるとレスポンス・描画量が無制限になる。固定 50 件のページングは依存 gem なしで実現でき、一覧の目的に必要な運用上の上限を作る。
+
+## 変更モジュールと責務
+
+| モジュール / ファイル | 変更 | 責務 |
+| --- | --- | --- |
+| `config/application.rb` | 変更 | credentials の `admin.emails` を起動時に安全に正規化し、空なら default deny となる設定値を提供する。 |
+| `config/credentials.yml.enc`（`bin/rails credentials:edit` 経由） | 運用設定 | 本番運営者のメールアドレス配列を保持する。値そのものをソースや plan に書かない。 |
+| `app/controllers/admin/base_controller.rb` | 新規 | ログイン確認、管理者許可リスト照合、非許可時の応答、管理画面の no-store を一か所で担う。 |
+| `app/controllers/admin/feedbacks_controller.rb` | 新規 | 一覧クエリ、安定ソート、ページ番号正規化、Inertia props の allowlist を担う。書き込みは持たない。 |
+| `config/routes.rb` | 変更 | `namespace :admin` 配下の `GET /admin/feedbacks` だけを公開する。 |
+| `db/migrate/*_add_feedbacks_created_at_id_index.rb` | 新規 | 新着順ページングを支える `feedbacks(created_at, id)` 複合インデックスを追加する。 |
+| `db/schema.rb` | 生成更新 | migration 実行で反映される schema のスナップショット。手編集しない。 |
+| `app/frontend/lib/feedback-categories.ts` | 新規 | 4 カテゴリの TypeScript 型と日本語ラベルを、送信フォームと管理一覧に共通提供する。 |
+| `app/frontend/pages/Feedback.tsx` | 変更 | 既存のカテゴリ UI を共通カテゴリ定義へ接続する。送信の挙動・フォーム項目は変更しない。 |
+| `app/frontend/pages/admin/Feedbacks.tsx` | 新規 | 認可済み props をカード一覧・空状態・ページ操作として描画する。 |
+| `spec/requests/admin/feedbacks_spec.rb` | 新規 | HTTP 認可、ルート→Inertia component 配線、props allowlist、順序、ページングを検証する。 |
+
+`Feedback` model と `User` model にロールや一覧用の公開メソッドは追加しない。`Feedback` の既存 enum・検証・任意 `user` 関連は、この controller の読み取りに必要な値をすでに提供している。
+
+## 実装ステップ（コミット可能な粒度）
+
+以下は実装時の小さな論理コミット案である。現在この plan 作成ではコミットしない。
+
+1. `フィードバックカテゴリの表示契約を共有する`
+   - `feedback-categories.ts` を追加し、4 enum 値の TypeScript 型と表示ラベルを定義する。
+   - `Feedback.tsx` のローカルなカテゴリ値・ラベル定義を共通 module に接続する。
+   - 既存の送信フォームでカテゴリ、アイコン、投稿 payload が変わらないことを型検査とブラウザで確認する。
+
+2. `管理ルート用の認可基盤を追加する`
+   - credentials の `admin.emails` 配列を運用者が設定する手順を実行し、`config/application.rb` で正規化・default deny を実装する。
+   - `Admin::BaseController` を追加し、既存の `current_user` / `require_login` を再利用して管理者検査と `no-store` を集中させる。
+   - この段階では一般ユーザー向けの route・props・ヘッダーを変更しない。
+
+3. `フィードバック新着順の読み取りをインデックスで支える`
+   - `feedbacks.created_at` と `id` の複合インデックスを追加する migration を作成・実行する。
+   - 生成された `db/schema.rb` を確認する。
+   - テーブル列、カテゴリ enum、既存の `user_id` の意味を変えない。
+
+4. `管理者フィードバック一覧を縦に接続する`
+   - `admin/feedbacks` route と `Admin::FeedbacksController#index` を追加する。
+   - 安定した新着順、50 件ページ、範囲外ページの正規化、必要最小限の Inertia props を実装する。
+   - `admin/Feedbacks` React page を追加し、カテゴリラベル、送信者種別、任意フィールド、JST 日時、空状態、前後ページリンクを表示する。
+   - 同じコミットで request spec を追加し、サーバーと UI の props 名を一つの縦スライスとして固定する。これにより片側だけが先行して本番ページを壊す状態を作らない。
+
+## テスト計画
+
+### RSpec request spec
+
+`spec/requests/admin/feedbacks_spec.rb` に OAuth の既存 request spec と同じテストログイン補助を置く。credentials を直接書き換えず、example の前後で `Rails.configuration.x.admin_emails` を退避・差し替え・復元して、管理者／非管理者を決定的に作る。
+
+最低限、次を検証する。
+
+1. 未ログインの `GET /admin/feedbacks` は `/auth/login` にリダイレクトする。
+2. ログイン済みでも許可リスト外ならトップへリダイレクトし、一覧 component と props を返さない。
+3. 許可リスト内なら `admin/Feedbacks` component を描画し、空一覧と安定したページ情報を返す。
+4. ログインユーザー由来・**ゲスト**由来の両方を factory で作り、`senderType`、カテゴリ、本文、任意件名、任意メール、日時が期待どおりに serialize されることを確認する。
+5. props の各行のキーが allowlist と一致し、`user_id`、`updated_at`、ユーザーのメールアドレスなどが漏れないことを確認する。
+6. 異なる `created_at`、同一 `created_at` の両方で `created_at DESC, id DESC` になることを確認する。
+7. 51 件以上を作り、1 ページ目／2 ページ目の件数、重複なし、`totalItems` と `totalPages`、無効値・範囲外 `page` の丸めを確認する。
+
+既存の `spec/requests/feedbacks_spec.rb` は送信経路の回帰防止として変更せず通す。モデルの永続化規則は変えないため、`Feedback` model spec に管理 UI の表示テストを足さない。
+
+### TypeScript と表示確認
+
+カテゴリ共通 module は単純な定数と型だけなので、実装詳細を再現する Vitest は足さない。`bun run check` が enum ラベル利用側の型不整合を検出する。新規 React page は route request spec が props 配線を、ブラウザ確認がカードの可読性・空状態・ページ操作を担保する。これは既存に page-level React spec がないこと、および ADR 0001〜0003 の配線と末端描画を重複させない原則に合う。
+
+実装完了時は、まず対象 spec、続いて全体を実行する。
+
+```sh
+bundle exec rspec spec/requests/admin/feedbacks_spec.rb
+bundle exec rspec
+bundle exec rubocop
+bun run check
+bun run lint
+```
+
+## リスク、回帰ポイント、検証
+
+| リスク / 回帰点 | 対策と検証 |
+| --- | --- |
+| 許可リスト未設定で運営者まで締め出される | default deny 自体は安全側の仕様とする。本番反映前に credentials の `admin.emails` を実際の OAuth メールで設定し、管理者ログインで確認する。未設定状態の request spec も拒否を確認する。 |
+| メールの大文字小文字・空白で意図した人が入れない | credentials 読み取り時と比較時の正規化を明文化し、空白・大文字混じりの設定を含む spec を追加する。 |
+| ルートを知る一般ユーザーにフィードバックが漏れる | Rails の `Admin::BaseController` で action 前に拒否する。非管理者のブラウザと、セッションなしの `curl -I /admin/feedbacks` でリダイレクト先を確認する。クライアント側の表示制御を安全策として数えない。 |
+| 本文・メールアドレスが共有端末のキャッシュや props に残る | 管理ルートを `no-store` にし、props は必要な `Feedback#email` と `senderType` だけに絞る。ブラウザの Network タブで非管理者レスポンスに一覧 JSON がないことを確認する。 |
+| フィードバック増加で一覧が重くなる、順序がページ間で揺れる | 固定 50 件、`created_at DESC, id DESC`、複合インデックスを採用する。factory で 51 件以上・同時刻データを使う request spec と、ブラウザで次ページ操作を確認する。 |
+| 送信本文がスクリプトとして動く | React のテキスト描画だけを使用する。開発環境で HTML タグを含む本文を作成し、文字列として表示され DOM が生成されないことをブラウザで確認する。 |
+| 共通カテゴリ定義への移動で既存フォームのカテゴリ投稿が壊れる | `spec/requests/feedbacks_spec.rb` と `bun run check` を通し、各カテゴリを選んで `/feedback` 投稿が従来の enum 値を保存することをブラウザで確認する。 |
+| 仮に credentials を更新しただけで本番へ反映されない | credentials はデプロイイメージに含まれ、既存の `RAILS_MASTER_KEY` で読まれる。デプロイ後に管理者で一覧へ入り、別メールのログインで拒否されるまでをリリース確認に含める。 |
+
+ブラウザの手動確認では、管理者アカウントでログイン後に `/admin/feedbacks` を開き、ユーザー送信・ゲスト送信・件名なし・メールなし・長い改行入り本文・51 件目以降を確認する。最後に非管理者アカウントとログアウト状態で同じ URL を直接開き、データが見えないことを確認する。
+
+## 未決事項と仮定
+
+### 本 plan で置く仮定
+
+- 運営者は少人数であり、当面は OAuth アカウントのメールアドレスを Rails credentials で管理できる。
+- `admin.emails` は本番で少なくとも一件設定される。メールアドレスの値は issue、ソース、UI にハードコードしない。
+- 送信者欄に必要なのは「ログインユーザーかゲストか」の区別であり、ユーザーのプロフィール・OAuth メールを追加で開示する要件はない。
+- 50 件ページと新着順一覧が、カテゴリをまたいだ最初の運用ビューとして十分である。
+- 管理者画面に専用デザインは未提供のため、既存画面のデザイン言語を使う。
+
+### 実装着手前に運営者が確認すべき事項
+
+1. 最初に許可する OAuth メールアドレスと、credentials 編集を行う責任者。
+2. 非管理者に返す権限不足メッセージを、現行案（トップへ戻す）でよいか。HTTP 403 のエラーページへ変更する必要がある場合は、既存にないエラー UI を別途設計する。
+3. 実データが増えた後に、カテゴリ絞り込み・対応状態・検索のどれが本当に必要か。その時点で操作主体、状態遷移、監査要件を決めて別 issue に分ける。
