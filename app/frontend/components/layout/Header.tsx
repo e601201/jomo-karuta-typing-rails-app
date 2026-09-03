@@ -5,6 +5,7 @@ import {
 	ChevronDown,
 	History,
 	House,
+	Inbox,
 	Info,
 	LogIn,
 	LogOut,
@@ -215,11 +216,13 @@ function ScoreCard({
 function UserDropdown({
 	user,
 	bestScores,
+	isAdmin,
 	onLogout,
 	close
 }: {
 	user: AuthUser;
 	bestScores: BestScores | null;
+	isAdmin: boolean;
 	onLogout: () => void;
 	close: () => void;
 }) {
@@ -325,6 +328,14 @@ function UserDropdown({
 					href="/feedback"
 					onClick={close}
 				/>
+				{isAdmin && (
+					<MenuItem
+						icon={<Inbox size={16} />}
+						label="フィードバック一覧"
+						href="/admin/feedbacks"
+						onClick={close}
+					/>
+				)}
 			</div>
 		</div>
 	);
@@ -333,7 +344,8 @@ function UserDropdown({
 export default function Header({ user }: Props) {
 	const [menuOpen, setMenuOpen] = useState(false);
 	const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-	const { best_scores: bestScores } = usePage().props as unknown as SharedProps;
+	const { best_scores: bestScores, auth } = usePage().props as unknown as SharedProps;
+	const isAdmin = auth?.is_admin === true;
 	const menuRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -429,6 +441,7 @@ export default function Header({ user }: Props) {
 										<UserDropdown
 											user={user}
 											bestScores={bestScores}
+											isAdmin={isAdmin}
 											onLogout={requestLogout}
 											close={close}
 										/>

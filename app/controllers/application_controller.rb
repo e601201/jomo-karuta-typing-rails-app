@@ -6,7 +6,10 @@ class ApplicationController < ActionController::Base
 
   inertia_share do
     {
-      auth: { user: current_user&.as_json(only: %i[id email nickname avatar_url created_at]) },
+      auth: {
+        user: current_user&.as_json(only: %i[id email nickname avatar_url created_at]),
+        is_admin: current_user&.admin? || false
+      },
       # 未ログイン / 未保存は nil（nil が「初回引き継ぎ対象」のシグナル。ADR-0004）
       settings: current_user&.user_setting&.as_frontend,
       # ベストスコア（ランキング登録済みスコア中の自己最高）。未ログインは nil
@@ -26,6 +29,11 @@ class ApplicationController < ActionController::Base
 
   def require_login
     redirect_to "/auth/login" unless current_user
+  end
+
+  # 運営以外にはページの存在を伏せる。未ログインもログイン済み一般ユーザーも同じ 404。
+  def require_admin
+    raise ActionController::RoutingError, "Not Found" unless current_user&.admin?
   end
 
   # fetch 系 API 呼び出し用に XSRF トークンをクッキーで配布する

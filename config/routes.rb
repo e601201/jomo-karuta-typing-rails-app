@@ -23,6 +23,11 @@ Rails.application.routes.draw do
   get  "feedback", to: "feedbacks#new", as: :feedback
   post "feedback", to: "feedbacks#create"
 
+  # 運営向けフィードバック一覧（#26）。認可は User#admin?。非運営には 404。
+  namespace :admin do
+    resources :feedbacks, only: :index
+  end
+
   # 認証 (OmniAuth)。request phase (POST /auth/:provider) は OmniAuth ミドルウェアが処理する
   get    "auth/login",              to: "sessions#new"
   get    "auth/error",              to: "sessions#error"
