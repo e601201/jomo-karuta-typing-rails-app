@@ -3,10 +3,7 @@ import { ChevronLeft, ChevronRight, Inbox, MessageCircle } from 'lucide-react';
 import type { SharedProps } from '@/types';
 import Header from '@/components/layout/Header';
 import { formatDateTime } from '@/lib/format-datetime';
-import {
-	FEEDBACK_CATEGORY_LABELS,
-	type FeedbackCategory
-} from '@/lib/feedback-categories';
+import { FEEDBACK_CATEGORY_LABELS, type FeedbackCategory } from '@/lib/feedback-categories';
 import backgroundImage from '@/assets/images/background.webp';
 
 const SERIF = { fontFamily: "'Noto Serif JP', serif" } as const;
@@ -129,9 +126,7 @@ export default function AdminFeedbacks({
 					<div className="mt-2 flex w-full max-w-[560px] flex-col items-center gap-5 rounded-xl border-2 border-[#C9A961] bg-[#0A1A35DD] px-8 py-14 text-center">
 						<MessageCircle className="h-14 w-14 text-[#C9A961]" />
 						<p className="text-xl font-bold text-[#F5E9C8]">
-							{category
-								? 'この種類のフィードバックはありません'
-								: 'まだフィードバックはありません'}
+							{category ? 'この種類のフィードバックはありません' : 'まだフィードバックはありません'}
 						</p>
 						<p className="text-[#B8A874]">
 							{category
@@ -142,8 +137,7 @@ export default function AdminFeedbacks({
 				) : (
 					<div className="w-full max-w-[1100px]">
 						<p className="mb-2 text-right text-xs text-[#B8A874]" style={SANS}>
-							全{total.toLocaleString()}件中 {from.toLocaleString()}–
-							{to.toLocaleString()}件
+							全{total.toLocaleString()}件中 {from.toLocaleString()}–{to.toLocaleString()}件
 						</p>
 						<div className="overflow-x-auto rounded-xl border-2 border-[#C9A961] bg-[#0A1A35DD]">
 							<table className="w-full min-w-[880px] border-collapse text-left">
@@ -200,10 +194,7 @@ export default function AdminFeedbacks({
 						</div>
 
 						{lastPage > 1 && (
-							<nav
-								aria-label="ページ送り"
-								className="mt-4 flex items-center justify-center gap-4"
-							>
+							<nav aria-label="ページ送り" className="mt-4 flex items-center justify-center gap-4">
 								{page > 1 ? (
 									<Link
 										href={listHref(category, page - 1)}

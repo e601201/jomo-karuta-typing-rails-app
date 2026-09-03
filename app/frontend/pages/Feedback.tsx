@@ -48,8 +48,18 @@ const CATEGORY_INFO: {
 	icon: ComponentType<{ size?: number; color?: string }>;
 	color: string;
 }[] = [
-	{ label: FEEDBACK_CATEGORY_LABELS.bug_report, desc: '動作の不具合やエラー', icon: Bug, color: '#C8302A' },
-	{ label: FEEDBACK_CATEGORY_LABELS.feature_request, desc: '新機能のご提案', icon: Lightbulb, color: '#E5C875' },
+	{
+		label: FEEDBACK_CATEGORY_LABELS.bug_report,
+		desc: '動作の不具合やエラー',
+		icon: Bug,
+		color: '#C8302A'
+	},
+	{
+		label: FEEDBACK_CATEGORY_LABELS.feature_request,
+		desc: '新機能のご提案',
+		icon: Lightbulb,
+		color: '#E5C875'
+	},
 	{
 		label: FEEDBACK_CATEGORY_LABELS.usage_question,
 		desc: '操作方法や使い方について',
@@ -57,7 +67,12 @@ const CATEGORY_INFO: {
 		color: '#E5C875'
 	},
 	// デザインは #0F2952 だが背景 #0A1A35 とほぼ同色で埋もれるため、視認できる控えめな金にする
-	{ label: FEEDBACK_CATEGORY_LABELS.other, desc: '感想・お問い合わせ', icon: MessageCircle, color: '#B8A874' }
+	{
+		label: FEEDBACK_CATEGORY_LABELS.other,
+		desc: '感想・お問い合わせ',
+		icon: MessageCircle,
+		color: '#B8A874'
+	}
 ];
 
 const FIELD_LABEL = 'text-sm font-semibold text-[#C9A961]';
