@@ -31,6 +31,7 @@ env:
     - GOOGLE_CLIENT_SECRET
     - GITHUB_CLIENT_ID
     - GITHUB_CLIENT_SECRET
+    - ADMIN_EMAILS
   clear:
     # PostgreSQL accessory のコンテナ名。同一 Docker ネットワーク (kamal) 内で名前解決される。
     DB_HOST: jomo_karuta_typing_rails_app-db
