@@ -4,6 +4,7 @@ import { Gamepad2, History as HistoryIcon, Target, Timer, Trophy, Zap } from 'lu
 import type { RandomModeDifficulty, SharedProps } from '@/types';
 import Header from '@/components/layout/Header';
 import { formatTime } from '@/lib/format-time';
+import { formatDateTime } from '@/lib/format-datetime';
 import backgroundImage from '@/assets/images/background.webp';
 
 const SERIF = { fontFamily: "'Noto Serif JP', serif" } as const;
@@ -51,16 +52,6 @@ const modeTabs = [
 	{ value: 'random', label: 'ランダム' },
 	{ value: 'timeattack', label: 'タイムアタック' }
 ] as const;
-
-function formatDate(iso: string): string {
-	return new Date(iso).toLocaleString('ja-JP', {
-		year: 'numeric',
-		month: '2-digit',
-		day: '2-digit',
-		hour: '2-digit',
-		minute: '2-digit'
-	});
-}
 
 function LevelChip({ difficulty }: { difficulty: RandomModeDifficulty }) {
 	const { label, color } = levelStyle[difficulty];
@@ -247,7 +238,7 @@ export default function History({ summary, records, recentLimit }: HistoryProps)
 														className="px-4 py-4 text-sm whitespace-nowrap text-[#F5E9C8] sm:px-6"
 														style={MONO}
 													>
-														{formatDate(record.created_at)}
+														{formatDateTime(record.created_at)}
 													</td>
 													<td className="px-4 py-4">
 														<ModeChip mode={record.game_mode} />
