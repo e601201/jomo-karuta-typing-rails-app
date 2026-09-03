@@ -24,7 +24,7 @@ export type BestScores = {
 };
 
 export type SharedProps = {
-	auth: { user: AuthUser | null };
+	auth: { user: AuthUser | null; is_admin: boolean };
 	csrf_token: string;
 	flash: FlashData;
 	// ログイン中かつ DB 保存済みのユーザー設定。未ログイン / 未保存は null（ADR-0004）

@@ -18,6 +18,8 @@
 bundle install
 bun install
 cp .env.example .env   # Google/GitHub OAuth クレデンシャルを設定
+# 運営としてフィードバック一覧を開く場合は .env に ADMIN_EMAILS=<自分の OAuth メール> を追加する
+# （未設定・空なら誰も運営にならない。本番は Kamal が credentials の admin.emails から注入する）
 bin/rails db:prepare
 bin/dev                # Rails (PORT 環境変数、デフォルト3000) + Vite dev server
 ```

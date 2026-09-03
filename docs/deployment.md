@@ -43,6 +43,9 @@ bin/rails credentials:edit
 - `db.password` … 生成済み（変更不要）
 - `google.client_id` / `google.client_secret` … `REPLACE_ME` を本番用の値に置き換える
 - `github.client_id` / `github.client_secret` … 同上
+- `admin.emails` … 運営のメールアドレス（カンマ区切り、大小文字無視）。アプリは ENV `ADMIN_EMAILS` として受け取る
+
+> **順序**: `.kamal/secrets` は `credentials:fetch admin.emails` の失敗で非ゼロ終了する。**Kamal の `ADMIN_EMAILS` 配線をデプロイする前に**、必ず `bin/rails credentials:edit` で `admin.emails` を入れておく。未投入のままデプロイするとデプロイ自体が落ちる。
 
 ### 5. config/deploy.yml の TODO を置き換え
 
@@ -72,6 +75,7 @@ bin/kamal setup
 - `https://<ドメイン>/up` が 200 を返す
 - Google / GitHub ログインが通る
 - 対戦モードでマッチングできる（WebSocket 接続。ブラウザ 2 窓で確認）
+- 運営アカウントでログインして `/admin/feedbacks` が開ける（開けなければ `ADMIN_EMAILS` の注入失敗）
 
 ## 2回目以降のデプロイ
 

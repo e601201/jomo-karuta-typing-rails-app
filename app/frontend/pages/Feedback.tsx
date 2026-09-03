@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import type { SharedProps } from '@/types';
 import Header from '@/components/layout/Header';
+import { FEEDBACK_CATEGORY_LABELS, type FeedbackCategory } from '@/lib/feedback-categories';
 import backgroundImage from '@/assets/images/background.webp';
 
 // 見出し・ラベルは明朝、本文・入力値・補足はゴシック（デザイン wNwWp 準拠）
@@ -25,11 +26,19 @@ const BODY_MAX_LENGTH = 1000;
 const SUBJECT_MAX_LENGTH = 100;
 
 // カテゴリは Feedback モデルの enum と一致させる（CONTEXT.md「フィードバック」参照）。
-const CATEGORIES: { value: string; label: string; icon: ComponentType<{ size?: number }> }[] = [
-	{ value: 'bug_report', label: 'バグ報告', icon: Bug },
-	{ value: 'feature_request', label: '機能リクエスト', icon: Sparkles },
-	{ value: 'usage_question', label: '使い方の質問', icon: CircleQuestionMark },
-	{ value: 'other', label: 'その他', icon: MessageCircle }
+const CATEGORIES: {
+	value: FeedbackCategory;
+	label: string;
+	icon: ComponentType<{ size?: number }>;
+}[] = [
+	{ value: 'bug_report', label: FEEDBACK_CATEGORY_LABELS.bug_report, icon: Bug },
+	{ value: 'feature_request', label: FEEDBACK_CATEGORY_LABELS.feature_request, icon: Sparkles },
+	{
+		value: 'usage_question',
+		label: FEEDBACK_CATEGORY_LABELS.usage_question,
+		icon: CircleQuestionMark
+	},
+	{ value: 'other', label: FEEDBACK_CATEGORY_LABELS.other, icon: MessageCircle }
 ];
 
 // 左情報パネルのカテゴリー説明（デザイン wNwWp 準拠。フォームの種類選択とは別の説明用）。
@@ -39,16 +48,31 @@ const CATEGORY_INFO: {
 	icon: ComponentType<{ size?: number; color?: string }>;
 	color: string;
 }[] = [
-	{ label: 'バグ報告', desc: '動作の不具合やエラー', icon: Bug, color: '#C8302A' },
-	{ label: '機能リクエスト', desc: '新機能のご提案', icon: Lightbulb, color: '#E5C875' },
 	{
-		label: '使い方の質問',
+		label: FEEDBACK_CATEGORY_LABELS.bug_report,
+		desc: '動作の不具合やエラー',
+		icon: Bug,
+		color: '#C8302A'
+	},
+	{
+		label: FEEDBACK_CATEGORY_LABELS.feature_request,
+		desc: '新機能のご提案',
+		icon: Lightbulb,
+		color: '#E5C875'
+	},
+	{
+		label: FEEDBACK_CATEGORY_LABELS.usage_question,
 		desc: '操作方法や使い方について',
 		icon: CircleQuestionMark,
 		color: '#E5C875'
 	},
 	// デザインは #0F2952 だが背景 #0A1A35 とほぼ同色で埋もれるため、視認できる控えめな金にする
-	{ label: 'その他', desc: '感想・お問い合わせ', icon: MessageCircle, color: '#B8A874' }
+	{
+		label: FEEDBACK_CATEGORY_LABELS.other,
+		desc: '感想・お問い合わせ',
+		icon: MessageCircle,
+		color: '#B8A874'
+	}
 ];
 
 const FIELD_LABEL = 'text-sm font-semibold text-[#C9A961]';
