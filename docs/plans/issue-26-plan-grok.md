@@ -51,13 +51,13 @@ kind: implementation-plan
 
 CONTEXT.md の語彙だけを使う。シノニムは使わない。
 
-| 画面・実装で扱うもの | 使う語 | 使わない語 |
-| --- | --- | --- |
-| プレイヤーが送った 1 件 | **フィードバック** | お問い合わせ、問い合わせ、バグ報告（4 種の 1 つとしてだけ使う） |
-| 未ログインの送信者 | **ゲスト** | 匿名ユーザー、非会員 |
-| ログインして送った送信者 | **ユーザー**（アカウントの nickname / email） | 会員 |
-| 任意の返信先 | フィードバックの `email`（ゲストが書く返信先。アカウントの email とは別） | — |
-| 4 種 | バグ報告 / 機能リクエスト / 使い方の質問 / その他（enum `bug_report` `feature_request` `usage_question` `other`） | — |
+| 画面・実装で扱うもの     | 使う語                                                                                                            | 使わない語                                                      |
+| ------------------------ | ----------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| プレイヤーが送った 1 件  | **フィードバック**                                                                                                | お問い合わせ、問い合わせ、バグ報告（4 種の 1 つとしてだけ使う） |
+| 未ログインの送信者       | **ゲスト**                                                                                                        | 匿名ユーザー、非会員                                            |
+| ログインして送った送信者 | **ユーザー**（アカウントの nickname / email）                                                                     | 会員                                                            |
+| 任意の返信先             | フィードバックの `email`（ゲストが書く返信先。アカウントの email とは別）                                         | —                                                               |
+| 4 種                     | バグ報告 / 機能リクエスト / 使い方の質問 / その他（enum `bug_report` `feature_request` `usage_question` `other`） | —                                                               |
 
 **「管理者」は用語集に無い。** 本プランではプレイヤー領域の概念にしない。認可は「この OAuth アカウントの email が運営の許可リストにあるか」という **運用設定** であり、ロールや権限モデルをドメインに導入しない。CONTEXT.md は更新しない。将来、運営向け画面が複数になり「管理者」がユビキタス言語として必要になったら `/domain-modeling` で足す。
 
@@ -204,16 +204,16 @@ has_many :feedbacks, dependent: :nullify
 
 ### 既存への小さな穴
 
-| ファイル | 責務の変化 |
-| --- | --- |
-| `config/routes.rb` | `namespace :admin { resources :feedbacks, only: [:index] }` → `/admin/feedbacks`。公開 `get/post "feedback"` は維持 |
-| `app/models/user.rb` | `has_many :feedbacks, dependent: :nullify` のみ |
-| `app/models/feedback.rb` | 一覧用の明示シリアライズを置くならここ（コントローラに書いてもよい。二重にしない） |
-| `spec/factories/feedbacks.rb` | `:with_user` / 件名あり、など一覧 spec が読みやすい trait |
-| `app/frontend/pages/admin/Feedbacks.tsx` | 運営向け一覧。`pages: '../pages'`（`entrypoints/inertia.tsx`）で自動解決 |
-| `docs/deployment.md` | 許可リストの置き方（credentials の `admin.emails` と開発用 `ADMIN_EMAILS`） |
-| `config/credentials.yml.enc` | 本番の許可リスト。値は PR に生で書かない |
-| `docs/adr/0011-admin-email-allowlist.md`（任意） | role 列を置かない理由 |
+| ファイル                                         | 責務の変化                                                                                                          |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `config/routes.rb`                               | `namespace :admin { resources :feedbacks, only: [:index] }` → `/admin/feedbacks`。公開 `get/post "feedback"` は維持 |
+| `app/models/user.rb`                             | `has_many :feedbacks, dependent: :nullify` のみ                                                                     |
+| `app/models/feedback.rb`                         | 一覧用の明示シリアライズを置くならここ（コントローラに書いてもよい。二重にしない）                                  |
+| `spec/factories/feedbacks.rb`                    | `:with_user` / 件名あり、など一覧 spec が読みやすい trait                                                           |
+| `app/frontend/pages/admin/Feedbacks.tsx`         | 運営向け一覧。`pages: '../pages'`（`entrypoints/inertia.tsx`）で自動解決                                            |
+| `docs/deployment.md`                             | 許可リストの置き方（credentials の `admin.emails` と開発用 `ADMIN_EMAILS`）                                         |
+| `config/credentials.yml.enc`                     | 本番の許可リスト。値は PR に生で書かない                                                                            |
+| `docs/adr/0011-admin-email-allowlist.md`（任意） | role 列を置かない理由                                                                                               |
 
 触らないもの: `FeedbacksController` の create ロジック、`Header.tsx`、`ApplicationController#inertia_share`、`SharedProps` への admin フラグ、プレイヤー向け `pages/Feedback.tsx`（カテゴリラベル 4 つは管理画面側に同じ文言を持ってよい。共有定数への抽出は必須にしない）。
 
@@ -363,11 +363,11 @@ curl -s -o /dev/null -w "%{http_code} %{redirect_url}\n" http://localhost:3000/a
 
 issue 本文の 3 つの要判断は、本プランでは次で **閉じた** ものとして実装してよい。実装中に覆すなら PR で明記する。
 
-| 要判断 | このプランの決定 |
-| --- | --- |
-| 認可モデル | email 許可リスト（`AdminAccess`）。role 列も Basic も無し |
+| 要判断                             | このプランの決定                                             |
+| ---------------------------------- | ------------------------------------------------------------ |
+| 認可モデル                         | email 許可リスト（`AdminAccess`）。role 列も Basic も無し    |
 | ページネーション・カテゴリ絞り込み | ページネーション無し・全件。カテゴリはクライアント側タブのみ |
-| 既読/対応済み | 持たない。マイグレーションで列を足さない |
+| 既読/対応済み                      | 持たない。マイグレーションで列を足さない                     |
 
 仮定:
 

@@ -122,19 +122,19 @@ Inertia へ渡す項目は次の allowlist に限定する。
 
 ## 変更モジュールと責務
 
-| モジュール / ファイル | 変更 | 責務 |
-| --- | --- | --- |
-| `config/application.rb` | 変更 | credentials の `admin.emails` を起動時に安全に正規化し、空なら default deny となる設定値を提供する。 |
-| `config/credentials.yml.enc`（`bin/rails credentials:edit` 経由） | 運用設定 | 本番運営者のメールアドレス配列を保持する。値そのものをソースや plan に書かない。 |
-| `app/controllers/admin/base_controller.rb` | 新規 | ログイン確認、管理者許可リスト照合、非許可時の応答、管理画面の no-store を一か所で担う。 |
-| `app/controllers/admin/feedbacks_controller.rb` | 新規 | 一覧クエリ、安定ソート、ページ番号正規化、Inertia props の allowlist を担う。書き込みは持たない。 |
-| `config/routes.rb` | 変更 | `namespace :admin` 配下の `GET /admin/feedbacks` だけを公開する。 |
-| `db/migrate/*_add_feedbacks_created_at_id_index.rb` | 新規 | 新着順ページングを支える `feedbacks(created_at, id)` 複合インデックスを追加する。 |
-| `db/schema.rb` | 生成更新 | migration 実行で反映される schema のスナップショット。手編集しない。 |
-| `app/frontend/lib/feedback-categories.ts` | 新規 | 4 カテゴリの TypeScript 型と日本語ラベルを、送信フォームと管理一覧に共通提供する。 |
-| `app/frontend/pages/Feedback.tsx` | 変更 | 既存のカテゴリ UI を共通カテゴリ定義へ接続する。送信の挙動・フォーム項目は変更しない。 |
-| `app/frontend/pages/admin/Feedbacks.tsx` | 新規 | 認可済み props をカード一覧・空状態・ページ操作として描画する。 |
-| `spec/requests/admin/feedbacks_spec.rb` | 新規 | HTTP 認可、ルート→Inertia component 配線、props allowlist、順序、ページングを検証する。 |
+| モジュール / ファイル                                             | 変更     | 責務                                                                                                 |
+| ----------------------------------------------------------------- | -------- | ---------------------------------------------------------------------------------------------------- |
+| `config/application.rb`                                           | 変更     | credentials の `admin.emails` を起動時に安全に正規化し、空なら default deny となる設定値を提供する。 |
+| `config/credentials.yml.enc`（`bin/rails credentials:edit` 経由） | 運用設定 | 本番運営者のメールアドレス配列を保持する。値そのものをソースや plan に書かない。                     |
+| `app/controllers/admin/base_controller.rb`                        | 新規     | ログイン確認、管理者許可リスト照合、非許可時の応答、管理画面の no-store を一か所で担う。             |
+| `app/controllers/admin/feedbacks_controller.rb`                   | 新規     | 一覧クエリ、安定ソート、ページ番号正規化、Inertia props の allowlist を担う。書き込みは持たない。    |
+| `config/routes.rb`                                                | 変更     | `namespace :admin` 配下の `GET /admin/feedbacks` だけを公開する。                                    |
+| `db/migrate/*_add_feedbacks_created_at_id_index.rb`               | 新規     | 新着順ページングを支える `feedbacks(created_at, id)` 複合インデックスを追加する。                    |
+| `db/schema.rb`                                                    | 生成更新 | migration 実行で反映される schema のスナップショット。手編集しない。                                 |
+| `app/frontend/lib/feedback-categories.ts`                         | 新規     | 4 カテゴリの TypeScript 型と日本語ラベルを、送信フォームと管理一覧に共通提供する。                   |
+| `app/frontend/pages/Feedback.tsx`                                 | 変更     | 既存のカテゴリ UI を共通カテゴリ定義へ接続する。送信の挙動・フォーム項目は変更しない。               |
+| `app/frontend/pages/admin/Feedbacks.tsx`                          | 新規     | 認可済み props をカード一覧・空状態・ページ操作として描画する。                                      |
+| `spec/requests/admin/feedbacks_spec.rb`                           | 新規     | HTTP 認可、ルート→Inertia component 配線、props allowlist、順序、ページングを検証する。              |
 
 `Feedback` model と `User` model にロールや一覧用の公開メソッドは追加しない。`Feedback` の既存 enum・検証・任意 `user` 関連は、この controller の読み取りに必要な値をすでに提供している。
 
@@ -197,16 +197,16 @@ bun run lint
 
 ## リスク、回帰ポイント、検証
 
-| リスク / 回帰点 | 対策と検証 |
-| --- | --- |
-| 許可リスト未設定で運営者まで締め出される | default deny 自体は安全側の仕様とする。本番反映前に credentials の `admin.emails` を実際の OAuth メールで設定し、管理者ログインで確認する。未設定状態の request spec も拒否を確認する。 |
-| メールの大文字小文字・空白で意図した人が入れない | credentials 読み取り時と比較時の正規化を明文化し、空白・大文字混じりの設定を含む spec を追加する。 |
-| ルートを知る一般ユーザーにフィードバックが漏れる | Rails の `Admin::BaseController` で action 前に拒否する。非管理者のブラウザと、セッションなしの `curl -I /admin/feedbacks` でリダイレクト先を確認する。クライアント側の表示制御を安全策として数えない。 |
-| 本文・メールアドレスが共有端末のキャッシュや props に残る | 管理ルートを `no-store` にし、props は必要な `Feedback#email` と `senderType` だけに絞る。ブラウザの Network タブで非管理者レスポンスに一覧 JSON がないことを確認する。 |
-| フィードバック増加で一覧が重くなる、順序がページ間で揺れる | 固定 50 件、`created_at DESC, id DESC`、複合インデックスを採用する。factory で 51 件以上・同時刻データを使う request spec と、ブラウザで次ページ操作を確認する。 |
-| 送信本文がスクリプトとして動く | React のテキスト描画だけを使用する。開発環境で HTML タグを含む本文を作成し、文字列として表示され DOM が生成されないことをブラウザで確認する。 |
-| 共通カテゴリ定義への移動で既存フォームのカテゴリ投稿が壊れる | `spec/requests/feedbacks_spec.rb` と `bun run check` を通し、各カテゴリを選んで `/feedback` 投稿が従来の enum 値を保存することをブラウザで確認する。 |
-| 仮に credentials を更新しただけで本番へ反映されない | credentials はデプロイイメージに含まれ、既存の `RAILS_MASTER_KEY` で読まれる。デプロイ後に管理者で一覧へ入り、別メールのログインで拒否されるまでをリリース確認に含める。 |
+| リスク / 回帰点                                              | 対策と検証                                                                                                                                                                                              |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 許可リスト未設定で運営者まで締め出される                     | default deny 自体は安全側の仕様とする。本番反映前に credentials の `admin.emails` を実際の OAuth メールで設定し、管理者ログインで確認する。未設定状態の request spec も拒否を確認する。                 |
+| メールの大文字小文字・空白で意図した人が入れない             | credentials 読み取り時と比較時の正規化を明文化し、空白・大文字混じりの設定を含む spec を追加する。                                                                                                      |
+| ルートを知る一般ユーザーにフィードバックが漏れる             | Rails の `Admin::BaseController` で action 前に拒否する。非管理者のブラウザと、セッションなしの `curl -I /admin/feedbacks` でリダイレクト先を確認する。クライアント側の表示制御を安全策として数えない。 |
+| 本文・メールアドレスが共有端末のキャッシュや props に残る    | 管理ルートを `no-store` にし、props は必要な `Feedback#email` と `senderType` だけに絞る。ブラウザの Network タブで非管理者レスポンスに一覧 JSON がないことを確認する。                                 |
+| フィードバック増加で一覧が重くなる、順序がページ間で揺れる   | 固定 50 件、`created_at DESC, id DESC`、複合インデックスを採用する。factory で 51 件以上・同時刻データを使う request spec と、ブラウザで次ページ操作を確認する。                                        |
+| 送信本文がスクリプトとして動く                               | React のテキスト描画だけを使用する。開発環境で HTML タグを含む本文を作成し、文字列として表示され DOM が生成されないことをブラウザで確認する。                                                           |
+| 共通カテゴリ定義への移動で既存フォームのカテゴリ投稿が壊れる | `spec/requests/feedbacks_spec.rb` と `bun run check` を通し、各カテゴリを選んで `/feedback` 投稿が従来の enum 値を保存することをブラウザで確認する。                                                    |
+| 仮に credentials を更新しただけで本番へ反映されない          | credentials はデプロイイメージに含まれ、既存の `RAILS_MASTER_KEY` で読まれる。デプロイ後に管理者で一覧へ入り、別メールのログインで拒否されるまでをリリース確認に含める。                                |
 
 ブラウザの手動確認では、管理者アカウントでログイン後に `/admin/feedbacks` を開き、ユーザー送信・ゲスト送信・件名なし・メールなし・長い改行入り本文・51 件目以降を確認する。最後に非管理者アカウントとログアウト状態で同じ URL を直接開き、データが見えないことを確認する。
 
