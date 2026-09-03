@@ -47,6 +47,107 @@ RSpec.describe User, type: :model do
       expect { user.destroy! }.not_to change(Score, :count)
       expect(score.reload.user_id).to be_nil
     end
+
+    it "has many feedbacks" do
+      user = create(:user)
+      mine = create(:feedback, user: user)
+      create(:feedback)
+
+      expect(user.feedbacks).to eq([ mine ])
+    end
+
+    it "nullifies feedbacks on destroy so the inbox survives" do
+      user = create(:user)
+      feedback = create(:feedback, user: user)
+
+      expect { user.destroy! }.not_to change(Feedback, :count)
+      expect(feedback.reload.user_id).to be_nil
+    end
+  end
+
+  describe "#admin?" do
+    # ENV をスタブせず差し替えて実挙動を検証する（許可リストの意味論はここが唯一の真実）
+    def with_admin_emails(value)
+      original = ENV["ADMIN_EMAILS"]
+      if value.nil?
+        ENV.delete("ADMIN_EMAILS")
+      else
+        ENV["ADMIN_EMAILS"] = value
+      end
+      yield
+    ensure
+      if original.nil?
+        ENV.delete("ADMIN_EMAILS")
+      else
+        ENV["ADMIN_EMAILS"] = original
+      end
+    end
+
+    it "is true when the email is on the allowlist" do
+      user = build(:user, email: "admin@example.com")
+
+      with_admin_emails("admin@example.com") do
+        expect(user.admin?).to be true
+      end
+    end
+
+    it "is false when the email is not on the allowlist" do
+      user = build(:user, email: "player@example.com")
+
+      with_admin_emails("admin@example.com") do
+        expect(user.admin?).to be false
+      end
+    end
+
+    it "is false for everyone when ADMIN_EMAILS is unset (fail closed)" do
+      user = build(:user, email: "admin@example.com")
+
+      with_admin_emails(nil) do
+        expect(user.admin?).to be false
+      end
+    end
+
+    it "is false for everyone when ADMIN_EMAILS is blank or only commas" do
+      user = build(:user, email: "admin@example.com")
+
+      with_admin_emails("") do
+        expect(user.admin?).to be false
+      end
+      with_admin_emails(",") do
+        expect(user.admin?).to be false
+      end
+    end
+
+    it "ignores case when comparing emails" do
+      user = build(:user, email: "Admin@Example.com")
+
+      with_admin_emails("admin@example.com") do
+        expect(user.admin?).to be true
+      end
+    end
+
+    it "treats comma-separated values with surrounding spaces as two allowlisted emails" do
+      with_admin_emails("a@x.com , b@x.com") do
+        expect(build(:user, email: "a@x.com").admin?).to be true
+        expect(build(:user, email: "b@x.com").admin?).to be true
+      end
+    end
+
+    it "is true for the second address in a multi-value allowlist" do
+      user = build(:user, email: "second@example.com")
+
+      with_admin_emails("first@example.com,second@example.com") do
+        expect(user.admin?).to be true
+      end
+    end
+
+    it "is false when the user email is blank" do
+      user = build(:user, email: "")
+
+      with_admin_emails("admin@example.com") do
+        expect(user.admin?).to be false
+      end
+    end
   end
 
   describe "#best_scores" do

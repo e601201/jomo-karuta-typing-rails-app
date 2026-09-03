@@ -9,8 +9,25 @@ class User < ApplicationRecord
   has_many :scores, dependent: :nullify
   # プレイ記録は非公開の個人データなので、退会時は一緒に消す
   has_many :game_results, dependent: :destroy
+  # フィードバックは運営の受信箱なので、退会しても本文は残す（user_id だけ外す）
+  has_many :feedbacks, dependent: :nullify
 
   validates :email, presence: true, uniqueness: true
+
+  # 運営（フィードバック一覧を読める人。CONTEXT.md「運営」）かどうか。
+  # 許可リストは ENV["ADMIN_EMAILS"]（カンマ区切り）。dev/test は .env、
+  # 本番は Kamal が credentials(admin.emails) から注入する（OAuth クレデンシャルと同じ経路）。
+  # 未設定・空なら誰も運営にならない（fail closed）。
+  def admin?
+    return false if email.blank?
+
+    self.class.admin_emails.include?(email.downcase)
+  end
+
+  # メモ化しない（プロセス内で ENV は変わらないが、テストが ENV を差し替えて実挙動を検証するため）
+  def self.admin_emails
+    ENV.fetch("ADMIN_EMAILS", "").split(",").filter_map { |e| e.strip.downcase.presence }
+  end
 
   # ベストスコア（全プレイ記録の中での自己最高。CONTEXT.md / ADR 0005 参照）。
   # 導出元はランキング登録済みの scores ではなく game_results（全プレイ）。
