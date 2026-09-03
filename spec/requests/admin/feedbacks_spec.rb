@@ -92,7 +92,7 @@ RSpec.describe "Admin::Feedbacks", type: :request do
     it "lists newest first and breaks ties by id descending" do
       log_in_as_admin do
         older = create(:feedback, body: "古い", created_at: 2.days.ago)
-        same_time = Time.zone.parse("2026-01-15 12:00:00")
+        same_time = 3.hours.ago.change(usec: 0) # 固定日付だと「2日前」より古くなり得る
         first_same = create(:feedback, body: "同一秒・先", created_at: same_time)
         second_same = create(:feedback, body: "同一秒・後", created_at: same_time)
         newest = create(:feedback, body: "新しい", created_at: 1.hour.ago)
