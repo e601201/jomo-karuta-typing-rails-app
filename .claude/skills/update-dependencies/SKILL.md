@@ -51,6 +51,14 @@ Run the checks in this order — fail fast on cheap checks before paying for the
 
 Any non-zero exit is a failure. Capture the failing command's output for the report.
 
+**exit code はパイプ越しに見ない。** `cmd | tail -5; echo $?` の `$?` は `tail` の終了コードなので常に 0 になる。出力をファイルに落としてから判定する:
+
+```bash
+bundle exec rspec > /tmp/rspec.out 2>&1; echo "rspec=$?"; tail -5 /tmp/rspec.out
+```
+
+（2.3 の bun 側の検証も同じ。以前 `bun run check 2>&1 | tail` の `$?` が 0 を返し、93 件の型エラーを見逃しかけた。）
+
 **`bin/rails test` を使わない。** このリポジトリの Ruby テストは minitest ではなく `spec/` 配下の RSpec。`test/` ディレクトリは Rails の雛形が残っているだけで中身が無いため、`bin/rails test` は `0 runs, 0 assertions` で **exit 0** する — 検証したつもりで何も検証していない状態になる。rspec の出力が `N examples, 0 failures`（N は 3 桁台）であることを確認すること。0 examples ならコマンドかパスを疑う。
 
 ### 1.4 失敗時のロールバック
@@ -62,6 +70,15 @@ git checkout -- Gemfile.lock
 ```
 
 Then report to the user: which validation failed, the relevant tail of its output, and the gem(s) most likely responsible (cross-reference the failing test/file with the diff captured earlier). **Stop the skill** — do not proceed to Node. The user needs to decide whether to pin a gem, fix code, or skip this update.
+
+**例外: vite_ruby と vite-plugin-ruby の互換チェック。** vite_ruby は起動時に `package.json` の `vite-plugin-ruby` のレンジを自分の `ViteRuby::DEFAULT_PLUGIN_VERSION` と照合し、合わなければ例外を投げる。rspec の全ファイルが次のエラーでロードに失敗する（`0 examples, 0 failures, N errors occurred outside of examples`）:
+
+```
+ArgumentError:
+  vite-plugin-ruby@^5.2.3 might not be compatible with vite_ruby-3.11.1
+```
+
+これは gem 側の破壊ではなく、npm 側が追いついていないだけで、ステップ 2 の ncu が `vite-plugin-ruby` を上げれば解消する。この場合に限りロールバックせずステップ 2 に進み、2.3 の後に **`bundle exec rspec` をやり直す**。それでも落ちる場合は gem と Node の両方を戻す（`git checkout -- Gemfile.lock package.json bun.lock && bun install`）。要求バージョンは `grep DEFAULT_PLUGIN_VERSION $(bundle show vite_ruby)/lib/vite_ruby/version.rb` で確認できる。エラーが勧める `bundle exec vite upgrade` は使わない — 独自に `bundle update` とパッケージ install を走らせ、ncu の差分（コミット本文の情報源）とずれるため。
 
 ### 1.5 成功時
 
@@ -93,7 +110,7 @@ bun install
 2. `bun run lint`  — prettier --check + eslint（typescript-eslint 経由）
 3. `bun run test`  — vitest
 
-Any non-zero exit is a failure.
+Any non-zero exit is a failure. exit code は 1.3 と同じくファイルに落としてから判定する（`| tail` 越しの `$?` は見ない）。
 
 **`check` は通るのに `lint` が落ちる典型が TypeScript の major 更新。** typescript-eslint は TS7 に未対応で、`tsc` は通るのに eslint がロード時にクラッシュする (`typescript-eslint does not support TS 7.0`)。この破壊は `check` だけでは検出できない — スキルが以前この検証を `check` のみにしていたため見逃した。だから lint と test を必ず併せて回す。
 
@@ -181,7 +198,7 @@ Do **not** push. The user reviews the diffs locally and pushes themselves — th
 
 **gem と Node は1つのコミットにまとめる。** 既存の履歴（`依存関係を…更新する` が gem と Node の両変更を1コミットに含む — `ead7097` / `783c082`）がこの慣例。片側だけの変更でもタイトルは同じ。
 
-**ステップ 1 が失敗したらステップ 2 に進まない。** A broken Ruby side means tests can't validate anything downstream — running Node updates on top would just compound the problem. （Node 側だけが失敗した場合は、検証済みの gem 変更だけをコミットしてよい。）
+**ステップ 1 が失敗したらステップ 2 に進まない。** A broken Ruby side means tests can't validate anything downstream — running Node updates on top would just compound the problem. （Node 側だけが失敗した場合は、検証済みの gem 変更だけをコミットしてよい。）唯一の例外は 1.4 の vite_ruby 互換チェックで、これは Node 側の更新で解消するので進んでよい。その場合 gem 側は rspec が未通過なので、Node 側を戻すなら gem 側も戻す。
 
 **ロールバックは `git checkout --` で行う。** Never `git reset --hard` or `git stash drop` — those can wipe unrelated state. The precondition check at the top guarantees only the lockfiles / package.json are dirty, so a targeted checkout is sufficient and safe. Node 側の対象は `package.json` と `bun.lock`（`package-lock.json` ではない）。
 
