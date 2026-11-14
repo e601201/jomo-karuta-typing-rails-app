@@ -1,11 +1,11 @@
 ---
 name: update-dependencies
-description: Update Ruby gems and Node (bun) packages to their latest versions for the jomo-karuta-typing-rails-app. Use whenever the user says "依存関係を更新して", "依存関係をアップデート", asks to run bundle update / ncu, or asks to update gems or Node packages. Runs bundle update --all and npx npm-check-updates -u, validates gems with rubocop / brakeman / rspec and Node with bun run check / lint / test, holds back known-incompatible majors (TypeScript 7, @types/node ahead of the Node runtime), rolls back on failure, and creates a single combined commit matching the project convention (依存関係を…更新する).
+description: Update Ruby gems and Node (bun) packages to their latest versions for the jomo-karuta-typing-rails-app. Use whenever the user says "依存関係を更新して", "依存関係をアップデート", asks to run bundle update / ncu, or asks to update gems or Node packages. Runs bundle update --all and npx npm-check-updates -u, validates gems with rubocop / brakeman / rspec and Node with bun run check / lint / test, holds back known-incompatible majors (TypeScript 7, @types/node ahead of the Node runtime), rolls back on failure, and creates two separate commits — gem first (gem の依存関係を更新する), then Node (Node の依存関係を更新する) — matching the project convention.
 ---
 
 # 依存関係更新スキル
 
-This skill updates the Ruby gems and Node packages of the **jomo-karuta-typing-rails-app** to their latest versions. Both package managers land in **one combined commit** (`依存関係を…更新する`), mirroring the existing project convention (`ead7097`, `783c082`). On any validation failure, the working tree is rolled back so the repository is never left in a broken intermediate state.
+This skill updates the Ruby gems and Node packages of the **jomo-karuta-typing-rails-app** to their latest versions. gem と Node は **別々のコミット**にする — 先に `gem の依存関係を更新する`、次に `Node の依存関係を更新する`（既存の慣例: `291029c` / `a325a0c`）。 On any validation failure, the working tree is rolled back so the repository is never left in a broken intermediate state.
 
 **このリポジトリは Node パッケージに bun を使う** (`bun.lock`、`package-lock.json` は無い)。`npm install` / `npm run` は使わない — `bun install` / `bun run` を使う。
 
@@ -82,7 +82,7 @@ ArgumentError:
 
 ### 1.5 成功時
 
-**コミットはまだしない。** gem の変更は作業ツリーに残したまま、ステップ 2 に進む。gem と Node をステップ 3 でまとめて1つのコミットにする。
+**コミットはまだしない。** gem の変更は作業ツリーに残したまま、ステップ 2 に進む（1.4 の vite_ruby 例外のように Node 側の結果次第で gem 側も戻すことがあるため、両側の検証が済んでからステップ 3 で順にコミットする）。
 
 ## ステップ 2 — Node (bun) の更新
 
@@ -134,17 +134,29 @@ bun install
 
 The second `bun install` re-syncs `node_modules` to the restored lockfile. Report the failing output to the user along with which packages bumped majors (parse `/tmp/ncu.out`) — those are the prime suspects.
 
-ステップ 1 の gem 変更は作業ツリーに残っている。Node 側が完全に失敗して戻した場合は、**gem 変更だけでステップ 3 のコミットを作る**（本文の Node 節は省く）。
+ステップ 1 の gem 変更は作業ツリーに残っている。Node 側が完全に失敗して戻した場合は、**ステップ 3 は gem のコミットだけを作る**（Node のコミットは作らない）。
 
-## ステップ 3 — まとめてコミット
+## ステップ 3 — gem と Node を別々にコミット
 
-gem と Node の変更を **1つのコミット**にする。`-a` は使わず、変更したファイルだけを明示的にステージする:
+**gem → Node の順に2つのコミット**を作る。`-a` は使わず、各コミットでそのファイルだけを明示的にステージする。変更がなかった側（または失敗して戻した側）のコミットは作らない。
 
 ```bash
-git add Gemfile.lock package.json bun.lock
+git add Gemfile.lock            # 1つ目: gem
+git commit -F /tmp/gem.msg
+git add package.json bun.lock   # 2つ目: Node
+git commit -F /tmp/node.msg
 ```
 
-（変更がなかった側のファイルは省く。gem 変更なしなら `Gemfile.lock` を外す等。）
+### 日付の指定
+
+ユーザーがコミットの日付を指定したとき（例: 「gem は 11/9、Node は 11/13」）は、**author date と committer date の両方**を設定する。時刻の指定がなければ既存の慣例に合わせて `00:01:05`、タイムゾーンは `+0900`:
+
+```bash
+D='2026-11-09T00:01:05+0900'
+GIT_AUTHOR_DATE=$D GIT_COMMITTER_DATE=$D git commit -F /tmp/gem.msg
+```
+
+`--date` だけだと committer date が今日のまま残るので使わない。指定がなければ日付はいじらない。
 
 ### 本文の組み立て
 
@@ -157,19 +169,33 @@ diff /tmp/Gemfile.lock.before Gemfile.lock \
 
 The space count is exactly 5 — `diff`'s own separator space, plus the 4-space indent that marks a resolved version under `GEM specs`. That exactness is the filter: checksum lines (2-space indent) and dependency constraint lines (6-space indent) name the same gems, so loosening this to ` +` yields duplicates and bogus versions like `loofah ~>`. If this ever prints nothing, suspect the pattern before concluding no gems changed — a mismatch here exits 0 silently, looking exactly like "nothing to update".
 
-Node 側は `/tmp/ncu.out` の `pkgname  ^X.Y.Z  →  ^A.B.C` 行から取るが、**2.4 で据え置いたパッケージは除外する**（実際に変わっていないため）。念のため `git diff --cached package.json` と突き合わせて、ステージされた差分と一致することを確認する。
+プラットフォーム別の gem（`nokogiri 1.19.7-arm64-darwin` 等）は1行にまとめ、サフィックスを落とす（`- nokogiri 1.19.4 → 1.19.7`）。
+
+Node 側は `/tmp/ncu.out` の `pkgname  ^X.Y.Z  →  ^A.B.C` 行から取るが、**2.4 で据え置いたパッケージは除外する**（実際に変わっていないため）。念のため `git diff --cached package.json` と突き合わせて、ステージされた差分と一致することを確認する（`package.json` はタブインデントなので `grep '^[-+] '` では拾えない。`grep -E '^[-+]\s+"'` を使う）。
 
 各行は `- pkgname OLD → NEW` に整形する（全角矢印 `→`、`^` / `~` プレフィックスは落とす。既存コミットの体裁に合わせる）。
 
+メッセージはファイル（`/tmp/gem.msg` / `/tmp/node.msg`）に書いてから `git commit -F` に渡す。シェル変数 `$(...)` で節を組み立てると末尾の改行が落ち、節の間の空行が消えるので注意する。
+
 ### コミットメッセージの形式
 
-`783c082` に倣う。変更のない側の節は省く:
+`291029c` / `a325a0c` に倣う。
+
+gem のコミット:
 
 ```
-依存関係を更新する
+gem の依存関係を更新する
 
 gem（Gemfile.lock）:
 - gemA X.Y.Z → A.B.C
+
+検証: bin/rubocop / brakeman / rspec すべて green。
+```
+
+Node のコミット（据え置きがなければ「意図的に見送り」節は省く）:
+
+```
+Node の依存関係を更新する
 
 Node / bun（package.json / bun.lock）:
 - pkgA X.Y.Z → A.B.C
@@ -178,10 +204,10 @@ Node / bun（package.json / bun.lock）:
 - typescript 7.x — typescript-eslint 未対応で lint がクラッシュ（tsc は通る、#10940）
 - @types/node 26 — ランタイムの Node v24 に合わせて据え置き
 
-検証: bin/rubocop / brakeman / rspec、bun run check / lint / test すべて green。
+検証: bun run check / lint / test すべて green。
 ```
 
-コミット末尾には、このリポジトリの他コミット（`ead7097` / `783c082` 等）と同じく `Co-Authored-By:` と `Claude-Session:` トレーラーを付ける。`git commit` を直接実行してよい。
+どちらのコミットも末尾に、このリポジトリの他コミットと同じく `Co-Authored-By:` と `Claude-Session:` トレーラーを付ける。`git commit` を直接実行してよい。
 
 ## 最終報告
 
@@ -190,13 +216,13 @@ End with a short summary in Japanese:
 - gem: 更新あり / 変更なし / 失敗 (理由)
 - Node (bun): 更新あり / 変更なし / 失敗 (理由)
 - 据え置いた major があればその一覧と理由
-- コミット: `<short-sha>`（作成した場合）
+- コミット: gem `<short-sha>` / Node `<short-sha>`（作成したもの）
 
 Do **not** push. The user reviews the diffs locally and pushes themselves — that's the convention here, and it gives them a chance to catch a major bump that passed validation but might still be risky in the browser.
 
 ## 重要な制約
 
-**gem と Node は1つのコミットにまとめる。** 既存の履歴（`依存関係を…更新する` が gem と Node の両変更を1コミットに含む — `ead7097` / `783c082`）がこの慣例。片側だけの変更でもタイトルは同じ。
+**gem と Node は別々のコミットにする。** 先に gem（`gem の依存関係を更新する`）、次に Node（`Node の依存関係を更新する`）。既存の履歴（`3943a88` / `1a53046`、`291029c` / `a325a0c`）がこの慣例。以前は1コミットにまとめていた（`ead7097` / `783c082`）が、今は分ける。
 
 **ステップ 1 が失敗したらステップ 2 に進まない。** A broken Ruby side means tests can't validate anything downstream — running Node updates on top would just compound the problem. （Node 側だけが失敗した場合は、検証済みの gem 変更だけをコミットしてよい。）唯一の例外は 1.4 の vite_ruby 互換チェックで、これは Node 側の更新で解消するので進んでよい。その場合 gem 側は rspec が未通過なので、Node 側を戻すなら gem 側も戻す。
 
